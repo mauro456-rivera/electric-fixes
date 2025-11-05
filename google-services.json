@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1088421079089",
+    "project_id": "mecanic-fixs",
+    "storage_bucket": "mecanic-fixs.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1088421079089:android:ed1ee29c9e310b202a0d10",
+        "android_client_info": {
+          "package_name": "mecanic_ixes.ds_2025"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-PU2z8TtS5hcLZkRIsJS0jnoId-y3qWw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

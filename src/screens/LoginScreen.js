@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -12,67 +12,72 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import CustomAlert from "../components/CustomAlert";
 import CustomButton from "../components/CustomButton";
 import { useAuth } from "../context/AuthContext";
-import ApiService from "../services/api";
 import { colors } from "../styles/colors";
 import { globalStyles } from "../styles/globalStyles";
 
 const LoginScreen = () => {
   const router = useRouter();
-  const { signIn } = useAuth();
+  const { signIn, isAuthenticated } = useAuth();
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("@dieselsoft.co");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
 
-  const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert("Error", "Por favor ingrese email y contraseña");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      Alert.alert("Error", "Por favor ingrese un email válido");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const credentials = {
-        email: email.toLowerCase().trim(),
-        password: password,
-      };
-
-      const response = await ApiService.login(credentials);
-      console.log("✅ Login exitoso");
-
-      const token = response.access_token;
-      const userData = response.user;
-
-      if (!token || !userData) {
-        throw new Error("Respuesta de login incompleta");
-      }
-
-      await signIn(userData, token);
-
-      // Pequeño delay para que el contexto se actualice
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
+  // Navegar automáticamente al menú cuando el usuario se autentique
+  useEffect(() => {
+    if (isAuthenticated && !loginLoading) {
+      console.log('🔵 Usuario autenticado detectado, navegando al menú...');
+      // Navegación inmediata para login más rápido
       router.replace("/menu");
-    } catch (error) {
-      console.error("❌ Login error:", error);
-      Alert.alert(
-        "Error de autenticación",
-        error.message || "No se pudo iniciar sesión. Verifica tus credenciales."
-      );
-    } finally {
-      setLoading(false);
     }
+  }, [isAuthenticated, loginLoading, router]);
+
+  const handleEmailChange = (text) => {
+    // Si intentan borrar el @ o el dominio, mantenerlo
+    if (!text.includes('@dieselsoft.co')) {
+      setEmail('@dieselsoft.co');
+      return;
+    }
+    // Obtener solo la parte antes del @
+    const beforeAt = text.split('@')[0];
+    // Actualizar con la parte antes del @ + el dominio fijo
+    setEmail(beforeAt + '@dieselsoft.co');
   };
+
+const handleLogin = async () => {
+  if (!email.trim() || !password.trim()) {
+    Alert.alert("Error", "Por favor ingrese email y contraseña");
+    return;
+  }
+
+  setLoginLoading(true);
+
+  try {
+    const emailTrimmed = email.toLowerCase().trim();
+
+    console.log('🔵 Iniciando login con Firebase Auth...');
+
+    await signIn(emailTrimmed, password);
+
+    console.log('✅ Login exitoso. El useEffect navegará automáticamente al menú...');
+
+    // NO navegar manualmente aquí, el useEffect se encargará cuando isAuthenticated cambie
+    setLoginLoading(false);
+
+  } catch (error) {
+    console.error("❌ Login error:", error);
+    setLoginLoading(false);
+    Alert.alert(
+      "Error de autenticación",
+      error.message || "No se pudo iniciar sesión. Verifica tus credenciales."
+    );
+  }
+};
+
 
   return (
     <KeyboardAvoidingView
@@ -88,7 +93,11 @@ const LoginScreen = () => {
             </Text>
             <Text style={styles.subtitle}>TRUCK RALLY TEAM</Text>
 
-            <Text style={styles.subtitlel}>MECANIC-FIXES</Text>
+            <View style={styles.appNamesContainer}>
+              <Text style={styles.mechanicText}>MECANIC-FIXES</Text>
+              <Text style={styles.separator}>|</Text>
+              <Text style={styles.electricText}>ELECTRIC-FIXES</Text>
+            </View>
           </View>
 
           <View style={styles.formContainer}>
@@ -101,14 +110,14 @@ const LoginScreen = () => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Email"
+                placeholder="usuario@dieselsoft.co"
                 placeholderTextColor={colors.textSecondary}
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={handleEmailChange}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
-                editable={!loading}
+                editable={!loginLoading}
               />
             </View>
 
@@ -126,11 +135,11 @@ const LoginScreen = () => {
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
-                editable={!loading}
+                editable={!loginLoading}
               />
               <TouchableOpacity
                 onPress={() => setShowPassword(!showPassword)}
-                disabled={loading}
+                disabled={loginLoading}
               >
                 <Ionicons
                   name={showPassword ? "eye-outline" : "eye-off-outline"}
@@ -146,8 +155,8 @@ const LoginScreen = () => {
               onPress={handleLogin}
               variant="primary"
               style={styles.button}
-              loading={loading}
-              disabled={loading}
+              loading={loginLoading}
+              disabled={loginLoading}
             />
           </View>
         </View>
@@ -169,12 +178,27 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     fontWeight: "300",
   },
-  subtitlel: {
+  appNamesContainer: {
     marginTop: 80,
-    fontSize: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  mechanicText: {
+    fontSize: 16,
     fontWeight: "700",
-    color: colors.text,
-    marginBottom: 16,
+    color: colors.mechanical,
+    letterSpacing: 0.5,
+  },
+  separator: {
+    fontSize: 16,
+    fontWeight: "300",
+    color: colors.textSecondary,
+  },
+  electricText: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: colors.electrical,
     letterSpacing: 0.5,
   },
   formContainer: { width: "100%" },

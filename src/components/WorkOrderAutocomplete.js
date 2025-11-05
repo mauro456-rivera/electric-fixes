@@ -13,14 +13,18 @@ import { useWorkOrders } from '../context/WorkOrderContext';
 import { colors } from '../styles/colors';
 
 const WorkOrderAutocomplete = ({ value, onSelect, placeholder = "Buscar Work Order" }) => {
-  const { searchWorkOrders, loading: globalLoading, workOrders } = useWorkOrders();
-  const [searchText, setSearchText] = useState(value || '');
+  const { searchWorkOrders, loading: globalLoading, workOrders, refreshWorkOrders } = useWorkOrders();
+  const [searchText, setSearchText] = useState(value || 'WO-TA-');
   const [filteredWorkOrders, setFilteredWorkOrders] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
+  // Los work orders se cargan automáticamente en WorkOrderContext
+  // No necesitamos cargarlos aquí
+
   // Filtrar work orders cuando cambia el texto
   useEffect(() => {
-    if (searchText.trim().length > 0) {
+    // Solo buscar si hay algo después de "WO-TA-"
+    if (searchText.length > 7) {
       // Solo buscar si los work orders ya están cargados
       if (!globalLoading && workOrders.length > 0) {
         const results = searchWorkOrders(searchText, 5);
@@ -45,6 +49,11 @@ const WorkOrderAutocomplete = ({ value, onSelect, placeholder = "Buscar Work Ord
   };
 
   const handleChangeText = (text) => {
+    // Asegurar que siempre comience con "WO-TA-"
+    if (!text.startsWith('WO-TA-')) {
+      setSearchText('WO-TA-');
+      return;
+    }
     setSearchText(text);
   };
 
@@ -84,12 +93,12 @@ const WorkOrderAutocomplete = ({ value, onSelect, placeholder = "Buscar Work Ord
             style={styles.loader}
           />
         )}
-        {searchText.length > 0 && !globalLoading && (
-          <TouchableOpacity 
+        {searchText.length > 7 && !globalLoading && (
+          <TouchableOpacity
             onPress={() => {
-              setSearchText('');
+              setSearchText('WO-TA-');
               setShowDropdown(false);
-              onSelect('', null);
+              onSelect('WO-TA-', null);
             }}
             style={styles.clearButton}
           >
@@ -116,7 +125,7 @@ const WorkOrderAutocomplete = ({ value, onSelect, placeholder = "Buscar Work Ord
       )}
 
       {/* Mensaje cuando no hay resultados */}
-      {showDropdown && filteredWorkOrders.length === 0 && searchText.length > 0 && !globalLoading && (
+      {showDropdown && filteredWorkOrders.length === 0 && searchText.length > 7 && !globalLoading && (
         <View style={styles.dropdown}>
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>No se encontraron Work Orders</Text>
@@ -125,7 +134,7 @@ const WorkOrderAutocomplete = ({ value, onSelect, placeholder = "Buscar Work Ord
       )}
       
       {/* Mensaje de carga inicial */}
-      {globalLoading && searchText.length > 0 && (
+      {globalLoading && searchText.length > 7 && (
         <View style={styles.dropdown}>
           <View style={styles.emptyContainer}>
             <ActivityIndicator size="small" color={colors.primary} />

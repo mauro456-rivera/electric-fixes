@@ -2,50 +2,50 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import CustomAlert from '../components/CustomAlert';
 import { useAuth } from '../context/AuthContext';
-import ApiService from '../services/api';
 import { colors } from '../styles/colors';
 import { globalStyles } from '../styles/globalStyles';
 
 const MenuScreen = () => {
   const router = useRouter();
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin, loading } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+
+  // Protección de ruta: Si no hay usuario autenticado y no está cargando, redirigir al login
+  React.useEffect(() => {
+    if (!loading && !user) {
+      console.warn('⚠️ Usuario no autenticado en MenuScreen, redirigiendo al login...');
+      router.replace('/login');
+    }
+  }, [user, loading, router]);
 
   const handleLogout = () => {
     setShowUserMenu(false);
-    Alert.alert(
-      'Cerrar Sesión',
-      '¿Estás seguro de que deseas cerrar sesión?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Cerrar Sesión',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await ApiService.logout();
-              await signOut();
-              router.replace('/login');
-            } catch (error) {
-              console.error('Logout error:', error);
-              await signOut();
-              router.replace('/login');
-            }
-          },
-        },
-      ]
-    );
+    setShowLogoutAlert(true);
   };
 
-  const menuOptions = [
+  const confirmLogout = async () => {
+    try {
+      await signOut();
+      router.replace('/login');
+    } catch (error) {
+      console.error('❌ Error al cerrar sesión:', error);
+      router.replace('/login');
+    }
+  };
+
+  const baseMenuOptions = [
     {
       id: 1,
       title: 'Registrar problema/solución',
-      icon: 'document-text-outline',
+      subtitle: 'Mecánico o Eléctrico',
+      icon: 'add-circle-outline',
       route: '/register-problem',
-      gradient: [colors.primary, '#1E7ACC'],
+      gradient: ['#1e3a5f', '#2d5a8c'],
+      iconBg: '#3b82f6',
     },
     {
       id: 2,
@@ -53,7 +53,8 @@ const MenuScreen = () => {
       subtitle: 'Consulta problemas y soluciones aplicadas',
       icon: 'list-outline',
       route: '/view-records',
-      gradient: ['#00C853', '#00952F'],
+      gradient: ['#1e4d3a', '#2d7a5f'],
+      iconBg: '#10b981',
     },
     {
       id: 3,
@@ -61,9 +62,47 @@ const MenuScreen = () => {
       subtitle: 'Encuentra soluciones para tus problemas',
       icon: 'search-outline',
       route: '/search-solutions',
-      gradient: [colors.secondary, '#CC6F00'],
+      gradient: ['#5a3a1e', '#8c5a2d'],
+      iconBg: '#f59e0b',
     },
   ];
+
+  const adminMenuOptions = [
+    {
+      id: 4,
+      title: 'Gestionar Usuarios',
+      subtitle: 'Crear y administrar usuarios del sistema',
+      icon: 'people-outline',
+      route: '/manage-users',
+      gradient: ['#4a1e5a', '#6d2d8c'],
+      iconBg: '#a855f7',
+      adminOnly: true,
+    },
+    {
+      id: 5,
+      title: 'Registro por Usuario',
+      subtitle: 'Ver problemas registrados por cada usuario',
+      icon: 'stats-chart-outline',
+      route: '/user-registrations',
+      gradient: ['#1e5a5a', '#2d8c8c'],
+      iconBg: '#06b6d4',
+      adminOnly: true,
+    },
+    {
+      id: 6,
+      title: 'Papelera',
+      subtitle: 'Ver y restaurar registros eliminados',
+      icon: 'trash-outline',
+      route: '/trash',
+      gradient: ['#5a1e1e', '#8c2d2d'],
+      iconBg: '#ef4444',
+      adminOnly: true,
+    },
+  ];
+
+  const menuOptions = isAdmin
+    ? [...baseMenuOptions, ...adminMenuOptions]
+    : baseMenuOptions;
 
   return (
     <View style={globalStyles.container}>
@@ -74,56 +113,59 @@ const MenuScreen = () => {
             <Text style={styles.logoSoft}>SOFT</Text>
           </Text>
           <Text style={styles.headerSubtitle}>TRUCK RALLY TEAM</Text>
-                      <Text style={styles.subtitlel}>MECANIC-FIXES</Text>
-          
+          <View style={styles.appNamesContainer}>
+            <Text style={styles.mechanicText}>MECANIC-FIXES</Text>
+            <Text style={styles.separator}>|</Text>
+            <Text style={styles.electricText}>ELECTRIC-FIXES</Text>
+          </View>
         </View>
 
-        <TouchableOpacity 
-          style={styles.userInfoButton} 
+        <TouchableOpacity
+          style={styles.userAvatarButton}
           onPress={() => setShowUserMenu(true)}
           activeOpacity={0.7}
         >
-          <View style={styles.userInfo}>
-            <Text style={styles.userName} numberOfLines={1}>
-              {user?.name || 'Usuario'}
+          <View style={styles.avatarCircle}>
+            <Text style={styles.avatarInitial}>
+              {(user?.name || 'U').charAt(0).toUpperCase()}
             </Text>
-            <Text style={styles.userPosition} numberOfLines={1}>
-              {user?.position || ''}
-            </Text>
-          </View>
-          <View style={styles.avatarContainer}>
-            <Ionicons name="person" size={24} color={colors.text} />
           </View>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.menuContainer}>
-        {menuOptions.map((option) => (
-          <TouchableOpacity
-            key={option.id}
-            onPress={() => router.push(option.route)}
-            activeOpacity={0.8}
-          >
-            <LinearGradient
-              colors={option.gradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.menuCard}
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.menuContainer}>
+          {menuOptions.map((option) => (
+            <TouchableOpacity
+              key={option.id}
+              onPress={() => router.push(option.route)}
+              activeOpacity={0.8}
             >
-              <View style={styles.iconContainer}>
-                <Ionicons name={option.icon} size={28} color={colors.text} />
-              </View>
-              <View style={styles.textContainer}>
-                <Text style={styles.menuTitle}>{option.title}</Text>
-                {option.subtitle && (
-                  <Text style={styles.menuSubtitle}>{option.subtitle}</Text>
-                )}
-              </View>
-              <Ionicons name="chevron-forward" size={24} color={colors.text} />
-            </LinearGradient>
-          </TouchableOpacity>
-        ))}
-      </View>
+              <LinearGradient
+                colors={option.gradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.menuCard}
+              >
+                <View style={[styles.iconContainer, { backgroundColor: option.iconBg }]}>
+                  <Ionicons name={option.icon} size={28} color="#ffffff" />
+                </View>
+                <View style={styles.textContainer}>
+                  <Text style={styles.menuTitle}>{option.title}</Text>
+                  {option.subtitle && (
+                    <Text style={styles.menuSubtitle}>{option.subtitle}</Text>
+                  )}
+                </View>
+                <Ionicons name="chevron-forward" size={24} color="rgba(255, 255, 255, 0.7)" />
+              </LinearGradient>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
 
       <Modal
         visible={showUserMenu}
@@ -143,12 +185,12 @@ const MenuScreen = () => {
               </View>
               <View style={styles.userMenuInfo}>
                 <Text style={styles.userMenuName}>
-                  {user?.name} {user?.lastname}
+                  {user?.name || 'Usuario'}
                 </Text>
-                <Text style={styles.userMenuEmail}>{user?.businessEmail}</Text>
-                {user?.position && (
-                  <Text style={styles.userMenuPosition}>{user?.position}</Text>
-                )}
+                <Text style={styles.userMenuEmail}>{user?.email}</Text>
+                <Text style={styles.userMenuPosition}>
+                  {isAdmin ? '⚡ Administrador' : '👤 Usuario'}
+                </Text>
               </View>
             </View>
 
@@ -169,6 +211,26 @@ const MenuScreen = () => {
           </View>
         </TouchableOpacity>
       </Modal>
+
+      <CustomAlert
+        visible={showLogoutAlert}
+        onClose={() => setShowLogoutAlert(false)}
+        type="warning"
+        title="Cerrar Sesión"
+        message="¿Estás seguro de que deseas cerrar sesión?"
+        buttons={[
+          {
+            text: 'Cerrar Sesión',
+            style: 'destructive',
+            onPress: confirmLogout
+          },
+          {
+            text: 'Cancelar',
+            style: 'cancel'
+          }
+        ]}
+      />
+
     </View>
   );
 };
@@ -195,13 +257,28 @@ const styles = StyleSheet.create({
   logoSoft: {
     color: colors.secondary,
   },
-    subtitlel: {
+  appNamesContainer: {
     marginTop: 5,
-    fontSize: 15,
-    fontWeight: "400",
-    color: colors.text,
-    marginBottom: 16,
-    letterSpacing: 0.5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  mechanicText: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: colors.mechanical,
+    letterSpacing: 0.3,
+  },
+  separator: {
+    fontSize: 11,
+    fontWeight: "300",
+    color: colors.textSecondary,
+  },
+  electricText: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: colors.electrical,
+    letterSpacing: 0.3,
   },
   headerSubtitle: {
     color: colors.textSecondary,
@@ -209,37 +286,37 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     marginTop: 2,
   },
-  userInfoButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.cardBackground,
-    borderRadius: 25,
-    paddingLeft: 12,
-    paddingRight: 4,
-    paddingVertical: 4,
-    borderWidth: 1,
-    borderColor: colors.border,
+  userAvatarButton: {
+    padding: 4,
   },
-  userInfo: {
-    marginRight: 8,
-    maxWidth: 120,
-  },
-  userName: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  userPosition: {
-    color: colors.textSecondary,
-    fontSize: 11,
-  },
-  avatarContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  avatarCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 2,
+    borderColor: colors.secondary,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  avatarInitial: {
+    color: '#ffffff',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 20,
   },
   menuContainer: {
     paddingHorizontal: 20,
@@ -249,23 +326,38 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 20,
-    borderRadius: 12,
+    borderRadius: 16,
     marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
   },
   iconContainer: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   textContainer: {
     flex: 1,
   },
   menuTitle: {
-    color: colors.text,
+    color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
   },

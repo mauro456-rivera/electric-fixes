@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Dimensions,
   FlatList,
   RefreshControl,
   StyleSheet,
@@ -10,24 +12,48 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const isSmallScreen = SCREEN_WIDTH < 375;
+const isMediumScreen = SCREEN_WIDTH >= 375 && SCREEN_WIDTH < 414;
+const isLargeScreen = SCREEN_WIDTH >= 414;
+import AppFooter from '../components/AppFooter';
+import CustomAlert from '../components/CustomAlert';
+import { useAuth } from '../context/AuthContext';
 import FirebaseFirestoreService from '../services/firebaseFirestore';
 import { colors } from '../styles/colors';
 import { globalStyles } from '../styles/globalStyles';
 
 const ViewRecordsScreen = () => {
   const router = useRouter();
+  const { user, isAdmin } = useAuth();
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [showAccessDeniedAlert, setShowAccessDeniedAlert] = useState(false);
 
   useEffect(() => {
+    // Verificar si el usuario tiene permiso para ver registros
+    if (user?.permissions?.canOnlyRegister && !isAdmin) {
+      setShowAccessDeniedAlert(true);
+      return;
+    }
     loadProblems();
-  }, []);
+  }, [user]);
+
+  // Reload problems when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      if (user && !(user?.permissions?.canOnlyRegister && !isAdmin)) {
+        loadProblems();
+      }
+    }, [user, isAdmin])
+  );
 
   const loadProblems = async () => {
     try {
       setLoading(true);
-      const data = await FirebaseFirestoreService.getAllProblems();
+      const data = await FirebaseFirestoreService.getAllProblems(user);
       setProblems(data);
     } catch (error) {
       console.error('Error cargando problemas:', error);
@@ -70,17 +96,22 @@ const ViewRecordsScreen = () => {
     const problemCount = item.problems ? item.problems.length : 0;
 
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.card}
         onPress={() => handleProblemPress(item)}
+        activeOpacity={0.7}
       >
         {/* Header del card */}
         <View style={styles.cardHeader}>
           <View style={styles.topicContainer}>
-            <Ionicons name="pricetag" size={16} color={colors.primary} />
-            <Text style={styles.topic}>{item.generalData?.topic || 'Sin tópico'}</Text>
+            <Ionicons name="pricetag" size={isSmallScreen ? 14 : 16} color={colors.primary} />
+            <Text style={styles.topic} numberOfLines={1}>
+              {item.generalData?.topic || 'Sin tópico'}
+            </Text>
           </View>
-          <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
+          <Text style={styles.date} numberOfLines={1}>
+            {formatDate(item.createdAt)}
+          </Text>
         </View>
 
         {/* Título del primer problema */}
@@ -89,26 +120,34 @@ const ViewRecordsScreen = () => {
         </Text>
 
         {/* Información adicional */}
-        <View style={styles.cardInfo}>
-          {item.generalData?.workOrder && (
-            <View style={styles.infoRow}>
-              <Ionicons name="document-text-outline" size={14} color={colors.textSecondary} />
-              <Text style={styles.infoText}>{item.generalData.workOrder}</Text>
-            </View>
-          )}
-          {item.generalData?.truckData && (
-            <View style={styles.infoRow}>
-              <Ionicons name="car-outline" size={14} color={colors.textSecondary} />
-              <Text style={styles.infoText}>{item.generalData.truckData}</Text>
-            </View>
-          )}
-        </View>
+        {(item.generalData?.workOrder || item.generalData?.truckData) && (
+          <View style={styles.cardInfo}>
+            {item.generalData?.workOrder && (
+              <View style={styles.infoRow}>
+                <Ionicons name="document-text-outline" size={isSmallScreen ? 12 : 14} color={colors.textSecondary} />
+                <Text style={styles.infoText} numberOfLines={1}>
+                  {item.generalData.workOrder}
+                </Text>
+              </View>
+            )}
+            {item.generalData?.truckData && (
+              <View style={styles.infoRow}>
+                <Ionicons name="car-outline" size={isSmallScreen ? 12 : 14} color={colors.textSecondary} />
+                <Text style={styles.infoText} numberOfLines={1}>
+                  {item.generalData.truckData}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
 
         {/* Footer */}
         <View style={styles.cardFooter}>
           <View style={styles.userInfo}>
-            <Ionicons name="person-outline" size={14} color={colors.textSecondary} />
-            <Text style={styles.userName}>{item.registeredBy?.name || 'Desconocido'}</Text>
+            <Ionicons name="person-outline" size={isSmallScreen ? 12 : 14} color={colors.textSecondary} />
+            <Text style={styles.userName} numberOfLines={1}>
+              {item.registeredBy?.name || 'Desconocido'}
+            </Text>
           </View>
           {problemCount > 1 && (
             <View style={styles.badge}>
@@ -170,6 +209,26 @@ const ViewRecordsScreen = () => {
           }
         />
       )}
+
+      <AppFooter />
+
+      {/* Alert de Acceso Denegado */}
+      <CustomAlert
+        visible={showAccessDeniedAlert}
+        onClose={() => {
+          setShowAccessDeniedAlert(false);
+          router.back();
+        }}
+        type="error"
+        title="Acceso denegado"
+        message="No tienes permiso para ver registros"
+        buttons={[
+          {
+            text: 'OK',
+            onPress: () => router.back()
+          }
+        ]}
+      />
     </View>
   );
 };
@@ -179,17 +238,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: isSmallScreen ? 12 : 16,
     paddingTop: 60,
-    paddingBottom: 20,
+    paddingBottom: isSmallScreen ? 16 : 20,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
   backButton: {
     padding: 4,
+    minWidth: 32,
+    minHeight: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: isSmallScreen ? 17 : isMediumScreen ? 18 : 20,
     fontWeight: '600',
     color: colors.text,
   },
@@ -197,109 +260,133 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
   },
   loadingText: {
     color: colors.textSecondary,
     marginTop: 12,
-    fontSize: 16,
+    fontSize: isSmallScreen ? 14 : 16,
+    textAlign: 'center',
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 40,
+    paddingHorizontal: isSmallScreen ? 30 : 40,
   },
   emptyText: {
-    fontSize: 18,
+    fontSize: isSmallScreen ? 16 : 18,
     color: colors.text,
     marginTop: 20,
     textAlign: 'center',
   },
   emptySubText: {
-    fontSize: 14,
+    fontSize: isSmallScreen ? 13 : 14,
     color: colors.textSecondary,
     marginTop: 8,
     textAlign: 'center',
   },
   listContent: {
-    padding: 16,
+    padding: isSmallScreen ? 12 : 16,
+    paddingBottom: 100,
   },
   card: {
     backgroundColor: colors.cardBackground,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    borderRadius: isSmallScreen ? 10 : 12,
+    padding: isSmallScreen ? 12 : 16,
+    marginBottom: isSmallScreen ? 12 : 16,
     borderWidth: 1,
     borderColor: colors.border,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
+    alignItems: 'flex-start',
+    marginBottom: isSmallScreen ? 10 : 12,
+    gap: 8,
   },
   topicContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.primary + '20',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: isSmallScreen ? 8 : 10,
+    paddingVertical: isSmallScreen ? 3 : 4,
+    borderRadius: isSmallScreen ? 10 : 12,
+    maxWidth: isSmallScreen ? SCREEN_WIDTH * 0.45 : SCREEN_WIDTH * 0.5,
+    flexShrink: 1,
   },
   topic: {
-    fontSize: 12,
+    fontSize: isSmallScreen ? 11 : 12,
     fontWeight: '600',
     color: colors.primary,
     marginLeft: 4,
+    flexShrink: 1,
   },
   date: {
-    fontSize: 12,
+    fontSize: isSmallScreen ? 10 : 11,
     color: colors.textSecondary,
+    marginTop: 2,
+    flexShrink: 0,
+    textAlign: 'right',
   },
   problemTitle: {
-    fontSize: 16,
+    fontSize: isSmallScreen ? 14 : isMediumScreen ? 15 : 16,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 12,
+    marginBottom: isSmallScreen ? 10 : 12,
+    lineHeight: isSmallScreen ? 18 : 22,
   },
   cardInfo: {
-    marginBottom: 12,
+    marginBottom: isSmallScreen ? 10 : 12,
+    gap: 4,
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 4,
+    flexShrink: 1,
   },
   infoText: {
-    fontSize: 13,
+    fontSize: isSmallScreen ? 11 : 12,
     color: colors.textSecondary,
     marginLeft: 6,
+    flex: 1,
   },
   cardFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 12,
+    paddingTop: isSmallScreen ? 10 : 12,
     borderTopWidth: 1,
     borderTopColor: colors.border,
+    gap: 8,
   },
   userInfo: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
+    flexShrink: 1,
   },
   userName: {
-    fontSize: 12,
+    fontSize: isSmallScreen ? 11 : 12,
     color: colors.textSecondary,
     marginLeft: 4,
+    flexShrink: 1,
   },
   badge: {
     backgroundColor: colors.secondary + '20',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingHorizontal: isSmallScreen ? 6 : 8,
+    paddingVertical: isSmallScreen ? 3 : 4,
+    borderRadius: isSmallScreen ? 6 : 8,
+    flexShrink: 0,
   },
   badgeText: {
-    fontSize: 11,
+    fontSize: isSmallScreen ? 10 : 11,
     fontWeight: '600',
     color: colors.secondary,
   },

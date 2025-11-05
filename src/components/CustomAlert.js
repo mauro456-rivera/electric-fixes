@@ -8,7 +8,7 @@ const CustomAlert = ({
   onClose, 
   title, 
   message, 
-  type = 'success', // 'success', 'error', 'warning', 'info'
+  type = 'success', // 'success', 'error', 'warning', 'info', 'loading'
   buttons = []
 }) => {
   const getIcon = () => {
@@ -19,6 +19,8 @@ const CustomAlert = ({
         return { name: 'close-circle', color: colors.error };
       case 'warning':
         return { name: 'warning', color: colors.warning };
+      case 'loading':
+        return { name: 'hourglass-outline', color: colors.primary };
       default:
         return { name: 'information-circle', color: colors.primary };
     }
@@ -42,37 +44,39 @@ const CustomAlert = ({
           <Text style={styles.title}>{title}</Text>
           {message && <Text style={styles.message}>{message}</Text>}
           
-          <View style={styles.buttonsContainer}>
-            {buttons.length > 0 ? (
-              buttons.map((button, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.button,
-                    button.style === 'cancel' && styles.cancelButton,
-                    button.style === 'destructive' && styles.destructiveButton,
-                    buttons.length === 1 && styles.singleButton
-                  ]}
-                  onPress={() => {
-                    onClose();
-                    button.onPress?.();
-                  }}
-                >
-                  <Text style={[
-                    styles.buttonText,
-                    button.style === 'cancel' && styles.cancelButtonText,
-                    button.style === 'destructive' && styles.destructiveButtonText
-                  ]}>
-                    {button.text}
-                  </Text>
+          {type !== 'loading' && (
+            <View style={styles.buttonsContainer}>
+              {buttons.length > 0 ? (
+                buttons.map((button, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.button,
+                      button.style === 'cancel' && styles.cancelButton,
+                      button.style === 'destructive' && styles.destructiveButton,
+                      buttons.length === 1 && styles.singleButton
+                    ]}
+                    onPress={() => {
+                      onClose();
+                      button.onPress?.();
+                    }}
+                  >
+                    <Text style={[
+                      styles.buttonText,
+                      button.style === 'cancel' && styles.cancelButtonText,
+                      button.style === 'destructive' && styles.destructiveButtonText
+                    ]}>
+                      {button.text}
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              ) : (
+                <TouchableOpacity style={styles.singleButton} onPress={onClose}>
+                  <Text style={styles.buttonText}>OK</Text>
                 </TouchableOpacity>
-              ))
-            ) : (
-              <TouchableOpacity style={styles.singleButton} onPress={onClose}>
-                <Text style={styles.buttonText}>OK</Text>
-              </TouchableOpacity>
-            )}
-          </View>
+              )}
+            </View>
+          )}
         </View>
       </View>
     </Modal>

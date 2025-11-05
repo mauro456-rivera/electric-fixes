@@ -1,9 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import ActivityItem from '../components/ActivityItem';
+import AppFooter from '../components/AppFooter';
+import CustomAlert from '../components/CustomAlert';
 import CustomButton from '../components/CustomButton';
 import FileUploader from '../components/FileUploader';
 import SolutionItem from '../components/SolutionItem';
@@ -13,87 +15,11 @@ import FirebaseFirestoreService from '../services/firebaseFirestore';
 import { colors } from '../styles/colors';
 import { globalStyles } from '../styles/globalStyles';
 
-// CustomAlert Component
-const CustomAlert = ({ 
-  visible, 
-  onClose, 
-  title, 
-  message, 
-  type = 'success',
-  buttons = []
-}) => {
-  const getIcon = () => {
-    switch(type) {
-      case 'success':
-        return { name: 'checkmark-circle', color: colors.success };
-      case 'error':
-        return { name: 'close-circle', color: colors.error };
-      case 'warning':
-        return { name: 'warning', color: colors.warning };
-      default:
-        return { name: 'information-circle', color: colors.primary };
-    }
-  };
-
-  const icon = getIcon();
-
-  return (
-    <Modal
-      visible={visible}
-      transparent={true}
-      animationType="fade"
-      onRequestClose={onClose}
-    >
-      <View style={alertStyles.overlay}>
-        <View style={alertStyles.alertContainer}>
-          <View style={[alertStyles.iconContainer, { backgroundColor: icon.color + '20' }]}>
-            <Ionicons name={icon.name} size={48} color={icon.color} />
-          </View>
-          
-          <Text style={alertStyles.title}>{title}</Text>
-          {message && <Text style={alertStyles.message}>{message}</Text>}
-          
-          <View style={alertStyles.buttonsContainer}>
-            {buttons.length > 0 ? (
-              buttons.map((button, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    alertStyles.button,
-                    button.style === 'cancel' && alertStyles.cancelButton,
-                    button.style === 'destructive' && alertStyles.destructiveButton,
-                    buttons.length === 1 && alertStyles.singleButton
-                  ]}
-                  onPress={() => {
-                    onClose();
-                    button.onPress?.();
-                  }}
-                >
-                  <Text style={[
-                    alertStyles.buttonText,
-                    button.style === 'cancel' && alertStyles.cancelButtonText,
-                    button.style === 'destructive' && alertStyles.destructiveButtonText
-                  ]}>
-                    {button.text}
-                  </Text>
-                </TouchableOpacity>
-              ))
-            ) : (
-              <TouchableOpacity style={alertStyles.singleButton} onPress={onClose}>
-                <Text style={alertStyles.buttonText}>OK</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-      </View>
-    </Modal>
-  );
-};
-
 const RegisterProblemScreen = () => {
   const router = useRouter();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [problemType, setProblemType] = useState('mechanical'); // 'mechanical' o 'electrical'
   const [selectedWorkOrder, setSelectedWorkOrder] = useState(null);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showErrorAlert, setShowErrorAlert] = useState(false);
@@ -101,13 +27,27 @@ const RegisterProblemScreen = () => {
   const [showMinActivityAlert, setShowMinActivityAlert] = useState(false);
   const [showMinSolutionAlert, setShowMinSolutionAlert] = useState(false);
   const [showMinProblemAlert, setShowMinProblemAlert] = useState(false);
+  const [showUploadingAlert, setShowUploadingAlert] = useState(false);
   const [validationError, setValidationError] = useState('');
+  const [showTopicModal, setShowTopicModal] = useState(false);
+  const [isCustomTopic, setIsCustomTopic] = useState(false);
 
-  // DATOS GENERALES (SE LLENAN UNA SOLA VEZ)
+  const topicOptions = [
+    'Diagnostico Freno Motor',
+    'Diagnostico Retarder',
+    'Diagnostico Sistema de Combustible',
+    'Diagnostico Frenos',
+    'Diagnostico Suspension',
+    'Diagnostico Luces',
+    'Diagnostico AdBlue',
+    'Diagnostico Potencia Motor',
+    'Otro'
+  ];
+
   const [generalData, setGeneralData] = useState({
     topic: '',
     truckData: '',
-    workOrder: '',
+    workOrder: 'WO-TA-',
   });
 
   // ARRAY DE PROBLEMAS (SIN CAMPOS GENERALES)
@@ -132,6 +72,19 @@ const RegisterProblemScreen = () => {
       ...generalData,
       [field]: value,
     });
+  };
+
+  // Manejar selección de tópico
+  const handleTopicSelection = (topic) => {
+    if (topic === 'Otro') {
+      setIsCustomTopic(true);
+      updateGeneralData('topic', '');
+      setShowTopicModal(false); // Cerrar dropdown al seleccionar "Otro"
+    } else {
+      setIsCustomTopic(false);
+      updateGeneralData('topic', topic);
+      setShowTopicModal(false); // Cerrar dropdown al seleccionar
+    }
   };
 
   // ACTUALIZAR PROBLEMA ACTUAL
@@ -253,18 +206,28 @@ const RegisterProblemScreen = () => {
     }
 
     setLoading(true);
+    setShowUploadingAlert(true); // Mostrar alerta de subiendo datos
 
     try {
+      // Preparar datos generales con Work Order completo
+      const generalDataWithWorkOrder = {
+        ...generalData,
+        workOrderDetails: selectedWorkOrder || null, // Guardar el objeto completo del Work Order
+      };
+
       const problemId = await FirebaseFirestoreService.saveProblem(
-        generalData,
+        generalDataWithWorkOrder,
         problems,
-        user
+        user,
+        problemType // Pasar el tipo de problema
       );
 
+      setShowUploadingAlert(false); // Ocultar alerta de subiendo
       setShowSuccessAlert(true);
     } catch (error) {
       console.error('Error guardando:', error);
       setValidationError('No se pudo guardar el problema. Intenta de nuevo.');
+      setShowUploadingAlert(false); // Ocultar alerta de subiendo
       setShowErrorAlert(true);
     } finally {
       setLoading(false);
@@ -273,6 +236,7 @@ const RegisterProblemScreen = () => {
 
   // SECCIONES DEL FORMULARIO PARA FLATLIST
   const formSections = [
+    { id: 'type-selector', type: 'type-selector' },
     { id: 'general', type: 'general' },
     { id: 'problem', type: 'problem' },
     { id: 'activities', type: 'activities' },
@@ -283,6 +247,59 @@ const RegisterProblemScreen = () => {
 
   const renderSection = ({ item }) => {
     switch (item.type) {
+      case 'type-selector':
+        if (currentProblemIndex !== 0) return null;
+        return (
+          <View style={styles.typeSelectorSection}>
+            <Text style={styles.typeSelectorTitle}>Tipo de Problema</Text>
+            <View style={styles.typeOptions}>
+              <TouchableOpacity
+                style={[
+                  styles.typeOption,
+                  problemType === 'mechanical' && styles.typeOptionActive,
+                ]}
+                onPress={() => setProblemType('mechanical')}
+              >
+                <Ionicons
+                  name="construct"
+                  size={32}
+                  color={problemType === 'mechanical' ? colors.mechanical : colors.textSecondary}
+                />
+                <Text
+                  style={[
+                    styles.typeOptionText,
+                    problemType === 'mechanical' && styles.typeOptionTextActiveMechanical,
+                  ]}
+                >
+                  Mecánico
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.typeOption,
+                  problemType === 'electrical' && styles.typeOptionActiveElectrical,
+                ]}
+                onPress={() => setProblemType('electrical')}
+              >
+                <Ionicons
+                  name="flash"
+                  size={32}
+                  color={problemType === 'electrical' ? colors.electrical : colors.textSecondary}
+                />
+                <Text
+                  style={[
+                    styles.typeOptionText,
+                    problemType === 'electrical' && styles.typeOptionTextActiveElectrical,
+                  ]}
+                >
+                  Eléctrico
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        );
+
       case 'general':
         if (currentProblemIndex !== 0) return null;
         return (
@@ -290,18 +307,35 @@ const RegisterProblemScreen = () => {
             <View style={styles.generalSection}>
               <Text style={styles.generalTitle}>Información General</Text>
               
-              <View style={styles.section}>
+              <View style={[styles.section, styles.topicSection]}>
                 <Text style={styles.label}>Tópico *</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Ingrese el tópico"
-                  placeholderTextColor={colors.textSecondary}
-                  value={generalData.topic}
-                  onChangeText={(text) => updateGeneralData('topic', text)}
-                />
+                <TouchableOpacity
+                  activeOpacity={isCustomTopic ? 1 : 0.7}
+                  onPress={() => !isCustomTopic && setShowTopicModal(!showTopicModal)}
+                  style={styles.topicTouchableContainer}
+                >
+                  <View style={styles.topicInputWrapper}>
+                    <TextInput
+                      style={[styles.input, styles.topicInputField]}
+                      placeholder={isCustomTopic ? "Escriba el tópico" : "Seleccione tópico"}
+                      placeholderTextColor={colors.textSecondary}
+                      value={generalData.topic}
+                      onChangeText={(text) => updateGeneralData('topic', text)}
+                      editable={isCustomTopic}
+                      pointerEvents={isCustomTopic ? 'auto' : 'none'}
+                    />
+                    <View style={styles.topicIconContainer}>
+                      <Ionicons
+                        name={showTopicModal ? "chevron-up" : "chevron-down"}
+                        size={20}
+                        color={colors.textSecondary}
+                      />
+                    </View>
+                  </View>
+                </TouchableOpacity>
               </View>
 
-              <View style={styles.section}>
+              <View style={[styles.section, styles.lowerSection]}>
                 <Text style={styles.label}>Datos del Camión</Text>
                 <TextInput
                   style={styles.input}
@@ -312,7 +346,7 @@ const RegisterProblemScreen = () => {
                 />
               </View>
 
-              <View style={styles.section}>
+              <View style={[styles.section, styles.lowerSection]}>
                 <Text style={styles.label}>Work Order</Text>
                 <WorkOrderAutocomplete
                   value={generalData.workOrder}
@@ -320,7 +354,7 @@ const RegisterProblemScreen = () => {
                     updateGeneralData('workOrder', displayText);
                     setSelectedWorkOrder(workOrderObject);
                   }}
-                  placeholder="Buscar Work Order..."
+                  placeholder="WO-TA-####"
                 />
               </View>
             </View>
@@ -440,7 +474,7 @@ const RegisterProblemScreen = () => {
               <CustomButton
                 title="Guardar"
                 onPress={handleSave}
-                variant="secondary"
+                variant="primary"
                 style={styles.saveButton}
                 loading={loading}
                 disabled={loading}
@@ -453,6 +487,7 @@ const RegisterProblemScreen = () => {
               />
             </View>
           </View>
+          
         );
 
       default:
@@ -513,6 +548,61 @@ const RegisterProblemScreen = () => {
         extraScrollHeight={100}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
+      />
+
+      {/* Modal de Dropdown de Tópicos */}
+      <Modal
+        visible={showTopicModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowTopicModal(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowTopicModal(false)}
+        >
+          <View style={styles.modalContent}>
+            <View style={styles.topicDropdownModal}>
+              <Text style={styles.dropdownTitle}>Seleccione un tópico</Text>
+              <FlatList
+                data={topicOptions}
+                keyExtractor={(item, index) => `topic-${index}`}
+                showsVerticalScrollIndicator={true}
+                bounces={true}
+                renderItem={({ item: topic }) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.topicDropdownItem,
+                      generalData.topic === topic && !isCustomTopic && styles.topicDropdownItemSelected
+                    ]}
+                    onPress={() => handleTopicSelection(topic)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={[
+                      styles.topicDropdownText,
+                      generalData.topic === topic && !isCustomTopic && styles.topicDropdownTextSelected
+                    ]}>
+                      {topic}
+                    </Text>
+                    {generalData.topic === topic && !isCustomTopic && (
+                      <Ionicons name="checkmark" size={20} color={colors.primary} />
+                    )}
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* Alert de Subiendo Datos */}
+      <CustomAlert
+        visible={showUploadingAlert}
+        onClose={() => {}}
+        type="loading"
+        title="Subiendo Datos"
+        message="Guardando problema y archivos..."
       />
 
       {/* Alert de Éxito */}
@@ -591,87 +681,11 @@ const RegisterProblemScreen = () => {
         title="Aviso"
         message="Debe haber al menos un problema"
       />
+
+      <AppFooter />
     </View>
   );
 };
-
-const alertStyles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  alertContainer: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: 20,
-    padding: 24,
-    width: '100%',
-    maxWidth: 340,
-    alignItems: 'center',
-  },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  message: {
-    fontSize: 15,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: 20,
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    width: '100%',
-    gap: 12,
-  },
-  button: {
-    flex: 1,
-    backgroundColor: colors.primary,
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  singleButton: {
-    flex: 1,
-    backgroundColor: colors.primary,
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  cancelButton: {
-    backgroundColor: colors.cardBackground,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  destructiveButton: {
-    backgroundColor: colors.error,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  cancelButtonText: {
-    color: colors.textSecondary,
-  },
-  destructiveButtonText: {
-    color: colors.text,
-  },
-});
 
 const styles = StyleSheet.create({
   header: {
@@ -730,6 +744,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
     borderColor: colors.border,
+    overflow: 'visible',
   },
   generalTitle: {
     fontSize: 20,
@@ -750,6 +765,13 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 20,
+    zIndex: 1,
+  },
+  topicSection: {
+    zIndex: 1000,
+  },
+  lowerSection: {
+    zIndex: 0,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -801,6 +823,125 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     flex: 1,
+  },
+  typeSelectorSection: {
+    backgroundColor: colors.cardBackground,
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  typeSelectorTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  typeOptions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  typeOption: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: colors.border,
+    backgroundColor: colors.background,
+  },
+  typeOptionActive: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primary + '10',
+  },
+  typeOptionActiveElectrical: {
+    borderColor: colors.electrical,
+    backgroundColor: colors.electrical + '10',
+  },
+  typeOptionText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.textSecondary,
+    marginTop: 8,
+  },
+  typeOptionTextActive: {
+    color: colors.text,
+  },
+  typeOptionTextActiveMechanical: {
+    color: colors.mechanical,
+    fontWeight: '700',
+  },
+  typeOptionTextActiveElectrical: {
+    color: colors.electrical,
+    fontWeight: '700',
+  },
+  topicTouchableContainer: {
+    width: '100%',
+  },
+  topicInputWrapper: {
+    position: 'relative',
+    width: '100%',
+  },
+  topicInputField: {
+    paddingRight: 40,
+  },
+  topicIconContainer: {
+    position: 'absolute',
+    right: 12,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '85%',
+    maxHeight: '60%',
+  },
+  topicDropdownModal: {
+    backgroundColor: colors.cardBackground,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    overflow: 'hidden',
+    maxHeight: 400,
+  },
+  dropdownTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    backgroundColor: colors.cardBackground,
+  },
+  topicDropdownItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  topicDropdownItemSelected: {
+    backgroundColor: colors.primary + '10',
+  },
+  topicDropdownText: {
+    fontSize: 15,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  topicDropdownTextSelected: {
+    color: colors.primary,
+    fontWeight: '600',
   },
 });
 

@@ -5,61 +5,104 @@ import React, { useState } from 'react';
 import { Alert, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { colors } from '../styles/colors';
 
-// CustomActionSheet Component
-const CustomActionSheet = ({ visible, onClose, title, options }) => {
+// CustomMediaPicker Component - Interfaz Visual Moderna
+const CustomMediaPicker = ({ visible, onClose, onPickMedia, onTakePhoto, onRecordVideo, onPickDocument }) => {
+  const mediaOptions = [
+    {
+      id: 'camera',
+      title: 'Tomar Foto',
+      subtitle: 'Captura una imagen',
+      icon: 'camera',
+      color: colors.primary,
+      gradient: ['#4A90E2', '#357ABD'],
+      onPress: onTakePhoto,
+    },
+    {
+      id: 'record',
+      title: 'Grabar Video',
+      subtitle: 'Graba un video nuevo',
+      icon: 'videocam',
+      color: colors.error,
+      gradient: ['#E74C3C', '#C0392B'],
+      onPress: onRecordVideo,
+    },
+    {
+      id: 'gallery',
+      title: 'Galería',
+      subtitle: 'Fotos y videos',
+      icon: 'images',
+      color: colors.secondary,
+      gradient: ['#9B59B6', '#8E44AD'],
+      onPress: onPickMedia,
+    },
+    {
+      id: 'document',
+      title: 'Documento',
+      subtitle: 'PDFs y archivos',
+      icon: 'document-text',
+      color: colors.warning,
+      gradient: ['#F39C12', '#E67E22'],
+      onPress: onPickDocument,
+    },
+  ];
+
   return (
     <Modal
       visible={visible}
       transparent={true}
-      animationType="fade"
+      animationType="slide"
       onRequestClose={onClose}
     >
-      <TouchableOpacity 
-        style={styles.overlay} 
-        activeOpacity={1} 
-        onPress={onClose}
-      >
-        <View style={styles.container}>
-          <TouchableOpacity activeOpacity={1}>
-            <View style={styles.sheet}>
-              <Text style={styles.sheetTitle}>{title}</Text>
-              
-              {options.map((option, index) => {
-                if (option.style === 'cancel') {
-                  return (
-                    <TouchableOpacity
-                      key={index}
-                      style={styles.cancelButton}
-                      onPress={() => {
-                        onClose();
-                        option.onPress?.();
-                      }}
-                    >
-                      <Text style={styles.cancelText}>{option.text}</Text>
-                    </TouchableOpacity>
-                  );
-                }
+      <View style={styles.modernOverlay}>
+        <TouchableOpacity
+          style={styles.modernBackdrop}
+          activeOpacity={1}
+          onPress={onClose}
+        />
 
-                return (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.option}
-                    onPress={() => {
-                      onClose();
-                      option.onPress?.();
-                    }}
-                  >
-                    {option.icon && (
-                      <Ionicons name={option.icon} size={22} color={colors.text} />
-                    )}
-                    <Text style={styles.optionText}>{option.text}</Text>
-                  </TouchableOpacity>
-                );
-              })}
+        <View style={styles.modernSheet}>
+          <View style={styles.modernHeader}>
+            <View>
+              <Text style={styles.modernTitle}>Agregar Archivos</Text>
+              <Text style={styles.modernSubtitle}>Selecciona una opción</Text>
             </View>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <Ionicons name="close-circle" size={32} color={colors.textSecondary} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.modernGrid}>
+            {mediaOptions.map((option) => (
+              <TouchableOpacity
+                key={option.id}
+                style={styles.modernCard}
+                onPress={() => {
+                  onClose();
+                  option.onPress();
+                }}
+                activeOpacity={0.85}
+              >
+                <View style={[styles.modernCardIcon, { backgroundColor: option.color + '20' }]}>
+                  <Ionicons
+                    name={option.icon}
+                    size={40}
+                    color={option.color}
+                  />
+                </View>
+                <Text style={styles.modernCardTitle}>{option.title}</Text>
+                <Text style={styles.modernCardSubtitle}>{option.subtitle}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <TouchableOpacity
+            style={styles.modernCancelButton}
+            onPress={onClose}
+          >
+            <Text style={styles.modernCancelText}>Cancelar</Text>
           </TouchableOpacity>
         </View>
-      </TouchableOpacity>
+      </View>
     </Modal>
   );
 };
@@ -79,22 +122,26 @@ const FileUploader = ({ files = [], onFilesChange, label = "Seleccionar archivo"
     return true;
   };
 
-  const pickImage = async () => {
+  // NUEVA FUNCIÓN: Seleccionar de galería (imágenes Y videos)
+  const pickMedia = async () => {
     const hasPermissions = await requestPermissions();
     if (!hasPermissions) return;
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images', 'videos'], // Sintaxis nueva: array de tipos
       allowsMultipleSelection: false,
       quality: 0.8,
     });
 
     if (!result.canceled && result.assets[0]) {
+      const asset = result.assets[0];
+      const isVideo = asset.type === 'video' || asset.uri.includes('.mp4') || asset.uri.includes('.mov');
+
       const newFile = {
         id: Date.now(),
-        uri: result.assets[0].uri,
-        type: 'image',
-        name: `image_${Date.now()}.jpg`,
+        uri: asset.uri,
+        type: isVideo ? 'video' : 'image',
+        name: isVideo ? `video_${Date.now()}.mp4` : `image_${Date.now()}.jpg`,
       };
       onFilesChange([...files, newFile]);
     }
@@ -120,14 +167,16 @@ const FileUploader = ({ files = [], onFilesChange, label = "Seleccionar archivo"
     }
   };
 
-  const pickVideo = async () => {
+  // NUEVA FUNCIÓN: Grabar video en tiempo real
+  const recordVideo = async () => {
     const hasPermissions = await requestPermissions();
     if (!hasPermissions) return;
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-      allowsMultipleSelection: false,
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['videos'], // Sintaxis nueva: array con solo videos
+      allowsEditing: false,
       quality: 0.8,
+      videoMaxDuration: 60, // Máximo 60 segundos
     });
 
     if (!result.canceled && result.assets[0]) {
@@ -250,88 +299,104 @@ const FileUploader = ({ files = [], onFilesChange, label = "Seleccionar archivo"
         </View>
       )}
 
-      <CustomActionSheet
+      <CustomMediaPicker
         visible={showActionSheet}
         onClose={() => setShowActionSheet(false)}
-        title={label}
-        options={[
-          { 
-            text: 'Tomar Foto', 
-            icon: 'camera',
-            onPress: takePhoto 
-          },
-          { 
-            text: 'Elegir Imagen', 
-            icon: 'image',
-            onPress: pickImage 
-          },
-          { 
-            text: 'Elegir Video', 
-            icon: 'videocam',
-            onPress: pickVideo 
-          },
-          { 
-            text: 'Elegir Documento', 
-            icon: 'document-text',
-            onPress: pickDocument 
-          },
-          { 
-            text: 'Cancelar', 
-            style: 'cancel' 
-          },
-        ]}
+        onPickMedia={pickMedia}
+        onTakePhoto={takePhoto}
+        onRecordVideo={recordVideo}
+        onPickDocument={pickDocument}
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  // CustomActionSheet styles
-  overlay: {
+  // CustomMediaPicker styles - Diseño Moderno
+  modernOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     justifyContent: 'flex-end',
   },
-  container: {
-    justifyContent: 'flex-end',
+  modernBackdrop: {
+    flex: 1,
   },
-  sheet: {
+  modernSheet: {
     backgroundColor: colors.cardBackground,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingTop: 20,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingTop: 24,
     paddingBottom: 40,
-  },
-  sheetTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: 20,
     paddingHorizontal: 20,
   },
-  option: {
+  modernHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    gap: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 24,
   },
-  optionText: {
-    fontSize: 16,
+  modernTitle: {
+    fontSize: 24,
+    fontWeight: '700',
     color: colors.text,
+    marginBottom: 4,
   },
-  cancelButton: {
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    marginTop: 8,
+  modernSubtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
   },
-  cancelText: {
+  closeButton: {
+    padding: 4,
+  },
+  modernGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginBottom: 20,
+  },
+  modernCard: {
+    width: '48%',
+    backgroundColor: colors.background,
+    borderRadius: 16,
+    padding: 20,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: colors.border,
+    minHeight: 140,
+    justifyContent: 'center',
+  },
+  modernCardIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  modernCardTitle: {
     fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  modernCardSubtitle: {
+    fontSize: 12,
     color: colors.textSecondary,
     textAlign: 'center',
+  },
+  modernCancelButton: {
+    backgroundColor: colors.cardBackground,
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  modernCancelText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.textSecondary,
   },
 
   // FileUploader styles

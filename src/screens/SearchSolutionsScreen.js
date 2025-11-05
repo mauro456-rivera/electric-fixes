@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -10,21 +11,40 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import AppFooter from '../components/AppFooter';
+import CustomAlert from '../components/CustomAlert';
+import { useAuth } from '../context/AuthContext';
 import FirebaseFirestoreService from '../services/firebaseFirestore';
 import { colors } from '../styles/colors';
 import { globalStyles } from '../styles/globalStyles';
 
 const SearchSolutionsScreen = () => {
   const router = useRouter();
+  const { user, isAdmin } = useAuth();
   const [searchText, setSearchText] = useState('');
   const [allProblems, setAllProblems] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
+  const [showAccessDeniedAlert, setShowAccessDeniedAlert] = useState(false);
 
   useEffect(() => {
+    // Verificar si el usuario tiene permiso para ver soluciones de todos
+    if (!isAdmin && !user?.permissions?.canViewSolutions) {
+      setShowAccessDeniedAlert(true);
+      return;
+    }
     loadAllProblems();
-  }, []);
+  }, [user]);
+
+  // Reload problems when screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      if (user && (isAdmin || user?.permissions?.canViewSolutions)) {
+        loadAllProblems();
+      }
+    }, [user, isAdmin])
+  );
 
   useEffect(() => {
     if (searchText.trim().length > 2) {
@@ -37,7 +57,7 @@ const SearchSolutionsScreen = () => {
   const loadAllProblems = async () => {
     try {
       setLoading(true);
-      const data = await FirebaseFirestoreService.getAllProblems();
+      const data = await FirebaseFirestoreService.getAllProblems(user);
       setAllProblems(data);
     } catch (error) {
       console.error('Error cargando problemas:', error);
@@ -325,6 +345,26 @@ const SearchSolutionsScreen = () => {
           </View>
         </View>
       )}
+
+      <AppFooter />
+
+      {/* Alert de Acceso Denegado */}
+      <CustomAlert
+        visible={showAccessDeniedAlert}
+        onClose={() => {
+          setShowAccessDeniedAlert(false);
+          router.back();
+        }}
+        type="error"
+        title="Acceso denegado"
+        message="No tienes permiso para buscar soluciones de todos los usuarios"
+        buttons={[
+          {
+            text: 'OK',
+            onPress: () => router.back()
+          }
+        ]}
+      />
     </View>
   );
 };

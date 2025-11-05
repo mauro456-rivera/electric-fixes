@@ -4,36 +4,49 @@ import FirebaseStorageService from './firebaseStorage';
 
 class FirebaseFirestoreService {
   /**
-   * Guarda un problema completo en Firestore
-   * @param {Object} generalData - Datos generales (topic, truckData, workOrder)
-   * @param {Array} problems - Array de problemas
-   * @param {Object} user - Usuario que registra
-   * @returns {Promise<string>} ID del documento creado
+   * Obtiene el nombre de la colección según el tipo de problema
+   * @param {string} problemType - Tipo de problema ('mechanical' o 'electrical')
+   * @returns {string} Nombre de la colección
    */
-  async saveProblem(generalData, problems, user) {
+  getCollectionName(problemType) {
+    return problemType === 'electrical' ? 'electrical-problems' : 'mechanical-problems';
+  }
+
+  /**
+   * Guarda un problema completo en Firestore con sus archivos en Storage
+   * @param {Object} generalData - Datos generales del problema (topic, truckData, workOrder)
+   * @param {Array} problems - Array de problemas con sus actividades y soluciones
+   * @param {Object} user - Información del usuario que registra el problema
+   * @param {string} problemType - Tipo de problema ('mechanical' o 'electrical')
+   * @returns {Promise<string>} ID del documento creado en Firestore
+   * @throws {Error} Si falla el guardado en Firebase
+   */
+  async saveProblem(generalData, problems, user, problemType = 'mechanical') {
     try {
-      console.log('💾 Iniciando guardado en Firebase...');
-
       const problemId = `problem_${Date.now()}`;
+      console.log(`💾 Iniciando guardado de problema: ${problemId}`);
 
+      // Procesa cada problema subiendo sus archivos a Storage
       const processedProblems = await Promise.all(
         problems.map(async (problem, index) => {
-          console.log(`📝 Procesando problema ${index + 1}...`);
+          console.log(`📋 Procesando problema ${index + 1}/${problems.length}`);
 
+          // Sube archivos adjuntos del problema si existen
           let problemFileUrls = [];
           if (problem.problemFiles && problem.problemFiles.length > 0) {
-            console.log(`📤 Subiendo ${problem.problemFiles.length} archivos del problema...`);
+            console.log(`📎 Subiendo ${problem.problemFiles.length} archivos del problema`);
             problemFileUrls = await FirebaseStorageService.uploadMultipleFiles(
               problem.problemFiles,
               `problems/${problemId}/problem_${index}/files`
             );
           }
 
+          // Procesa y sube archivos de cada actividad del problema
           const processedActivities = await Promise.all(
             problem.activities.map(async (activity, actIndex) => {
               let activityFileUrls = [];
               if (activity.files && activity.files.length > 0) {
-                console.log(`📤 Subiendo archivos de actividad ${actIndex + 1}...`);
+                console.log(`📎 Subiendo ${activity.files.length} archivos de actividad ${actIndex + 1}`);
                 activityFileUrls = await FirebaseStorageService.uploadMultipleFiles(
                   activity.files,
                   `problems/${problemId}/problem_${index}/activities/activity_${actIndex}`
@@ -46,11 +59,12 @@ class FirebaseFirestoreService {
             })
           );
 
+          // Procesa y sube archivos de cada solución del problema
           const processedSolutions = await Promise.all(
             problem.solutions.map(async (solution, solIndex) => {
               let solutionFileUrls = [];
               if (solution.files && solution.files.length > 0) {
-                console.log(`📤 Subiendo archivos de solución ${solIndex + 1}...`);
+                console.log(`📎 Subiendo ${solution.files.length} archivos de solución ${solIndex + 1}`);
                 solutionFileUrls = await FirebaseStorageService.uploadMultipleFiles(
                   solution.files,
                   `problems/${problemId}/problem_${index}/solutions/solution_${solIndex}`
@@ -63,6 +77,7 @@ class FirebaseFirestoreService {
             })
           );
 
+          // Retorna el problema procesado con todas las URLs de archivos
           return {
             problemTitle: problem.problemTitle,
             problemDescription: problem.problemDescription,
@@ -74,59 +89,82 @@ class FirebaseFirestoreService {
         })
       );
 
+      // Construye el documento completo para guardar en Firestore
+      const collectionName = this.getCollectionName(problemType);
       const docData = {
         generalData: {
           topic: generalData.topic,
           truckData: generalData.truckData,
-          workOrder: generalData.workOrder,
+          workOrder: generalData.workOrder, // Código del Work Order (texto)
+          workOrderDetails: generalData.workOrderDetails || null, // Objeto completo del Work Order
         },
         problems: processedProblems,
         registeredBy: {
           userId: user.id,
-          name: `${user.name} ${user.lastname}`,
-          email: user.businessEmail,
-          position: user.position,
+          name: user.name || 'Usuario Desconocido',
+          email: user.email,
         },
+        problemType: problemType, // 'mechanical' o 'electrical'
         createdAt: serverTimestamp(),
         status: 'active',
+        deleted: false, // Soft delete flag
       };
 
-      console.log('💾 Guardando en Firestore...');
-      const docRef = await addDoc(collection(db, 'problems'), docData);
-      
-      console.log('✅ Problema guardado exitosamente con ID:', docRef.id);
+      // Guarda el documento en la colección correspondiente
+      console.log(`💾 Guardando documento en colección: ${collectionName}...`);
+      const docRef = await addDoc(collection(db, collectionName), docData);
+      console.log(`✅ Problema guardado exitosamente con ID: ${docRef.id}`);
+
       return docRef.id;
     } catch (error) {
-      console.error('❌ Error guardando en Firebase:', error);
-      throw error;
+      console.error('❌ Error al guardar problema:', error.message);
+      throw new Error(`Error al guardar el problema: ${error.message}`);
     }
   }
 
   /**
-   * Obtiene todos los problemas registrados
-   * @returns {Promise<Array>} Array de problemas con sus IDs
+   * Obtiene todos los problemas registrados con filtros de permisos
+   * @param {Object} user - Usuario que solicita los problemas
+   * @param {boolean} includeDeleted - Si se incluyen los eliminados (solo admin)
+   * @returns {Promise<Array>} Array de problemas filtrados según permisos
+   * @throws {Error} Si falla la consulta a Firestore
    */
-  async getAllProblems() {
+  async getAllProblems(user, includeDeleted = false) {
     try {
-      console.log('📥 Obteniendo todos los problemas...');
-      
-      const q = query(
-        collection(db, 'problems'),
-        orderBy('createdAt', 'desc')
-      );
-      
-      const querySnapshot = await getDocs(q);
-      
-      const problems = [];
-      querySnapshot.forEach((doc) => {
-        problems.push({
-          id: doc.id,
-          ...doc.data(),
-        });
+      const isAdmin = user?.role === 'admin';
+      const canViewAll = isAdmin || user?.permissions?.canViewAll;
+
+      // Obtener problemas de ambas colecciones
+      const mechanicalProblems = await this.getProblemsFromCollection('mechanical-problems');
+      const electricalProblems = await this.getProblemsFromCollection('electrical-problems');
+
+      // Combinar todos los problemas
+      let allProblems = [...mechanicalProblems, ...electricalProblems];
+
+      // Filtrar según permisos
+      allProblems = allProblems.filter(problem => {
+        // Excluir eliminados (a menos que sea admin y se solicite incluirlos)
+        if (problem.deleted && !(isAdmin && includeDeleted)) {
+          return false;
+        }
+
+        // Admin o usuario con permiso canViewAll ve todo
+        if (canViewAll) {
+          return true;
+        }
+
+        // Usuario normal solo ve sus propios registros
+        return problem.registeredBy?.userId === user?.id;
       });
 
-      console.log(`✅ ${problems.length} problemas obtenidos`);
-      return problems;
+      // Ordenar por fecha descendente
+      allProblems.sort((a, b) => {
+        const dateA = a.createdAt?.toMillis?.() || 0;
+        const dateB = b.createdAt?.toMillis?.() || 0;
+        return dateB - dateA;
+      });
+
+      return allProblems;
     } catch (error) {
       console.error('❌ Error obteniendo problemas:', error);
       throw error;
@@ -134,28 +172,250 @@ class FirebaseFirestoreService {
   }
 
   /**
-   * Obtiene un problema específico por ID
-   * @param {string} problemId - ID del problema
-   * @returns {Promise<Object>} Datos del problema
+   * Obtiene problemas de una colección específica
+   * @param {string} collectionName - Nombre de la colección
+   * @returns {Promise<Array>} Array de problemas
    */
-  async getProblemById(problemId) {
+  async getProblemsFromCollection(collectionName) {
     try {
-      console.log(`📥 Obteniendo problema ${problemId}...`);
-      
-      const docRef = doc(db, 'problems', problemId);
-      const docSnap = await getDoc(docRef);
+      const q = query(
+        collection(db, collectionName),
+        orderBy('createdAt', 'desc')
+      );
 
-      if (docSnap.exists()) {
-        console.log('✅ Problema encontrado');
-        return {
-          id: docSnap.id,
-          ...docSnap.data(),
-        };
-      } else {
-        throw new Error('Problema no encontrado');
-      }
+      const querySnapshot = await getDocs(q);
+      const problems = [];
+
+      querySnapshot.forEach((doc) => {
+        problems.push({
+          id: doc.id,
+          collectionName: collectionName, // Para saber de qué colección viene
+          ...doc.data(),
+        });
+      });
+
+      return problems;
     } catch (error) {
-      console.error('❌ Error obteniendo problema:', error);
+      console.error(`❌ Error obteniendo problemas de ${collectionName}:`, error);
+      return []; // Retornar array vacío si falla
+    }
+  }
+
+  /**
+   * Obtiene solo los problemas eliminados (para papelera - solo admin)
+   * @returns {Promise<Array>} Array de problemas eliminados
+   */
+  async getDeletedProblems() {
+    try {
+      const mechanicalProblems = await this.getProblemsFromCollection('mechanical-problems');
+      const electricalProblems = await this.getProblemsFromCollection('electrical-problems');
+
+      const allProblems = [...mechanicalProblems, ...electricalProblems];
+
+      // Filtrar solo los eliminados
+      const deletedProblems = allProblems.filter(problem => problem.deleted === true);
+
+      // Ordenar por fecha de creación descendente
+      deletedProblems.sort((a, b) => {
+        const dateA = a.createdAt?.toMillis?.() || 0;
+        const dateB = b.createdAt?.toMillis?.() || 0;
+        return dateB - dateA;
+      });
+
+      return deletedProblems;
+    } catch (error) {
+      console.error('❌ Error obteniendo problemas eliminados:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtiene un problema por ID buscando en ambas colecciones
+   * @param {string} problemId - ID único del problema en Firestore
+   * @param {string} collectionName - Nombre de la colección (opcional)
+   * @returns {Promise<Object>} Objeto con los datos completos del problema y su ID
+   * @throws {Error} Si el problema no existe o falla la consulta
+   */
+  async getProblemById(problemId, collectionName = null) {
+    try {
+      // Si se especifica la colección, buscar solo ahí
+      if (collectionName) {
+        const docRef = doc(db, collectionName, problemId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          return {
+            id: docSnap.id,
+            collectionName: collectionName,
+            ...docSnap.data(),
+          };
+        }
+      } else {
+        // Buscar en ambas colecciones
+        const collections = ['mechanical-problems', 'electrical-problems'];
+
+        for (const coll of collections) {
+          const docRef = doc(db, coll, problemId);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            return {
+              id: docSnap.id,
+              collectionName: coll,
+              ...docSnap.data(),
+            };
+          }
+        }
+      }
+
+      throw new Error('Problema no encontrado');
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Marca un problema como eliminado (soft delete)
+   * @param {string} problemId - ID del problema
+   * @param {string} collectionName - Nombre de la colección
+   * @returns {Promise<void>}
+   */
+  async softDeleteProblem(problemId, collectionName) {
+    try {
+      const { updateDoc, doc, serverTimestamp } = await import('firebase/firestore');
+      const docRef = doc(db, collectionName, problemId);
+
+      await updateDoc(docRef, {
+        deleted: true,
+        deletedAt: serverTimestamp(),
+      });
+
+      console.log(`✅ Problema marcado como eliminado: ${problemId}`);
+    } catch (error) {
+      console.error('❌ Error en soft delete:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Restaura un problema eliminado
+   * @param {string} problemId - ID del problema
+   * @param {string} collectionName - Nombre de la colección
+   * @returns {Promise<void>}
+   */
+  async restoreProblem(problemId, collectionName) {
+    try {
+      const { updateDoc, doc, deleteField } = await import('firebase/firestore');
+      const docRef = doc(db, collectionName, problemId);
+
+      await updateDoc(docRef, {
+        deleted: false,
+        deletedAt: deleteField(), // Eliminar el campo deletedAt
+      });
+
+      console.log(`✅ Problema restaurado: ${problemId}`);
+    } catch (error) {
+      console.error('❌ Error restaurando problema:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Elimina un problema permanentemente de Firestore (solo desde la base de datos)
+   * ADVERTENCIA: Esta acción no se puede deshacer
+   * @param {string} problemId - ID del problema
+   * @param {string} collectionName - Nombre de la colección
+   * @returns {Promise<void>}
+   */
+  async permanentDeleteProblem(problemId, collectionName) {
+    try {
+      const { deleteDoc, doc } = await import('firebase/firestore');
+      const docRef = doc(db, collectionName, problemId);
+
+      await deleteDoc(docRef);
+      console.log(`✅ Problema eliminado permanentemente: ${problemId}`);
+    } catch (error) {
+      console.error('❌ Error eliminando permanentemente:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtiene estadísticas de registros por usuario
+   * @returns {Promise<Array>} Array de usuarios con su conteo de problemas registrados
+   */
+  async getUserRegistrationStats() {
+    try {
+      const mechanicalProblems = await this.getProblemsFromCollection('mechanical-problems');
+      const electricalProblems = await this.getProblemsFromCollection('electrical-problems');
+
+      const allProblems = [...mechanicalProblems, ...electricalProblems];
+
+      // Filtrar solo problemas activos (no eliminados)
+      const activeProblems = allProblems.filter(problem => !problem.deleted);
+
+      // Agrupar por usuario
+      const userStats = {};
+
+      activeProblems.forEach(problem => {
+        const userId = problem.registeredBy?.userId;
+        const userName = problem.registeredBy?.name || 'Usuario Desconocido';
+        const userEmail = problem.registeredBy?.email || '';
+
+        if (userId) {
+          if (!userStats[userId]) {
+            userStats[userId] = {
+              userId,
+              userName,
+              userEmail,
+              count: 0,
+              problems: [],
+            };
+          }
+          // Contar cada problema individual dentro del registro
+          const problemCount = problem.problems?.length || 1;
+          userStats[userId].count += problemCount;
+          userStats[userId].problems.push(problem);
+        }
+      });
+
+      // Convertir a array y ordenar por conteo descendente
+      const statsArray = Object.values(userStats).sort((a, b) => b.count - a.count);
+
+      return statsArray;
+    } catch (error) {
+      console.error('❌ Error obteniendo estadísticas de usuarios:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtiene todos los problemas registrados por un usuario específico
+   * @param {string} userId - ID del usuario
+   * @returns {Promise<Array>} Array de problemas del usuario
+   */
+  async getProblemsByUser(userId) {
+    try {
+      const mechanicalProblems = await this.getProblemsFromCollection('mechanical-problems');
+      const electricalProblems = await this.getProblemsFromCollection('electrical-problems');
+
+      const allProblems = [...mechanicalProblems, ...electricalProblems];
+
+      // Filtrar problemas del usuario específico (no eliminados)
+      const userProblems = allProblems.filter(
+        problem => problem.registeredBy?.userId === userId && !problem.deleted
+      );
+
+      // Ordenar por fecha descendente
+      userProblems.sort((a, b) => {
+        const dateA = a.createdAt?.toMillis?.() || 0;
+        const dateB = b.createdAt?.toMillis?.() || 0;
+        return dateB - dateA;
+      });
+
+      return userProblems;
+    } catch (error) {
+      console.error('❌ Error obteniendo problemas del usuario:', error);
       throw error;
     }
   }

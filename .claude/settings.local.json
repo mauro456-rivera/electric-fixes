@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/dev2/mobille/**)",
+      "Bash(mv:*)",
+      "Bash(eas whoami:*)",
+      "Bash(npm install:*)",
+      "Bash(eas project:info:*)",
+      "Bash(npx expo start --clear)",
+      "Bash(eas build:configure:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
