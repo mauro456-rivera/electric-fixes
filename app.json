@@ -3,7 +3,7 @@
     "name": "Mechanic Fixes",
     "slug": "mechanic-fixes",
     "owner": "jbian",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/images/mecanic-fixes.png",
     "scheme": "mecanicfixes",
@@ -15,15 +15,6 @@
       "bundleIdentifier": "com.mecanicfixes.ds2025",
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
-        "NSAppTransportSecurity": {
-          "NSAllowsArbitraryLoads": true,
-          "NSExceptionDomains": {
-            "159.89.139.254": {
-              "NSExceptionAllowsInsecureHTTPLoads": true,
-              "NSIncludesSubdomains": true
-            }
-          }
-        },
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "La app necesita acceso a la cámara para tomar fotos de las reparaciones y diagnósticos del vehículo",
         "NSPhotoLibraryUsageDescription": "La app necesita acceso a tus fotos para que puedas seleccionar y adjuntar imágenes de las reparaciones realizadas",
