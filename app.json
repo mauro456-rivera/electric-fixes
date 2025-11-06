@@ -25,7 +25,6 @@
     "android": {
       "package": "mecanic_ixes.ds_2025",
       "usesCleartextTraffic": true,
-      "versionCode": 16,
       "adaptiveIcon": {
         "backgroundColor": "#0B1623",
         "foregroundImage": "./assets/images/mecanic-fixes.png"
