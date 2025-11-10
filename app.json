@@ -12,6 +12,7 @@
     "jsEngine": "hermes",
     "privacy": "public",
     "description": "Aplicación profesional para documentar y gestionar reparaciones mecánicas y eléctricas de vehículos. Permite a los técnicos capturar fotos, videos y notas de audio sobre diagnósticos y trabajos realizados.",
+    "privacyPolicy": "https://sites.google.com/view/poltica-de-privacidad-mechanic/p%C3%A1gina-principal",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mecanicfixes.ds2025",
