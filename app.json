@@ -3,17 +3,22 @@
     "name": "Mechanic Fixes",
     "slug": "mechanic-fixes",
     "owner": "jbian",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
-    "icon": "./assets/images/mecanic-fixes.png",
-    "scheme": "mecanicfixes",
+    "icon": "./assets/images/mechanic-fixes.png",
+    "scheme": "mechanicfixes",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "jsEngine": "hermes",
+    "privacy": "public",
+    "description": "Aplicación profesional para documentar y gestionar reparaciones mecánicas y eléctricas de vehículos. Permite a los técnicos capturar fotos, videos y notas de audio sobre diagnósticos y trabajos realizados.",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mecanicfixes.ds2025",
       "googleServicesFile": "./GoogleService-Info.plist",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "La app necesita acceso a la cámara para tomar fotos de las reparaciones y diagnósticos del vehículo",
@@ -27,7 +32,7 @@
       "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "backgroundColor": "#0B1623",
-        "foregroundImage": "./assets/images/mecanic-fixes.png"
+        "foregroundImage": "./assets/images/mechanic-fixes.png"
       },
       "permissions": [
         "android.permission.INTERNET",

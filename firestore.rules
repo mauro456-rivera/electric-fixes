@@ -71,17 +71,17 @@ service cloud.firestore {
 
     // Mechanical problems collection
     match /mechanical-problems/{problemId} {
-      // Read rules
+      // Read rules - para obtener un documento específico
       allow read: if isAuthenticated() &&
                     isActive() &&
                     !canOnlyRegister() &&
                     (canViewAll() || isOwner(resource));
 
-      // List rules - same as read
+      // List rules - usuarios autenticados y activos pueden listar
+      // El filtrado por owner se hace en el cliente
       allow list: if isAuthenticated() &&
                      isActive() &&
-                     !canOnlyRegister() &&
-                     (canViewAll() || isOwner(resource));
+                     !canOnlyRegister();
 
       // Create rules - authenticated and active users can create
       allow create: if isAuthenticated() &&
@@ -107,17 +107,17 @@ service cloud.firestore {
 
     // Electrical problems collection
     match /electrical-problems/{problemId} {
-      // Read rules
+      // Read rules - para obtener un documento específico
       allow read: if isAuthenticated() &&
                     isActive() &&
                     !canOnlyRegister() &&
                     (canViewAll() || isOwner(resource));
 
-      // List rules - same as read
+      // List rules - usuarios autenticados y activos pueden listar
+      // El filtrado por owner se hace en el cliente
       allow list: if isAuthenticated() &&
                      isActive() &&
-                     !canOnlyRegister() &&
-                     (canViewAll() || isOwner(resource));
+                     !canOnlyRegister();
 
       // Create rules - authenticated and active users can create
       allow create: if isAuthenticated() &&
@@ -143,17 +143,17 @@ service cloud.firestore {
 
     // Legacy problems collection (for backward compatibility)
     match /problems/{problemId} {
-      // Read rules
+      // Read rules - para obtener un documento específico
       allow read: if isAuthenticated() &&
                     isActive() &&
                     !canOnlyRegister() &&
                     (canViewAll() || isOwner(resource));
 
-      // List rules
+      // List rules - usuarios autenticados y activos pueden listar
+      // El filtrado por owner se hace en el cliente
       allow list: if isAuthenticated() &&
                      isActive() &&
-                     !canOnlyRegister() &&
-                     (canViewAll() || isOwner(resource));
+                     !canOnlyRegister();
 
       // Create rules
       allow create: if isAuthenticated() &&

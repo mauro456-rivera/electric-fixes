@@ -1,14 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Read(//c/dev2/mobille/**)",
-      "Bash(mv:*)",
-      "Bash(eas whoami:*)",
-      "Bash(npm install:*)",
-      "Bash(eas project:info:*)",
-      "Bash(npx expo start --clear)",
-      "Bash(eas build:configure:*)",
-      "Bash(ls -la \"C:\\dev2\\mobille\\mecanic-fixes\"\" | grep -E \"^d \")"
+      "Bash(NUL)",
+      "Bash(findstr:*)",
+      "Bash(dir:*)",
+      "Bash(ren mecanic-fixes.png mechanic-fixes.png)"
     ],
     "deny": [],
     "ask": []
