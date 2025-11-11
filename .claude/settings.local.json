@@ -4,7 +4,8 @@
       "Bash(NUL)",
       "Bash(findstr:*)",
       "Bash(dir:*)",
-      "Bash(ren mecanic-fixes.png mechanic-fixes.png)"
+      "Bash(ren mecanic-fixes.png mechanic-fixes.png)",
+      "WebFetch(domain:sites.google.com)"
     ],
     "deny": [],
     "ask": []
