@@ -3,7 +3,7 @@
     "name": "Mechanic Fixes",
     "slug": "mechanic-fixes",
     "owner": "jbian",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/images/mechanic-fixes.png",
     "scheme": "mechanicfixes",
@@ -74,9 +74,9 @@
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 35,
-            "targetSdkVersion": 35,
-            "minSdkVersion": 24,
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "minSdkVersion": 25,
             "enableProguardInReleaseBuilds": false,
             "enableShrinkResourcesInReleaseBuilds": false,
             "useLegacyPackaging": false,
