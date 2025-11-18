@@ -226,6 +226,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: !!user,
     isAdmin: user?.role === 'admin',
     isUser: user?.role === 'user',
+    isGuest: user?.role === 'invitado',
   };
 
   return (

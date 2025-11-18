@@ -8,27 +8,19 @@ import { useAuth } from '../context/AuthContext';
 import { colors } from '../styles/colors';
 import { globalStyles } from '../styles/globalStyles';
 
-const MenuScreen = () => {
+const GuestMenuScreen = () => {
   const router = useRouter();
-  const { user, signOut, isAdmin, isGuest, loading } = useAuth();
+  const { user, signOut, loading } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
 
   // Protección de ruta: Si no hay usuario autenticado y no está cargando, redirigir al login
   React.useEffect(() => {
     if (!loading && !user) {
-      console.warn('⚠️ Usuario no autenticado en MenuScreen, redirigiendo al login...');
+      console.warn('⚠️ Usuario no autenticado en GuestMenuScreen, redirigiendo al login...');
       router.replace('/login');
     }
   }, [user, loading, router]);
-
-  // Redirigir usuarios invitados a su menú especial
-  React.useEffect(() => {
-    if (!loading && user && isGuest) {
-      console.log('🔵 Usuario invitado detectado, redirigiendo a menú de invitados...');
-      router.replace('/guest-menu');
-    }
-  }, [user, loading, isGuest, router]);
 
   const handleLogout = () => {
     setShowUserMenu(false);
@@ -45,72 +37,27 @@ const MenuScreen = () => {
     }
   };
 
-  const baseMenuOptions = [
+  // Opciones de menú solo para invitados
+  const guestMenuOptions = [
     {
       id: 1,
-      title: 'Registrar problema/solución',
-      subtitle: 'Mecánico o Eléctrico',
-      icon: 'add-circle-outline',
-      route: '/register-problem',
-      gradient: ['#1e3a5f', '#2d5a8c'],
-      iconBg: '#3b82f6',
+      title: 'Soluciones Eléctricas',
+      subtitle: 'Consulta 20 soluciones eléctricas para Volvo',
+      icon: 'flash-outline',
+      route: '/guest-solutions?type=electrical',
+      gradient: ['#5a3a1e', '#8c5a2d'],
+      iconBg: colors.electrical,
     },
     {
       id: 2,
-      title: 'Ver Registros',
-      subtitle: 'Consulta problemas y soluciones aplicadas',
-      icon: 'list-outline',
-      route: '/view-records',
+      title: 'Soluciones Mecánicas',
+      subtitle: 'Consulta 20 soluciones mecánicas para Volvo',
+      icon: 'construct-outline',
+      route: '/guest-solutions?type=mechanical',
       gradient: ['#1e4d3a', '#2d7a5f'],
-      iconBg: '#10b981',
-    },
-    {
-      id: 3,
-      title: 'Buscar Soluciones',
-      subtitle: 'Encuentra soluciones para tus problemas',
-      icon: 'search-outline',
-      route: '/search-solutions',
-      gradient: ['#5a3a1e', '#8c5a2d'],
-      iconBg: '#f59e0b',
+      iconBg: colors.mechanical,
     },
   ];
-
-  const adminMenuOptions = [
-    {
-      id: 4,
-      title: 'Gestionar Usuarios',
-      subtitle: 'Crear y administrar usuarios del sistema',
-      icon: 'people-outline',
-      route: '/manage-users',
-      gradient: ['#4a1e5a', '#6d2d8c'],
-      iconBg: '#a855f7',
-      adminOnly: true,
-    },
-    {
-      id: 5,
-      title: 'Registro por Usuario',
-      subtitle: 'Ver problemas registrados por cada usuario',
-      icon: 'stats-chart-outline',
-      route: '/user-registrations',
-      gradient: ['#1e5a5a', '#2d8c8c'],
-      iconBg: '#06b6d4',
-      adminOnly: true,
-    },
-    {
-      id: 6,
-      title: 'Papelera',
-      subtitle: 'Ver y restaurar registros eliminados',
-      icon: 'trash-outline',
-      route: '/trash',
-      gradient: ['#5a1e1e', '#8c2d2d'],
-      iconBg: '#ef4444',
-      adminOnly: true,
-    },
-  ];
-
-  const menuOptions = isAdmin
-    ? [...baseMenuOptions, ...adminMenuOptions]
-    : baseMenuOptions;
 
   return (
     <View style={globalStyles.container}>
@@ -126,6 +73,10 @@ const MenuScreen = () => {
             <Text style={styles.separator}>|</Text>
             <Text style={styles.electricText}>ELECTRIC-FIXES</Text>
           </View>
+          <View style={styles.guestBadge}>
+            <Ionicons name="person-outline" size={14} color="#ffffff" />
+            <Text style={styles.guestBadgeText}>Usuario Invitado</Text>
+          </View>
         </View>
 
         <TouchableOpacity
@@ -135,7 +86,7 @@ const MenuScreen = () => {
         >
           <View style={styles.avatarCircle}>
             <Text style={styles.avatarInitial}>
-              {(user?.name || 'U').charAt(0).toUpperCase()}
+              {(user?.name || 'I').charAt(0).toUpperCase()}
             </Text>
           </View>
         </TouchableOpacity>
@@ -146,8 +97,15 @@ const MenuScreen = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        <View style={styles.welcomeContainer}>
+          <Text style={styles.welcomeText}>Bienvenido, {user?.name || 'Invitado'}</Text>
+          <Text style={styles.welcomeSubtext}>
+            Como usuario invitado puedes consultar todas las soluciones registradas
+          </Text>
+        </View>
+
         <View style={styles.menuContainer}>
-          {menuOptions.map((option) => (
+          {guestMenuOptions.map((option) => (
             <TouchableOpacity
               key={option.id}
               onPress={() => router.push(option.route)}
@@ -181,8 +139,8 @@ const MenuScreen = () => {
         animationType="fade"
         onRequestClose={() => setShowUserMenu(false)}
       >
-        <TouchableOpacity 
-          style={styles.modalOverlay} 
+        <TouchableOpacity
+          style={styles.modalOverlay}
           activeOpacity={1}
           onPress={() => setShowUserMenu(false)}
         >
@@ -197,14 +155,14 @@ const MenuScreen = () => {
                 </Text>
                 <Text style={styles.userMenuEmail}>{user?.email}</Text>
                 <Text style={styles.userMenuPosition}>
-                  {isAdmin ? '⚡ Administrador' : '👤 Usuario'}
+                  👤 Usuario Invitado
                 </Text>
               </View>
             </View>
 
             <View style={styles.menuDivider} />
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.userMenuItem}
               onPress={handleLogout}
               activeOpacity={0.7}
@@ -215,7 +173,7 @@ const MenuScreen = () => {
 
             <View style={styles.menuDivider} />
 
-            
+
           </View>
         </TouchableOpacity>
       </Modal>
@@ -294,6 +252,22 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     marginTop: 2,
   },
+  guestBadge: {
+    marginTop: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.secondary,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+    gap: 4,
+  },
+  guestBadgeText: {
+    color: '#ffffff',
+    fontSize: 10,
+    fontWeight: '600',
+  },
   userAvatarButton: {
     padding: 4,
   },
@@ -301,11 +275,11 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.secondary,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: colors.secondary,
+    borderColor: colors.primary,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -325,6 +299,21 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 20,
+  },
+  welcomeContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  welcomeText: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: 8,
+  },
+  welcomeSubtext: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    lineHeight: 20,
   },
   menuContainer: {
     paddingHorizontal: 20,
@@ -374,7 +363,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
   },
-  
+
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
@@ -400,7 +389,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.secondary,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -448,4 +437,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MenuScreen;
+export default GuestMenuScreen;

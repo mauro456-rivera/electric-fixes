@@ -102,6 +102,16 @@ class UserService {
       };
     }
 
+    if (role === 'invitado') {
+      return {
+        canEdit: false,
+        canDelete: false,
+        canViewAll: false,
+        canViewSolutions: true, // Solo puede ver soluciones
+        canOnlyRegister: false,
+      };
+    }
+
     // Usuario normal por defecto
     return {
       canEdit: false,
@@ -333,6 +343,41 @@ class UserService {
     } catch (error) {
       console.error('❌ Error obteniendo permisos:', error);
       return this.getDefaultPermissions('user');
+    }
+  }
+
+  /**
+   * Registra un nuevo usuario invitado (auto-registro)
+   * @param {Object} userData - Datos del nuevo usuario invitado
+   * @returns {Promise<string>} ID del usuario creado
+   */
+  async registerGuest(userData) {
+    try {
+      console.log('🔵 Registrando nuevo usuario invitado...');
+
+      // Crear usuario con Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        userData.email,
+        userData.password
+      );
+
+      const newUserId = userCredential.user.uid;
+      console.log('✅ Usuario invitado creado en Auth:', newUserId);
+
+      // Crear documento en Firestore con role 'invitado'
+      await this.createUserDocument(newUserId, {
+        email: userData.email,
+        name: userData.name,
+        role: 'invitado',
+        createdBy: newUserId, // Se auto-registró
+      });
+
+      console.log('✅ Usuario invitado registrado exitosamente');
+      return newUserId;
+    } catch (error) {
+      console.error('❌ Error registrando usuario invitado:', error);
+      throw error;
     }
   }
 }

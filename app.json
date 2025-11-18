@@ -42,10 +42,9 @@
       },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSCameraUsageDescription": "La app necesita acceso a la cámara para tomar fotos de las reparaciones y diagnósticos del vehículo",
-        "NSPhotoLibraryUsageDescription": "La app necesita acceso a tus fotos para que puedas seleccionar y adjuntar imágenes de las reparaciones realizadas",
-        "NSPhotoLibraryAddUsageDescription": "La app necesita permiso para guardar las fotos de las reparaciones en tu galería",
-        "NSMicrophoneUsageDescription": "La app necesita acceso al micrófono para grabar notas de voz sobre las reparaciones"
+        "NSCameraUsageDescription": "Mechanic Fixes usa la cámara para documentar reparaciones de vehículos. Por ejemplo: cuando registras una reparación de motor, puedes tomar fotos del problema identificado, capturar el estado antes/después del trabajo, y grabar videos mostrando el funcionamiento del vehículo para adjuntarlos al reporte de servicio del taller.",
+        "NSPhotoLibraryUsageDescription": "Mechanic Fixes accede a tu biblioteca de fotos para adjuntar imágenes existentes a los reportes de reparación. Por ejemplo: cuando creas un registro de servicio, puedes seleccionar fotos previas del vehículo dañado, adjuntar imágenes de facturas de piezas, o incluir capturas de diagnósticos del scanner automotriz al historial de reparaciones.",
+        "NSPhotoLibraryAddUsageDescription": "Mechanic Fixes guarda fotos y videos de reparaciones en tu biblioteca para mantener un respaldo visual. Por ejemplo: después de tomar fotos del trabajo completado en un vehículo, la app las guarda automáticamente en tu galería permitiéndote tener evidencia fotográfica del servicio realizado además del registro digital en el sistema del taller."
       }
     },
     "android": {

@@ -158,6 +158,16 @@ const handleLogin = async () => {
               loading={loginLoading}
               disabled={loginLoading}
             />
+
+            <TouchableOpacity
+              onPress={() => router.push("/register-guest")}
+              style={styles.registerLink}
+              disabled={loginLoading}
+            >
+              <Text style={styles.registerLinkText}>
+                ¿No tienes cuenta? <Text style={styles.registerLinkBold}>Regístrate</Text>
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
@@ -216,6 +226,18 @@ const styles = StyleSheet.create({
   iconRight: { marginLeft: 10, padding: 4 },
   input: { flex: 1, color: colors.text, fontSize: 16, paddingVertical: 14 },
   button: { marginTop: 8 },
+  registerLink: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  registerLinkText: {
+    color: colors.textSecondary,
+    fontSize: 14,
+  },
+  registerLinkBold: {
+    color: colors.primary,
+    fontWeight: "600",
+  },
 });
 
 export default LoginScreen;
