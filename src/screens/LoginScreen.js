@@ -12,7 +12,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import CustomAlert from "../components/CustomAlert";
 import CustomButton from "../components/CustomButton";
 import { useAuth } from "../context/AuthContext";
 import { colors } from "../styles/colors";
@@ -22,7 +21,7 @@ const LoginScreen = () => {
   const router = useRouter();
   const { signIn, isAuthenticated } = useAuth();
 
-  const [email, setEmail] = useState("@dieselsoft.co");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
@@ -37,15 +36,14 @@ const LoginScreen = () => {
   }, [isAuthenticated, loginLoading, router]);
 
   const handleEmailChange = (text) => {
-    // Si intentan borrar el @ o el dominio, mantenerlo
-    if (!text.includes('@dieselsoft.co')) {
-      setEmail('@dieselsoft.co');
-      return;
+    setEmail(text);
+  };
+
+  const handleEmailBlur = () => {
+    // Al perder el foco, agregar automáticamente @dieselsoft.co si no tiene @
+    if (email && !email.includes('@')) {
+      setEmail(email + '@dieselsoft.co');
     }
-    // Obtener solo la parte antes del @
-    const beforeAt = text.split('@')[0];
-    // Actualizar con la parte antes del @ + el dominio fijo
-    setEmail(beforeAt + '@dieselsoft.co');
   };
 
 const handleLogin = async () => {
@@ -110,10 +108,11 @@ const handleLogin = async () => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="usuario@dieselsoft.co"
+                placeholder="example@example.com"
                 placeholderTextColor={colors.textSecondary}
                 value={email}
                 onChangeText={handleEmailChange}
+                onBlur={handleEmailBlur}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}

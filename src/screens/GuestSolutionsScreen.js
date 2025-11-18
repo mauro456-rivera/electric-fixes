@@ -81,7 +81,12 @@ const GuestSolutionsScreen = () => {
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         {filteredSolutions.map((solution, index) => (
-          <View key={solution.id} style={styles.solutionCard}>
+          <TouchableOpacity
+            key={solution.id}
+            activeOpacity={0.7}
+            onPress={() => router.push(`/solution-detail?id=${solution.id}&type=${type}`)}
+          >
+            <View style={styles.solutionCard}>
             <View style={styles.cardHeader}>
               <View style={[styles.typeBadge, { backgroundColor: typeColor }]}>
                 <Ionicons
@@ -116,8 +121,13 @@ const GuestSolutionsScreen = () => {
 
             <View style={styles.cardFooter}>
               <Text style={styles.solutionId}>ID: {solution.id}</Text>
+              <View style={styles.viewDetailButton}>
+                <Text style={styles.viewDetailText}>Ver detalles</Text>
+                <Ionicons name="chevron-forward" size={16} color={colors.primary} />
+              </View>
             </View>
           </View>
+          </TouchableOpacity>
         ))}
 
         {filteredSolutions.length === 0 && (
@@ -275,6 +285,9 @@ const styles = StyleSheet.create({
     marginLeft: 24,
   },
   cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: colors.border,
     paddingTop: 8,
@@ -284,6 +297,16 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: colors.textSecondary,
     fontWeight: '500',
+  },
+  viewDetailButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  viewDetailText: {
+    fontSize: 12,
+    color: colors.primary,
+    fontWeight: '600',
   },
   emptyContainer: {
     alignItems: 'center',

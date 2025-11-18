@@ -1,0 +1,761 @@
+{
+  "mechanical": [
+    {
+      "id": "mech-001",
+      "problem": "Pérdida de potencia en subidas con carga completa",
+      "solution": "Revisar y limpiar filtro de aire, verificar turbocompresor por acumulación de carbonilla. Realizar limpieza del sistema de admisión y calibración del acelerador electrónico.",
+      "truck": "Volvo FH16",
+      "category": "Motor",
+      "severity": "Alta",
+      "difficulty": "Media",
+      "estimatedTime": "2-3 horas",
+      "tools": [
+        "Escáner de diagnóstico VCADS",
+        "Juego de llaves métricas",
+        "Compresor de aire",
+        "Limpiador de sistema de admisión",
+        "Multímetro digital"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Diagnóstico inicial",
+          "description": "Conectar escáner VCADS y verificar códigos de error relacionados con presión de turbo y sensor MAF"
+        },
+        {
+          "number": 2,
+          "title": "Inspección del filtro de aire",
+          "description": "Remover filtro de aire y verificar nivel de suciedad. Si está obstruido más del 50%, reemplazar"
+        },
+        {
+          "number": 3,
+          "title": "Verificación del turbocompresor",
+          "description": "Inspeccionar álabes del turbo por carbonilla. Verificar juego axial (no debe exceder 0.05mm)"
+        },
+        {
+          "number": 4,
+          "title": "Limpieza del sistema de admisión",
+          "description": "Aplicar limpiador de admisión mientras el motor está en ralentí alto (1500 RPM)"
+        },
+        {
+          "number": 5,
+          "title": "Calibración del acelerador",
+          "description": "Usar VCADS para calibrar posición del pedal electrónico y verificar respuesta"
+        },
+        {
+          "number": 6,
+          "title": "Prueba de manejo",
+          "description": "Realizar prueba en carretera con carga para verificar restauración de potencia"
+        }
+      ],
+      "precautions": [
+        "Nunca arrancar el motor sin filtro de aire instalado",
+        "Dejar enfriar el turbo antes de inspeccionar (mínimo 30 minutos)",
+        "Usar gafas de protección al aplicar limpiador de admisión",
+        "Verificar que no haya fugas de aire en sistema de admisión"
+      ],
+      "parts": [
+        {
+          "name": "Filtro de aire",
+          "partNumber": "21707132",
+          "optional": true
+        },
+        {
+          "name": "Limpiador de admisión CRC",
+          "partNumber": "N/A",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "mech-002",
+      "problem": "Consumo excesivo de aceite del motor",
+      "solution": "Inspeccionar anillos de pistón y guías de válvulas. Verificar turbocompresor por fugas en sellos. Cambiar aceite a especificación VDS-4.5 y verificar nivel de soplado del cárter.",
+      "truck": "Volvo FM",
+      "category": "Motor",
+      "severity": "Alta",
+      "difficulty": "Alta",
+      "estimatedTime": "4-6 horas",
+      "tools": [
+        "Medidor de compresión",
+        "Endoscopio automotriz",
+        "Juego de llaves torx",
+        "Extractor de guías de válvulas",
+        "Micrómetro"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Prueba de consumo",
+          "description": "Registrar kilometraje y nivel de aceite. Recorrer 1000km y medir consumo exacto"
+        },
+        {
+          "number": 2,
+          "title": "Inspección de soplado del cárter",
+          "description": "Con motor en ralentí, verificar flujo de gases del respiradero. Exceso indica desgaste de anillos"
+        },
+        {
+          "number": 3,
+          "title": "Verificación de turbo",
+          "description": "Desmontar manguera de salida del turbo. Inspeccionar por presencia de aceite en álabes de compresor"
+        },
+        {
+          "number": 4,
+          "title": "Prueba de compresión",
+          "description": "Medir compresión en todos los cilindros. Valores deben estar entre 35-40 bar"
+        },
+        {
+          "number": 5,
+          "title": "Inspección endoscópica",
+          "description": "Usar endoscopio para verificar estado de paredes de cilindro y depósitos de carbonilla en pistones"
+        },
+        {
+          "number": 6,
+          "title": "Cambio de aceite premium",
+          "description": "Drenar aceite usado. Rellenar con aceite Volvo VDS-4.5 15W-40 (cantidad: 28 litros para D13)"
+        },
+        {
+          "number": 7,
+          "title": "Monitoreo post-servicio",
+          "description": "Verificar consumo después de 500km. Si persiste, considerar reconstrucción de motor"
+        }
+      ],
+      "precautions": [
+        "No usar aceites genéricos, solo VDS-4.5 certificado",
+        "Motor debe estar a temperatura de trabajo para pruebas",
+        "Verificar fecha de vencimiento del aceite antes de usar",
+        "Si consumo supera 1L/1000km, el problema es crítico"
+      ],
+      "parts": [
+        {
+          "name": "Aceite Volvo VDS-4.5 15W-40",
+          "partNumber": "1161711",
+          "optional": false
+        },
+        {
+          "name": "Filtro de aceite",
+          "partNumber": "21707133",
+          "optional": false
+        },
+        {
+          "name": "Kit de sellos de turbo",
+          "partNumber": "85000295",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "mech-003",
+      "problem": "Vibración excesiva en el volante a 80-90 km/h",
+      "solution": "Balancear y alinear ruedas delanteras. Verificar estado de rodamientos de rueda y bujes de suspensión. Inspeccionar barra estabilizadora y silent blocks.",
+      "truck": "Volvo FH",
+      "category": "Suspensión",
+      "severity": "Media",
+      "difficulty": "Media",
+      "estimatedTime": "3-4 horas",
+      "tools": [
+        "Balanceadora de ruedas",
+        "Alineador láser computerizado",
+        "Torquímetro 400-500 Nm",
+        "Extractor de rodamientos",
+        "Gato hidráulico 10 ton"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Inspección visual de neumáticos",
+          "description": "Verificar desgaste irregular, abultamientos o daños laterales en neumáticos delanteros"
+        },
+        {
+          "number": 2,
+          "title": "Verificación de presión",
+          "description": "Ajustar presión según carga: Eje delantero vacío 8.5 bar, cargado 9.0 bar"
+        },
+        {
+          "number": 3,
+          "title": "Balanceo de ruedas",
+          "description": "Desmontar ruedas delanteras y balancear con contrapesos. Tolerancia máxima 10g"
+        },
+        {
+          "number": 4,
+          "title": "Verificación de rodamientos",
+          "description": "Levantar eje y verificar juego lateral de ruedas. No debe exceder 0.2mm"
+        },
+        {
+          "number": 5,
+          "title": "Alineación computarizada",
+          "description": "Verificar ángulos: Camber -0.5° a +0.5°, Caster 4° a 6°, Toe-in 0-2mm"
+        },
+        {
+          "number": 6,
+          "title": "Inspección de silent blocks",
+          "description": "Verificar grietas en gomas de suspensión. Reemplazar si hay desgaste visible"
+        },
+        {
+          "number": 7,
+          "title": "Prueba de ruta",
+          "description": "Probar vehículo a velocidades entre 60-100 km/h para verificar eliminación de vibración"
+        }
+      ],
+      "precautions": [
+        "Nunca trabajar bajo vehículo solo con gato, usar torres de seguridad",
+        "Verificar tuercas de rueda con torque correcto (490 Nm)",
+        "No alinear con suspensión neumática desnivelada",
+        "Asegurar que gomas nuevas sean originales Volvo"
+      ],
+      "parts": [
+        {
+          "name": "Contrapesos de rueda",
+          "partNumber": "N/A",
+          "optional": false
+        },
+        {
+          "name": "Silent block de barra estabilizadora",
+          "partNumber": "20459639",
+          "optional": true
+        },
+        {
+          "name": "Rodamiento de rueda",
+          "partNumber": "21100965",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "mech-004",
+      "problem": "Dificultad para cambiar marchas en transmisión I-Shift",
+      "solution": "Verificar nivel de aceite de transmisión ATF Dexron VI. Actualizar software de transmisión a última versión. Calibrar embrague automatizado y verificar cilindro selector.",
+      "truck": "Volvo FH",
+      "category": "Transmisión",
+      "severity": "Alta",
+      "difficulty": "Alta",
+      "estimatedTime": "2-3 horas",
+      "tools": [
+        "VCADS Pro con licencia de transmisión",
+        "Bomba de aceite ATF",
+        "Medidor de temperatura infrarrojo",
+        "Laptop con software Volvo PTT"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Lectura de códigos de falla",
+          "description": "Conectar VCADS y leer códigos DTCs específicos de transmisión I-Shift"
+        },
+        {
+          "number": 2,
+          "title": "Verificación de nivel de aceite",
+          "description": "Con transmisión a 40-60°C, verificar nivel por varilla. Debe estar en zona verde"
+        },
+        {
+          "number": 3,
+          "title": "Análisis de calidad de aceite",
+          "description": "Drenar muestra de aceite. Color oscuro o olor a quemado indica sobrecalentamiento"
+        },
+        {
+          "number": 4,
+          "title": "Actualización de software",
+          "description": "Descargar última versión de software I-Shift desde portal Volvo. Flashear ECU de transmisión"
+        },
+        {
+          "number": 5,
+          "title": "Calibración de embrague",
+          "description": "Ejecutar rutina de calibración automática desde VCADS. Proceso toma 10-15 minutos"
+        },
+        {
+          "number": 6,
+          "title": "Verificación de actuadores",
+          "description": "Probar cilindro selector y actuador de embrague con función de prueba de VCADS"
+        },
+        {
+          "number": 7,
+          "title": "Reset de adaptaciones",
+          "description": "Borrar valores adaptativos y permitir que transmisión re-aprenda patrones de cambio"
+        }
+      ],
+      "precautions": [
+        "NO cambiar aceite con transmisión caliente (riesgo de quemaduras)",
+        "Usar solo aceite ATF Dexron VI original, otros dañan embrague",
+        "No interrumpir proceso de calibración o se debe repetir",
+        "Verificar versión de software compatible con motor"
+      ],
+      "parts": [
+        {
+          "name": "Aceite ATF Dexron VI",
+          "partNumber": "1161838",
+          "optional": true
+        },
+        {
+          "name": "Filtro de transmisión I-Shift",
+          "partNumber": "22491111",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "mech-005",
+      "problem": "Fuga de refrigerante en circuito de enfriamiento",
+      "solution": "Revisar mangueras de radiador y abrazaderas. Verificar bomba de agua por desgaste de sello mecánico. Probar presión del sistema y reemplazar tapón de radiador si es necesario.",
+      "truck": "Volvo FM",
+      "category": "Sistema de enfriamiento",
+      "severity": "Alta",
+      "difficulty": "Media",
+      "estimatedTime": "2-4 horas",
+      "tools": [
+        "Probador de presión de radiador",
+        "Lámpara UV y tinte fluorescente",
+        "Manómetro 0-2 bar",
+        "Termómetro infrarrojo"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Localización visual de fuga",
+          "description": "Con motor frío, inspeccionar manchas verdes (refrigerante) bajo el vehículo y en motor"
+        },
+        {
+          "number": 2,
+          "title": "Prueba de presión del sistema",
+          "description": "Conectar probador de presión y presurizar a 1.5 bar. Sistema debe mantener presión por 10 min"
+        },
+        {
+          "number": 3,
+          "title": "Inspección con lámpara UV",
+          "description": "Si fuga no es visible, agregar tinte UV al refrigerante y hacer circular. Inspeccionar con lámpara"
+        },
+        {
+          "number": 4,
+          "title": "Verificación de mangueras",
+          "description": "Palpar todas las mangueras buscando partes blandas o agrietadas. Reapretar abrazaderas a 8-10 Nm"
+        },
+        {
+          "number": 5,
+          "title": "Inspección de bomba de agua",
+          "description": "Verificar orificio de drenaje de bomba (weep hole). Goteo indica falla de sello mecánico"
+        },
+        {
+          "number": 6,
+          "title": "Prueba de tapón de presión",
+          "description": "Probar tapón del radiador con probador. Debe abrir a 1.4-1.5 bar"
+        },
+        {
+          "number": 7,
+          "title": "Recarga y purga del sistema",
+          "description": "Rellenar con mezcla 50/50 de anticongelante Volvo y agua destilada. Purgar aire del sistema"
+        }
+      ],
+      "precautions": [
+        "NUNCA abrir radiador con motor caliente - líquido hirviendo puede causar quemaduras graves",
+        "Usar solo anticongelante aprobado Volvo tipo G12/G13 (orgánico)",
+        "No mezclar anticongelantes de diferente tipo",
+        "Desechar refrigerante usado según normativas ambientales"
+      ],
+      "parts": [
+        {
+          "name": "Anticongelante Volvo Coolant",
+          "partNumber": "1161418",
+          "optional": false
+        },
+        {
+          "name": "Tapón de radiador 1.4 bar",
+          "partNumber": "8113574",
+          "optional": true
+        },
+        {
+          "name": "Manguera superior de radiador",
+          "partNumber": "20440050",
+          "optional": true
+        },
+        {
+          "name": "Bomba de agua",
+          "partNumber": "21026156",
+          "optional": true
+        }
+      ]
+    }
+  ],
+  "electrical": [
+    {
+      "id": "elec-001",
+      "problem": "Batería se descarga durante la noche",
+      "solution": "Medir consumo en reposo (no debe superar 150mA). Verificar alternador por diodo en cortocircuito. Revisar módulos electrónicos que no entren en modo sleep: tacógrafo, GPS, alarma.",
+      "truck": "Volvo FH",
+      "category": "Sistema eléctrico",
+      "severity": "Alta",
+      "difficulty": "Media",
+      "estimatedTime": "1-2 horas",
+      "tools": [
+        "Multímetro digital con rango de mA",
+        "Pinza amperimétrica DC",
+        "Probador de diodos de alternador",
+        "Cargador de baterías inteligente"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Medición de corriente de reposo",
+          "description": "Desconectar cable negativo. Conectar multímetro en serie. Cerrar cabina y esperar 15min para que módulos duerman. Consumo normal: 50-150mA"
+        },
+        {
+          "number": 2,
+          "title": "Identificación de consumo parasitario",
+          "description": "Ir retirando fusibles uno por uno mientras se monitorea corriente. Cuando baje significativamente, se identifica el circuito problemático"
+        },
+        {
+          "number": 3,
+          "title": "Prueba de diodos del alternador",
+          "description": "Con motor apagado, probar diodos del alternador. Un diodo en corto drenará batería continuamente"
+        },
+        {
+          "number": 4,
+          "title": "Verificación de tacógrafo",
+          "description": "Tacógrafo digital debe entrar en sleep después de 40 segundos. Si permanece activo, consumirá 300-500mA"
+        },
+        {
+          "number": 5,
+          "title": "Inspección de GPS/rastreador",
+          "description": "Dispositivos GPS aftermarket mal instalados pueden consumir 200-400mA permanentemente"
+        },
+        {
+          "number": 6,
+          "title": "Revisión de alarma",
+          "description": "Sistemas de alarma defectuosos pueden mantener módulos activos. Verificar consumo desconectando alarma"
+        },
+        {
+          "number": 7,
+          "title": "Carga completa de baterías",
+          "description": "Cargar baterías a 100% con cargador inteligente (24V, 20A) durante 8-12 horas"
+        }
+      ],
+      "precautions": [
+        "Desconectar SIEMPRE terminal negativo primero para evitar cortocircuitos",
+        "No usar multímetro en rango incorrecto - puede dañarse el fusible interno",
+        "Esperar tiempo suficiente para que módulos entren en sleep (mínimo 15 min)",
+        "Baterías descargadas pueden congelarse en climas fríos y reventarse"
+      ],
+      "parts": [
+        {
+          "name": "Batería 12V 225Ah",
+          "partNumber": "21620639",
+          "optional": true
+        },
+        {
+          "name": "Alternador remanufacturado",
+          "partNumber": "21319366",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "elec-002",
+      "problem": "Luces del tablero parpadean intermitentemente",
+      "solution": "Verificar conexiones de masa del chasis. Limpiar terminales de batería y reapretar. Revisar regulador de voltaje del alternador (debe mantener 28V en sistema de 24V).",
+      "truck": "Volvo FM",
+      "category": "Iluminación",
+      "severity": "Media",
+      "difficulty": "Baja",
+      "estimatedTime": "1 hora",
+      "tools": [
+        "Multímetro digital",
+        "Cepillo de alambre para terminales",
+        "Llave de torque",
+        "Spray limpiador de contactos"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Medición de voltaje del sistema",
+          "description": "Con motor en ralentí, medir voltaje en baterías. Debe ser 27.5-28.5V. Si es menor, hay problema de carga"
+        },
+        {
+          "number": 2,
+          "title": "Limpieza de terminales de batería",
+          "description": "Desconectar baterías. Limpiar terminales con cepillo de alambre hasta que brillen. Aplicar vaselina anticorrosiva"
+        },
+        {
+          "number": 3,
+          "title": "Verificación de masas del chasis",
+          "description": "Localizar puntos de masa principales (motor-chasis, batería-chasis). Limpiar y reapretar con 25-30 Nm"
+        },
+        {
+          "number": 4,
+          "title": "Prueba de regulador de voltaje",
+          "description": "Acelerar motor a 1500 RPM. Voltaje debe estabilizarse en 28V ±0.5V. Si sube a más de 29V, regulador está fallando"
+        },
+        {
+          "number": 5,
+          "title": "Medición de caída de voltaje",
+          "description": "Medir voltaje entre terminal positivo de alternador y batería. No debe haber más de 0.5V de diferencia"
+        },
+        {
+          "number": 6,
+          "title": "Inspección de tablero de instrumentos",
+          "description": "Verificar conectores traseros del tablero estén bien insertados y sin corrosión"
+        }
+      ],
+      "precautions": [
+        "Desconectar baterías antes de limpiar para evitar chispas",
+        "No invertir polaridad al reconectar - daña módulos electrónicos",
+        "Voltaje superior a 29V puede quemar bombillas LED",
+        "Usar solo vaselina dieléctrica, no grasa común"
+      ],
+      "parts": [
+        {
+          "name": "Terminal de batería",
+          "partNumber": "3981446",
+          "optional": true
+        },
+        {
+          "name": "Cable de masa del chasis",
+          "partNumber": "21049125",
+          "optional": true
+        },
+        {
+          "name": "Regulador de voltaje alternador",
+          "partNumber": "22152495",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "elec-003",
+      "problem": "Sistema ABS no funciona (luz permanece encendida)",
+      "solution": "Escanear códigos de falla con VCADS. Verificar sensores de velocidad de ruedas y limpiar anillos reluctores. Revisar cableado por cortocircuitos o conectores corroídos.",
+      "truck": "Volvo FH",
+      "category": "ABS",
+      "severity": "Crítica",
+      "difficulty": "Media",
+      "estimatedTime": "2-3 horas",
+      "tools": [
+        "Escáner VCADS Pro",
+        "Multímetro con función de frecuencia",
+        "Osciloscopio automotriz",
+        "Cepillo de alambre",
+        "Spray limpia contactos WD-40"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Lectura de códigos DTC",
+          "description": "Conectar VCADS y leer códigos de falla del módulo ABS/EBS. Anotar todos los códigos presentes y pendientes"
+        },
+        {
+          "number": 2,
+          "title": "Identificación de rueda afectada",
+          "description": "Los códigos indican qué sensor tiene falla (ej: '21-5' = sensor rueda trasera derecha exterior)"
+        },
+        {
+          "number": 3,
+          "title": "Inspección del anillo reluctor",
+          "description": "Levantar rueda indicada. Inspeccionar anillo dentado magnético por daños, suciedad o dientes rotos"
+        },
+        {
+          "number": 4,
+          "title": "Limpieza del sensor",
+          "description": "Desmontar sensor de velocidad. Limpiar punta magnética con limpiador de frenos. Verificar que no esté desgastado"
+        },
+        {
+          "number": 5,
+          "title": "Medición de resistencia del sensor",
+          "description": "Medir resistencia del sensor: debe estar entre 950-1200 Ohms. Fuera de rango = sensor defectuoso"
+        },
+        {
+          "number": 6,
+          "title": "Verificación de distancia sensor-anillo",
+          "description": "Gap entre sensor y anillo debe ser 0.5-1.5mm. Más de 2mm causará señal débil"
+        },
+        {
+          "number": 7,
+          "title": "Prueba dinámica con VCADS",
+          "description": "Elevar vehículo, girar ruedas manualmente. VCADS debe mostrar señal de velocidad en cada rueda"
+        },
+        {
+          "number": 8,
+          "title": "Borrado de códigos y prueba",
+          "description": "Borrar códigos de falla. Probar vehículo a más de 7 km/h. Luz de ABS debe apagarse"
+        }
+      ],
+      "precautions": [
+        "NUNCA conducir con ABS inoperativo - distancias de frenado aumentan 40%",
+        "Sensor ABS es frágil, no golpear al instalar",
+        "Limpiar anillo con cuidado, no rayar superficie magnética",
+        "Cables de sensores pasan cerca del escape, verificar que no estén derretidos"
+      ],
+      "parts": [
+        {
+          "name": "Sensor de velocidad ABS",
+          "partNumber": "20392958",
+          "optional": true
+        },
+        {
+          "name": "Anillo reluctor",
+          "partNumber": "3197862",
+          "optional": true
+        },
+        {
+          "name": "Conector de sensor",
+          "partNumber": "20508011",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "elec-004",
+      "problem": "Alternador no carga las baterías",
+      "solution": "Verificar tensión de correa del alternador. Probar alternador en banco de pruebas (debe entregar mínimo 90A). Revisar cable de excitación y regulador de voltaje interno.",
+      "truck": "Volvo FH16",
+      "category": "Sistema de carga",
+      "severity": "Crítica",
+      "difficulty": "Media",
+      "estimatedTime": "1-2 horas",
+      "tools": [
+        "Banco de pruebas de alternadores",
+        "Medidor de tensión de correas",
+        "Multímetro digital",
+        "Llave de impacto",
+        "Pinza amperimétrica DC 0-200A"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Verificación de síntoma",
+          "description": "Con motor en marcha, medir voltaje en baterías. Si es menor a 26V, hay fallo de carga"
+        },
+        {
+          "number": 2,
+          "title": "Inspección visual del alternador",
+          "description": "Verificar que polea del alternador gire con el motor. Si gira pero no carga, es problema interno"
+        },
+        {
+          "number": 3,
+          "title": "Medición de tensión de correa",
+          "description": "Usar medidor de tensión (Cricket). Valor correcto: 60-80 Hz. Menos de 50 Hz = correa floja"
+        },
+        {
+          "number": 4,
+          "title": "Prueba de cable de excitación",
+          "description": "Con motor apagado, medir voltaje en terminal D+ del alternador. Debe tener 24V al dar contacto"
+        },
+        {
+          "number": 5,
+          "title": "Medición de corriente de carga",
+          "description": "Con pinza amperimétrica en cable positivo del alternador, arrancar motor. Debe generar 60-100A inicialmente"
+        },
+        {
+          "number": 6,
+          "title": "Desmontaje y prueba en banco",
+          "description": "Si no carga, desmontar alternador. Probar en banco a 1500 RPM. Debe entregar mínimo 90A a 28V"
+        },
+        {
+          "number": 7,
+          "title": "Inspección interna",
+          "description": "Desarmar alternador: verificar escobillas (mínimo 5mm), rodamientos, anillos rozantes y diodos"
+        }
+      ],
+      "precautions": [
+        "NO desconectar batería con motor en marcha - pico de voltaje daña módulos",
+        "Correa muy tensa daña rodamientos del alternador",
+        "Al instalar alternador nuevo, verificar polaridad antes de conectar",
+        "Baterías descargadas pueden causar falla prematura de alternador nuevo"
+      ],
+      "parts": [
+        {
+          "name": "Alternador 24V 100A",
+          "partNumber": "21319366",
+          "optional": true
+        },
+        {
+          "name": "Correa poli-V",
+          "partNumber": "20808812",
+          "optional": false
+        },
+        {
+          "name": "Kit de escobillas",
+          "partNumber": "3090782",
+          "optional": true
+        },
+        {
+          "name": "Regulador de voltaje",
+          "partNumber": "22152495",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "elec-005",
+      "problem": "Motor de arranque gira pero no enciende el motor",
+      "solution": "Verificar presión de combustible y funcionamiento de bomba de alta presión. Revisar relay de corte de combustible. Escanear ECM por códigos de sensor de posición del cigüeñal.",
+      "truck": "Volvo FM",
+      "category": "Arranque",
+      "severity": "Alta",
+      "difficulty": "Alta",
+      "estimatedTime": "1-3 horas",
+      "tools": [
+        "Escáner VCADS Pro",
+        "Manómetro de presión de combustible 0-2000 bar",
+        "Multímetro digital",
+        "Osciloscopio para señal CKP"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Verificación de síntoma exacto",
+          "description": "Motor gira con velocidad normal pero no arranca. Observar si hay humo en escape (indica que hay combustible)"
+        },
+        {
+          "number": 2,
+          "title": "Lectura de códigos de falla",
+          "description": "Conectar VCADS. Buscar códigos relacionados con: sensor CKP, sensor CMP, bomba de combustible, inyectores"
+        },
+        {
+          "number": 3,
+          "title": "Prueba de presión de combustible",
+          "description": "Conectar manómetro al riel común. Al dar marcha, presión debe subir a 250-300 bar en 2-3 segundos"
+        },
+        {
+          "number": 4,
+          "title": "Verificación de relay de corte",
+          "description": "Localizar relay de corte de combustible (fuel shut-off). Verificar que activa al dar contacto (se escucha click)"
+        },
+        {
+          "number": 5,
+          "title": "Prueba del sensor de posición del cigüeñal",
+          "description": "Con osciloscopio, medir señal del CKP mientras se da marcha. Debe generar pulsos de 0-5V consistentes"
+        },
+        {
+          "number": 6,
+          "title": "Inspección de fusibles principales",
+          "description": "Verificar fusible de bomba de combustible (típicamente 15A) y fusible de ECM (10A)"
+        },
+        {
+          "number": 7,
+          "title": "Revisión de inmovilizador",
+          "description": "Si tiene sistema de inmovilizador aftermarket, puede estar bloqueando arranque. Verificar con bypass temporal"
+        }
+      ],
+      "precautions": [
+        "No dar marcha por más de 10 segundos - motor de arranque se sobrecalentará",
+        "Esperar 30 segundos entre intentos de arranque",
+        "Al abrir sistema de combustible de alta presión, puede haber 200+ bar residuales",
+        "Diesel salpicado en piel puede causar necrosis - usar guantes"
+      ],
+      "parts": [
+        {
+          "name": "Sensor de posición cigüeñal CKP",
+          "partNumber": "21340647",
+          "optional": true
+        },
+        {
+          "name": "Relay de corte de combustible",
+          "partNumber": "20410803",
+          "optional": true
+        },
+        {
+          "name": "Bomba de alta presión",
+          "partNumber": "21620256",
+          "optional": true
+        }
+      ]
+    }
+  ]
+}

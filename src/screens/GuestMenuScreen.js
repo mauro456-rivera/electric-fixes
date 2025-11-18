@@ -13,6 +13,7 @@ const GuestMenuScreen = () => {
   const { user, signOut, loading } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+  const [showWelcomeAlert, setShowWelcomeAlert] = useState(false);
 
   // Protección de ruta: Si no hay usuario autenticado y no está cargando, redirigir al login
   React.useEffect(() => {
@@ -21,6 +22,17 @@ const GuestMenuScreen = () => {
       router.replace('/login');
     }
   }, [user, loading, router]);
+
+  // Mostrar alerta de bienvenida al cargar la pantalla
+  React.useEffect(() => {
+    if (!loading && user) {
+      // Pequeño delay para que la animación sea suave
+      const timer = setTimeout(() => {
+        setShowWelcomeAlert(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, user]);
 
   const handleLogout = () => {
     setShowUserMenu(false);
@@ -42,7 +54,7 @@ const GuestMenuScreen = () => {
     {
       id: 1,
       title: 'Soluciones Eléctricas',
-      subtitle: 'Consulta 20 soluciones eléctricas para Volvo',
+      subtitle: '',
       icon: 'flash-outline',
       route: '/guest-solutions?type=electrical',
       gradient: ['#5a3a1e', '#8c5a2d'],
@@ -51,7 +63,7 @@ const GuestMenuScreen = () => {
     {
       id: 2,
       title: 'Soluciones Mecánicas',
-      subtitle: 'Consulta 20 soluciones mecánicas para Volvo',
+      subtitle: '',
       icon: 'construct-outline',
       route: '/guest-solutions?type=mechanical',
       gradient: ['#1e4d3a', '#2d7a5f'],
@@ -97,13 +109,6 @@ const GuestMenuScreen = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.welcomeContainer}>
-          <Text style={styles.welcomeText}>Bienvenido, {user?.name || 'Invitado'}</Text>
-          <Text style={styles.welcomeSubtext}>
-            Como usuario invitado puedes consultar todas las soluciones registradas
-          </Text>
-        </View>
-
         <View style={styles.menuContainer}>
           {guestMenuOptions.map((option) => (
             <TouchableOpacity
@@ -177,6 +182,20 @@ const GuestMenuScreen = () => {
           </View>
         </TouchableOpacity>
       </Modal>
+
+      <CustomAlert
+        visible={showWelcomeAlert}
+        onClose={() => setShowWelcomeAlert(false)}
+        type="info"
+        title={`Bienvenido, ${user?.name || 'Invitado'}`}
+        message="Como usuario invitado tienes acceso a consultar todas las soluciones eléctricas y mecánicas registradas en el sistema. ¡Explora y aprende!"
+        buttons={[
+          {
+            text: 'Entendido',
+            onPress: () => setShowWelcomeAlert(false)
+          }
+        ]}
+      />
 
       <CustomAlert
         visible={showLogoutAlert}

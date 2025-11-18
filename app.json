@@ -3,7 +3,7 @@
     "name": "Mechanic Fixes",
     "slug": "mechanic-fixes",
     "owner": "jbian",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/images/mechanic-fixes.png",
     "scheme": "mechanicfixes",
@@ -11,7 +11,7 @@
     "newArchEnabled": true,
     "jsEngine": "hermes",
     "privacy": "public",
-    "description": "Sistema de gestión profesional para talleres mecánicos. Permite a administradores y técnicos: (1) Registrar problemas y reparaciones de vehículos con fotos, videos y notas de audio, (2) Consultar historial de reparaciones por usuario, (3) Buscar soluciones a problemas comunes, (4) Gestionar usuarios del taller. Los administradores tienen acceso completo mientras los técnicos pueden registrar y consultar sus propios trabajos.",
+    "description": "Aplicación móvil sencilla desarrollada por Dieselsoft que proporciona acceso a soluciones mecánicas y eléctricas para camiones Volvo. Consulta soluciones técnicas detalladas con pasos de diagnóstico, herramientas necesarias, precauciones de seguridad y números de parte originales. Ideal para técnicos, mecánicos y estudiantes de mecánica automotriz.",
     "privacyPolicy": "https://sites.google.com/view/poltica-de-privacidad-mechanic/p%C3%A1gina-principal",
     "ios": {
       "supportsTablet": true,
@@ -41,10 +41,7 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false,
-        "NSCameraUsageDescription": "Mechanic Fixes usa la cámara para documentar reparaciones de vehículos. Por ejemplo: cuando registras una reparación de motor, puedes tomar fotos del problema identificado, capturar el estado antes/después del trabajo, y grabar videos mostrando el funcionamiento del vehículo para adjuntarlos al reporte de servicio del taller.",
-        "NSPhotoLibraryUsageDescription": "Mechanic Fixes accede a tu biblioteca de fotos para adjuntar imágenes existentes a los reportes de reparación. Por ejemplo: cuando creas un registro de servicio, puedes seleccionar fotos previas del vehículo dañado, adjuntar imágenes de facturas de piezas, o incluir capturas de diagnósticos del scanner automotriz al historial de reparaciones.",
-        "NSPhotoLibraryAddUsageDescription": "Mechanic Fixes guarda fotos y videos de reparaciones en tu biblioteca para mantener un respaldo visual. Por ejemplo: después de tomar fotos del trabajo completado en un vehículo, la app las guarda automáticamente en tu galería permitiéndote tener evidencia fotográfica del servicio realizado además del registro digital en el sistema del taller."
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -80,13 +77,6 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#0B1623"
-        }
-      ],
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "La app necesita acceso a tus fotos",
-          "cameraPermission": "La app necesita acceso a la cámara"
         }
       ],
       [

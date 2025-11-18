@@ -58,10 +58,17 @@ service cloud.firestore {
       // Only admins can read all users
       allow list: if isAdmin();
 
-      // Users can be created during registration (handled by backend)
-      // IMPORTANTE: También permitir que un usuario autenticado cree/actualice su propio documento
-      allow create: if isAuthenticated() && request.auth.uid == userId;
-      
+      // Permitir crear documento de usuario en estos casos:
+      // 1. El usuario autenticado crea su propio documento (auto-registro)
+      // 2. El createdBy es un usuario admin existente (admin creando usuarios)
+      allow create: if isAuthenticated() && (
+        // Auto-registro: el usuario crea su propio documento
+        (request.auth.uid == userId && request.resource.data.createdBy == userId) ||
+        // Admin creando usuario: verificar que createdBy sea un admin
+        (request.resource.data.createdBy != null &&
+         get(/databases/$(database)/documents/users/$(request.resource.data.createdBy)).data.role == 'admin')
+      );
+
       // Permitir que un usuario autenticado actualice su propio documento
       allow update: if isAuthenticated() && request.auth.uid == userId;
 
