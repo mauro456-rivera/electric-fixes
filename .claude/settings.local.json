@@ -6,7 +6,8 @@
       "Bash(dir:*)",
       "Bash(ren mecanic-fixes.png mechanic-fixes.png)",
       "WebFetch(domain:sites.google.com)",
-      "Bash(nul)"
+      "Bash(nul)",
+      "Bash(npm run lint)"
     ],
     "deny": [],
     "ask": []

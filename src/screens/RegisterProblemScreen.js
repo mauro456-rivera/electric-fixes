@@ -46,8 +46,27 @@ const RegisterProblemScreen = () => {
 
   const [generalData, setGeneralData] = useState({
     topic: '',
-    truckData: '',
+    // Datos del Camión separados
+    truckBrand: '', // Marca (ej: Freightliner, Kenworth, Peterbilt)
+    truckModel: '', // Modelo (ej: Cascadia, T680, 579)
+    truckYear: '', // Año (ej: 2020, 2021)
     workOrder: 'WO-TA-',
+    // Campos de Información Básica (según metodología PDF)
+    mainSymptom: '',
+    urgency: 'Media', // Crítica/Media/Leve
+    estimatedDiagnosticTime: '', // en minutos
+  });
+
+  // Estado para Síntomas Reportados (dinámicos)
+  const [reportedSymptoms, setReportedSymptoms] = useState([
+    { id: Date.now(), text: '' }
+  ]);
+
+  // Estado para Herramientas Requeridas (dinámicos)
+  const [requiredTools, setRequiredTools] = useState({
+    diagnostic: [{ id: Date.now(), text: '' }], // Scanner, multímetro, etc.
+    tools: [{ id: Date.now() + 1, text: '' }], // Llaves, sockets específicos
+    safety: [{ id: Date.now() + 2, text: '' }], // Guantes, gafas, etc.
   });
 
   // ARRAY DE PROBLEMAS (SIN CAMPOS GENERALES)
@@ -71,6 +90,58 @@ const RegisterProblemScreen = () => {
     setGeneralData({
       ...generalData,
       [field]: value,
+    });
+  };
+
+  // FUNCIONES PARA SÍNTOMAS REPORTADOS
+  const addSymptom = () => {
+    setReportedSymptoms([
+      ...reportedSymptoms,
+      { id: Date.now(), text: '' }
+    ]);
+  };
+
+  const updateSymptom = (id, text) => {
+    setReportedSymptoms(
+      reportedSymptoms.map(symptom =>
+        symptom.id === id ? { ...symptom, text } : symptom
+      )
+    );
+  };
+
+  const removeSymptom = (id) => {
+    if (reportedSymptoms.length === 1) {
+      // No permitir eliminar el último síntoma
+      return;
+    }
+    setReportedSymptoms(reportedSymptoms.filter(symptom => symptom.id !== id));
+  };
+
+  // FUNCIONES PARA HERRAMIENTAS REQUERIDAS
+  const addTool = (category) => {
+    setRequiredTools({
+      ...requiredTools,
+      [category]: [...requiredTools[category], { id: Date.now(), text: '' }]
+    });
+  };
+
+  const updateTool = (category, id, text) => {
+    setRequiredTools({
+      ...requiredTools,
+      [category]: requiredTools[category].map(tool =>
+        tool.id === id ? { ...tool, text } : tool
+      )
+    });
+  };
+
+  const removeTool = (category, id) => {
+    if (requiredTools[category].length === 1) {
+      // No permitir eliminar el último
+      return;
+    }
+    setRequiredTools({
+      ...requiredTools,
+      [category]: requiredTools[category].filter(tool => tool.id !== id)
     });
   };
 
@@ -188,6 +259,11 @@ const RegisterProblemScreen = () => {
       return false;
     }
 
+    if (!generalData.mainSymptom.trim()) {
+      setValidationError('El síntoma principal es requerido');
+      return false;
+    }
+
     for (let i = 0; i < problems.length; i++) {
       const problem = problems[i];
       if (!problem.problemTitle.trim()) {
@@ -209,11 +285,20 @@ const RegisterProblemScreen = () => {
     setShowUploadingAlert(true); // Mostrar alerta de subiendo datos
 
     try {
-      // Preparar datos generales con Work Order completo
+      // Preparar datos generales con Work Order completo, síntomas y herramientas
       const generalDataWithWorkOrder = {
         ...generalData,
         workOrderDetails: selectedWorkOrder || null, // Guardar el objeto completo del Work Order
+        reportedSymptoms: reportedSymptoms.filter(s => s.text.trim() !== ''), // Solo síntomas con texto
+        requiredTools: {
+          diagnostic: requiredTools.diagnostic.filter(t => t.text.trim() !== ''),
+          tools: requiredTools.tools.filter(t => t.text.trim() !== ''),
+          safety: requiredTools.safety.filter(t => t.text.trim() !== ''),
+        },
       };
+
+      // Debug: Ver qué datos se están guardando
+      console.log('📊 Datos que se van a guardar:', JSON.stringify(generalDataWithWorkOrder, null, 2));
 
       const problemId = await FirebaseFirestoreService.saveProblem(
         generalDataWithWorkOrder,
@@ -238,6 +323,8 @@ const RegisterProblemScreen = () => {
   const formSections = [
     { id: 'type-selector', type: 'type-selector' },
     { id: 'general', type: 'general' },
+    { id: 'symptoms', type: 'symptoms' },
+    { id: 'tools', type: 'tools' },
     { id: 'problem', type: 'problem' },
     { id: 'activities', type: 'activities' },
     { id: 'solutions', type: 'solutions' },
@@ -337,13 +424,43 @@ const RegisterProblemScreen = () => {
 
               <View style={[styles.section, styles.lowerSection]}>
                 <Text style={styles.label}>Datos del Camión</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Ingrese datos del camión"
-                  placeholderTextColor={colors.textSecondary}
-                  value={generalData.truckData}
-                  onChangeText={(text) => updateGeneralData('truckData', text)}
-                />
+
+                {/* Marca */}
+                <View style={styles.truckFieldContainer}>
+                  <Text style={styles.truckFieldLabel}>Marca</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Ej: Freightliner, Kenworth, Peterbilt"
+                    placeholderTextColor={colors.textSecondary}
+                    value={generalData.truckBrand}
+                    onChangeText={(text) => updateGeneralData('truckBrand', text)}
+                  />
+                </View>
+
+                {/* Modelo */}
+                <View style={styles.truckFieldContainer}>
+                  <Text style={styles.truckFieldLabel}>Modelo</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Ej: Cascadia, T680, 579"
+                    placeholderTextColor={colors.textSecondary}
+                    value={generalData.truckModel}
+                    onChangeText={(text) => updateGeneralData('truckModel', text)}
+                  />
+                </View>
+
+                {/* Año */}
+                <View style={styles.truckFieldContainer}>
+                  <Text style={styles.truckFieldLabel}>Año</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Ej: 2020, 2021, 2022"
+                    placeholderTextColor={colors.textSecondary}
+                    value={generalData.truckYear}
+                    onChangeText={(text) => updateGeneralData('truckYear', text)}
+                    keyboardType="numeric"
+                  />
+                </View>
               </View>
 
               <View style={[styles.section, styles.lowerSection]}>
@@ -358,6 +475,196 @@ const RegisterProblemScreen = () => {
                 />
               </View>
             </View>
+
+            {/* NUEVA SECCIÓN: INFORMACIÓN BÁSICA */}
+            <View style={styles.generalSection}>
+              <Text style={styles.generalTitle}>Información Básica</Text>
+
+              <View style={[styles.section, styles.lowerSection]}>
+                <Text style={styles.label}>Síntoma Principal *</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Descripción clara del síntoma principal"
+                  placeholderTextColor={colors.textSecondary}
+                  value={generalData.mainSymptom}
+                  onChangeText={(text) => updateGeneralData('mainSymptom', text)}
+                />
+              </View>
+
+              <View style={[styles.section, styles.lowerSection]}>
+                <Text style={styles.label}>Urgencia</Text>
+                <View style={styles.urgencyContainer}>
+                  {['Leve', 'Media', 'Crítica'].map((level) => (
+                    <TouchableOpacity
+                      key={level}
+                      style={[
+                        styles.urgencyButton,
+                        generalData.urgency === level && styles.urgencyButtonActive,
+                        generalData.urgency === level && level === 'Crítica' && styles.urgencyButtonCritical,
+                        generalData.urgency === level && level === 'Media' && styles.urgencyButtonMedium,
+                        generalData.urgency === level && level === 'Leve' && styles.urgencyButtonLow,
+                      ]}
+                      onPress={() => updateGeneralData('urgency', level)}
+                    >
+                      <Text
+                        style={[
+                          styles.urgencyButtonText,
+                          generalData.urgency === level && styles.urgencyButtonTextActive,
+                        ]}
+                      >
+                        {level}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+
+              <View style={[styles.section, styles.lowerSection]}>
+                <Text style={styles.label}>Tiempo Diagnóstico Estimado (minutos)</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Ej: 30, 60, 120"
+                  placeholderTextColor={colors.textSecondary}
+                  value={generalData.estimatedDiagnosticTime}
+                  onChangeText={(text) => updateGeneralData('estimatedDiagnosticTime', text)}
+                  keyboardType="numeric"
+                />
+              </View>
+            </View>
+
+            <View style={styles.separator} />
+          </>
+        );
+
+      case 'symptoms':
+        if (currentProblemIndex !== 0) return null;
+        return (
+          <>
+            <View style={styles.symptomsSection}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.generalTitle}>Síntomas Reportados (+)</Text>
+                <TouchableOpacity onPress={addSymptom} style={styles.addButton}>
+                  <Ionicons name="add-circle" size={28} color={colors.secondary} />
+                </TouchableOpacity>
+              </View>
+
+              {reportedSymptoms.map((symptom, index) => (
+                <View key={symptom.id} style={styles.symptomItem}>
+                  <View style={styles.symptomRow}>
+                    <TextInput
+                      style={styles.symptomInput}
+                      placeholder={`Síntoma ${index + 1} (ej: Luz check engine encendida, Pérdida de potencia)`}
+                      placeholderTextColor={colors.textSecondary}
+                      value={symptom.text}
+                      onChangeText={(text) => updateSymptom(symptom.id, text)}
+                    />
+
+                    {reportedSymptoms.length > 1 && (
+                      <TouchableOpacity
+                        onPress={() => removeSymptom(symptom.id)}
+                        style={styles.removeSymptomButton}
+                      >
+                        <Ionicons name="close-circle" size={24} color={colors.error} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </View>
+              ))}
+            </View>
+
+            <View style={styles.separator} />
+          </>
+        );
+
+      case 'tools':
+        if (currentProblemIndex !== 0) return null;
+        return (
+          <>
+            <View style={styles.toolsSection}>
+              <Text style={styles.generalTitle}>Herramientas Requeridas</Text>
+
+              {/* Diagnóstico */}
+              <View style={styles.toolCategory}>
+                <View style={styles.toolCategoryHeader}>
+                  <Ionicons name="medkit-outline" size={20} color={colors.primary} />
+                  <Text style={styles.toolCategoryTitle}>Diagnóstico</Text>
+                  <TouchableOpacity onPress={() => addTool('diagnostic')} style={styles.addToolButton}>
+                    <Ionicons name="add-circle-outline" size={22} color={colors.secondary} />
+                  </TouchableOpacity>
+                </View>
+                {requiredTools.diagnostic.map((tool, index) => (
+                  <View key={tool.id} style={styles.toolItemRow}>
+                    <TextInput
+                      style={styles.toolInput}
+                      placeholder={`Ej: Scanner ${index > 0 ? ', Multímetro' : ''}`}
+                      placeholderTextColor={colors.textSecondary}
+                      value={tool.text}
+                      onChangeText={(text) => updateTool('diagnostic', tool.id, text)}
+                    />
+                    {requiredTools.diagnostic.length > 1 && (
+                      <TouchableOpacity onPress={() => removeTool('diagnostic', tool.id)} style={styles.removeToolButton}>
+                        <Ionicons name="close-circle" size={20} color={colors.error} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ))}
+              </View>
+
+              {/* Herramientas */}
+              <View style={styles.toolCategory}>
+                <View style={styles.toolCategoryHeader}>
+                  <Ionicons name="construct-outline" size={20} color={colors.primary} />
+                  <Text style={styles.toolCategoryTitle}>Herramientas</Text>
+                  <TouchableOpacity onPress={() => addTool('tools')} style={styles.addToolButton}>
+                    <Ionicons name="add-circle-outline" size={22} color={colors.secondary} />
+                  </TouchableOpacity>
+                </View>
+                {requiredTools.tools.map((tool, index) => (
+                  <View key={tool.id} style={styles.toolItemRow}>
+                    <TextInput
+                      style={styles.toolInput}
+                      placeholder={`Ej: Llaves${index > 0 ? ', Sockets' : ''}`}
+                      placeholderTextColor={colors.textSecondary}
+                      value={tool.text}
+                      onChangeText={(text) => updateTool('tools', tool.id, text)}
+                    />
+                    {requiredTools.tools.length > 1 && (
+                      <TouchableOpacity onPress={() => removeTool('tools', tool.id)} style={styles.removeToolButton}>
+                        <Ionicons name="close-circle" size={20} color={colors.error} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ))}
+              </View>
+
+              {/* Equipo de Seguridad */}
+              <View style={styles.toolCategory}>
+                <View style={styles.toolCategoryHeader}>
+                  <Ionicons name="shield-checkmark-outline" size={20} color={colors.primary} />
+                  <Text style={styles.toolCategoryTitle}>Equipo Seguridad</Text>
+                  <TouchableOpacity onPress={() => addTool('safety')} style={styles.addToolButton}>
+                    <Ionicons name="add-circle-outline" size={22} color={colors.secondary} />
+                  </TouchableOpacity>
+                </View>
+                {requiredTools.safety.map((tool, index) => (
+                  <View key={tool.id} style={styles.toolItemRow}>
+                    <TextInput
+                      style={styles.toolInput}
+                      placeholder={`Ej: Guantes${index > 0 ? ', Gafas' : ''}`}
+                      placeholderTextColor={colors.textSecondary}
+                      value={tool.text}
+                      onChangeText={(text) => updateTool('safety', tool.id, text)}
+                    />
+                    {requiredTools.safety.length > 1 && (
+                      <TouchableOpacity onPress={() => removeTool('safety', tool.id)} style={styles.removeToolButton}>
+                        <Ionicons name="close-circle" size={20} color={colors.error} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ))}
+              </View>
+            </View>
+
             <View style={styles.separator} />
           </>
         );
@@ -481,7 +788,13 @@ const RegisterProblemScreen = () => {
               />
               <CustomButton
                 title="Cancelar"
-                onPress={() => router.back()}
+                onPress={() => {
+                  if (router.canGoBack()) {
+                    router.back();
+                  } else {
+                    router.replace('/menu');
+                  }
+                }}
                 variant="gray"
                 style={styles.cancelButton}
               />
@@ -499,7 +812,16 @@ const RegisterProblemScreen = () => {
     <View style={globalStyles.container}>
       {/* HEADER */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/menu');
+            }
+          }}
+          style={styles.backButton}
+        >
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Registrar Problema</Text>
@@ -615,7 +937,15 @@ const RegisterProblemScreen = () => {
         buttons={[
           {
             text: 'OK',
-            onPress: () => router.back()
+            onPress: () => {
+              setShowSuccessAlert(false);
+              // Navegar al menú principal o intentar volver si hay historial
+              if (router.canGoBack()) {
+                router.back();
+              } else {
+                router.replace('/menu');
+              }
+            }
           }
         ]}
       />
@@ -942,6 +1272,131 @@ const styles = StyleSheet.create({
   topicDropdownTextSelected: {
     color: colors.primary,
     fontWeight: '600',
+  },
+  // Estilos para Urgencia
+  urgencyContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  urgencyButton: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: colors.border,
+    backgroundColor: colors.inputBackground,
+    alignItems: 'center',
+  },
+  urgencyButtonActive: {
+    borderWidth: 2,
+  },
+  urgencyButtonCritical: {
+    borderColor: '#EF4444',
+    backgroundColor: '#EF444410',
+  },
+  urgencyButtonMedium: {
+    borderColor: '#F59E0B',
+    backgroundColor: '#F59E0B10',
+  },
+  urgencyButtonLow: {
+    borderColor: '#10B981',
+    backgroundColor: '#10B98110',
+  },
+  urgencyButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.textSecondary,
+  },
+  urgencyButtonTextActive: {
+    fontWeight: '700',
+    color: colors.text,
+  },
+  // Estilos para campos de Datos del Camión
+  truckFieldContainer: {
+    marginBottom: 12,
+  },
+  truckFieldLabel: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginBottom: 6,
+    fontWeight: '500',
+  },
+  // Estilos para Síntomas Reportados
+  symptomsSection: {
+    backgroundColor: colors.cardBackground,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  symptomItem: {
+    marginBottom: 12,
+  },
+  symptomRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  symptomInput: {
+    flex: 1,
+    backgroundColor: colors.inputBackground,
+    borderRadius: 8,
+    padding: 12,
+    color: colors.text,
+    fontSize: 15,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  removeSymptomButton: {
+    padding: 4,
+  },
+  // Estilos para Herramientas Requeridas
+  toolsSection: {
+    backgroundColor: colors.cardBackground,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  toolCategory: {
+    marginBottom: 16,
+  },
+  toolCategoryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    gap: 8,
+  },
+  toolCategoryTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    flex: 1,
+  },
+  addToolButton: {
+    padding: 2,
+  },
+  toolItemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 8,
+  },
+  toolInput: {
+    flex: 1,
+    backgroundColor: colors.inputBackground,
+    borderRadius: 8,
+    padding: 10,
+    color: colors.text,
+    fontSize: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  removeToolButton: {
+    padding: 4,
   },
 });
 

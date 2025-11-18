@@ -83,4 +83,10 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# Project specific
+.gradle/
+CLAUDE.md
+*.pdf
+nul
+
 # @end expo-cli

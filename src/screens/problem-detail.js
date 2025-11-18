@@ -391,18 +391,27 @@ const ProblemDetailScreen = () => {
               <Text style={styles.label}>Tópico:</Text>
               <Text style={styles.value}>{problem.generalData?.topic || 'N/A'}</Text>
             </View>
-            {problem.generalData?.truckData && (
+
+            {/* Datos del Camión (nuevos campos separados) */}
+            {(problem.generalData?.truckBrand || problem.generalData?.truckModel || problem.generalData?.truckYear || problem.generalData?.truckData) && (
               <View style={styles.infoRow}>
                 <Text style={styles.label}>Camión:</Text>
-                <Text style={styles.value}>{problem.generalData.truckData}</Text>
+                <Text style={styles.value}>
+                  {problem.generalData?.truckBrand && problem.generalData?.truckModel && problem.generalData?.truckYear
+                    ? `${problem.generalData.truckBrand} ${problem.generalData.truckModel} ${problem.generalData.truckYear}`
+                    : problem.generalData?.truckData || 'N/A'
+                  }
+                </Text>
               </View>
             )}
+
             {problem.generalData?.workOrder && (
               <View style={styles.infoRow}>
                 <Text style={styles.label}>Work Order:</Text>
                 <Text style={styles.value}>{problem.generalData.workOrder}</Text>
               </View>
             )}
+
             <View style={styles.infoRow}>
               <Text style={styles.label}>Registrado por:</Text>
               <Text style={styles.value}>{problem.registeredBy?.name || 'N/A'}</Text>
@@ -412,6 +421,101 @@ const ProblemDetailScreen = () => {
               <Text style={styles.value}>{formatDate(problem.createdAt)}</Text>
             </View>
           </View>
+
+          {/* NUEVA SECCIÓN: Información Básica */}
+          {(problem.generalData?.mainSymptom || problem.generalData?.urgency || problem.generalData?.estimatedDiagnosticTime) && (
+            <View style={styles.infoCard}>
+              <Text style={styles.subsectionTitle}>Información Básica</Text>
+
+              {problem.generalData?.mainSymptom && (
+                <View style={styles.infoRow}>
+                  <Text style={styles.label}>Síntoma Principal:</Text>
+                  <Text style={styles.value}>{problem.generalData.mainSymptom}</Text>
+                </View>
+              )}
+
+              {problem.generalData?.urgency && (
+                <View style={styles.infoRow}>
+                  <Text style={styles.label}>Urgencia:</Text>
+                  <Text style={[
+                    styles.value,
+                    problem.generalData.urgency === 'Crítica' && { color: '#EF4444', fontWeight: '600' },
+                    problem.generalData.urgency === 'Media' && { color: '#F59E0B', fontWeight: '600' },
+                    problem.generalData.urgency === 'Leve' && { color: '#10B981', fontWeight: '600' },
+                  ]}>
+                    {problem.generalData.urgency}
+                  </Text>
+                </View>
+              )}
+
+              {problem.generalData?.estimatedDiagnosticTime && (
+                <View style={styles.infoRow}>
+                  <Text style={styles.label}>Tiempo Estimado:</Text>
+                  <Text style={styles.value}>{problem.generalData.estimatedDiagnosticTime} min</Text>
+                </View>
+              )}
+            </View>
+          )}
+
+          {/* NUEVA SECCIÓN: Síntomas Reportados */}
+          {problem.generalData?.reportedSymptoms && problem.generalData.reportedSymptoms.length > 0 && (
+            <View style={styles.infoCard}>
+              <Text style={styles.subsectionTitle}>Síntomas Reportados</Text>
+              {problem.generalData.reportedSymptoms.map((symptom, index) => (
+                <View key={symptom.id || index} style={styles.symptomItem}>
+                  <Ionicons name="checkmark-circle" size={18} color={colors.primary} />
+                  <Text style={styles.symptomText}>{symptom.text}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* NUEVA SECCIÓN: Herramientas Requeridas */}
+          {problem.generalData?.requiredTools && (
+            (problem.generalData.requiredTools.diagnostic?.length > 0 ||
+             problem.generalData.requiredTools.tools?.length > 0 ||
+             problem.generalData.requiredTools.safety?.length > 0)
+          ) && (
+            <View style={styles.infoCard}>
+              <Text style={styles.subsectionTitle}>Herramientas Requeridas</Text>
+
+              {problem.generalData.requiredTools.diagnostic?.length > 0 && (
+                <View style={styles.toolCategory}>
+                  <View style={styles.toolCategoryHeader}>
+                    <Ionicons name="medkit-outline" size={16} color={colors.primary} />
+                    <Text style={styles.toolCategoryTitle}>Diagnóstico</Text>
+                  </View>
+                  {problem.generalData.requiredTools.diagnostic.map((tool, index) => (
+                    <Text key={tool.id || index} style={styles.toolItem}>• {tool.text}</Text>
+                  ))}
+                </View>
+              )}
+
+              {problem.generalData.requiredTools.tools?.length > 0 && (
+                <View style={styles.toolCategory}>
+                  <View style={styles.toolCategoryHeader}>
+                    <Ionicons name="construct-outline" size={16} color={colors.primary} />
+                    <Text style={styles.toolCategoryTitle}>Herramientas</Text>
+                  </View>
+                  {problem.generalData.requiredTools.tools.map((tool, index) => (
+                    <Text key={tool.id || index} style={styles.toolItem}>• {tool.text}</Text>
+                  ))}
+                </View>
+              )}
+
+              {problem.generalData.requiredTools.safety?.length > 0 && (
+                <View style={styles.toolCategory}>
+                  <View style={styles.toolCategoryHeader}>
+                    <Ionicons name="shield-checkmark-outline" size={16} color={colors.primary} />
+                    <Text style={styles.toolCategoryTitle}>Equipo Seguridad</Text>
+                  </View>
+                  {problem.generalData.requiredTools.safety.map((tool, index) => (
+                    <Text key={tool.id || index} style={styles.toolItem}>• {tool.text}</Text>
+                  ))}
+                </View>
+              )}
+            </View>
+          )}
         </View>
 
         {problem.problems && problem.problems.length > 1 && (
@@ -2297,6 +2401,44 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.textSecondary,
     fontStyle: 'italic',
+  },
+  // Estilos para nuevas secciones
+  subsectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.primary,
+    marginBottom: 12,
+  },
+  symptomItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  symptomText: {
+    fontSize: 14,
+    color: colors.text,
+    flex: 1,
+  },
+  toolCategory: {
+    marginBottom: 12,
+  },
+  toolCategoryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 6,
+  },
+  toolCategoryTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  toolItem: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginLeft: 22,
+    marginBottom: 4,
   },
 });
 
