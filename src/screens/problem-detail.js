@@ -1,8 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Video } from 'expo-av';
-import * as Sharing from 'expo-sharing';
-import * as FileSystem from 'expo-file-system';
 import { useFocusEffect } from '@react-navigation/native';
+import { Video } from 'expo-av';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -10,20 +8,20 @@ import {
   Alert,
   Dimensions,
   Image,
+  Linking,
   Modal,
+  Platform,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-  Share,
-  Platform,
-  Linking
+  View
 } from 'react-native';
-import { GestureHandlerRootView, Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
+  useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
 import AppFooter from '../components/AppFooter';
@@ -349,7 +347,17 @@ const ProblemDetailScreen = () => {
     );
   }
 
+  // Detectar si es estructura NUEVA o ANTIGUA
+  const isNewStructure = !!problem.generalData?.diagnosticGuide;
+
+  // Estructura NUEVA (con steps)
+  const currentStep = problem.steps?.[selectedProblemIndex];
+
+  // Estructura ANTIGUA (con problems)
   const currentProblem = problem.problems?.[selectedProblemIndex];
+
+  // Usar el correcto según la estructura
+  const currentItem = isNewStructure ? currentStep : currentProblem;
 
   return (
     <View style={globalStyles.container}>
@@ -359,8 +367,10 @@ const ProblemDetailScreen = () => {
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <View style={styles.headerTitleRow}>
-            <Ionicons name="flash" size={18} color="#FFD700" />
-            <Text style={styles.headerTitle}>Detalles del Problema</Text>
+            <Ionicons name={isNewStructure ? "book" : "flash"} size={18} color="#FFD700" />
+            <Text style={styles.headerTitle}>
+              {isNewStructure ? 'Detalle de Guía' : 'Detalles del Problema'}
+            </Text>
           </View>
         </View>
         <View style={styles.headerActions}>
@@ -388,8 +398,14 @@ const ProblemDetailScreen = () => {
           
           <View style={styles.infoCard}>
             <View style={styles.infoRow}>
-              <Text style={styles.label}>Tópico:</Text>
-              <Text style={styles.value}>{problem.generalData?.topic || 'N/A'}</Text>
+              <Text style={styles.label}>
+                {isNewStructure ? 'Guía de Diagnóstico:' : 'Tópico:'}
+              </Text>
+              <Text style={styles.value}>
+                {isNewStructure
+                  ? (problem.generalData?.diagnosticGuide || 'N/A')
+                  : (problem.generalData?.topic || 'N/A')}
+              </Text>
             </View>
 
             {/* Datos del Camión (nuevos campos separados) */}
@@ -518,10 +534,11 @@ const ProblemDetailScreen = () => {
           )}
         </View>
 
-        {problem.problems && problem.problems.length > 1 && (
+        {((isNewStructure && problem.steps && problem.steps.length > 1) ||
+          (!isNewStructure && problem.problems && problem.problems.length > 1)) && (
           <View style={styles.problemNav}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {problem.problems.map((_, index) => (
+              {(isNewStructure ? problem.steps : problem.problems).map((_, index) => (
                 <TouchableOpacity
                   key={index}
                   style={[
@@ -530,10 +547,10 @@ const ProblemDetailScreen = () => {
                   ]}
                   onPress={() => setSelectedProblemIndex(index)}
                 >
-                  <Ionicons 
-                    name="construct" 
-                    size={14} 
-                    color={selectedProblemIndex === index ? colors.text : colors.textSecondary} 
+                  <Ionicons
+                    name={isNewStructure ? "list-outline" : "construct"}
+                    size={14}
+                    color={selectedProblemIndex === index ? colors.text : colors.textSecondary}
                   />
                   <Text
                     style={[
@@ -541,7 +558,7 @@ const ProblemDetailScreen = () => {
                       selectedProblemIndex === index && styles.problemTabTextActive,
                     ]}
                   >
-                    Problema {index + 1}
+                    {isNewStructure ? `Paso ${index + 1}` : `Problema ${index + 1}`}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -549,42 +566,52 @@ const ProblemDetailScreen = () => {
           </View>
         )}
 
-        {currentProblem && (
+        {currentItem && (
           <>
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
                 <View style={styles.iconBadge}>
-                  <Ionicons name="construct" size={18} color={colors.secondary} />
+                  <Ionicons
+                    name={isNewStructure ? "list" : "construct"}
+                    size={18}
+                    color={colors.secondary}
+                  />
                 </View>
-                <Text style={styles.sectionTitle}>Problema</Text>
+                <Text style={styles.sectionTitle}>
+                  {isNewStructure ? 'Paso' : 'Problema'}
+                </Text>
               </View>
 
-              {/* Card de Título y Descripción del Problema */}
+              {/* Card de Título del Paso/Problema */}
               <View style={styles.problemCard}>
                 <View style={styles.problemTitleContainer}>
-                  <Text style={styles.problemTitleLabel}>Título del problema:</Text>
-                  <Text style={styles.problemTitle}>{currentProblem.problemTitle}</Text>
+                  <Text style={styles.problemTitleLabel}>
+                    {isNewStructure ? 'Título del paso:' : 'Título del problema:'}
+                  </Text>
+                  <Text style={styles.problemTitle}>
+                    {isNewStructure ? currentItem.stepTitle : currentItem.problemTitle}
+                  </Text>
                 </View>
-                {currentProblem.problemDescription && (
+                {!isNewStructure && currentItem.problemDescription && (
                   <View style={styles.problemDescriptionContainer}>
                     <Text style={styles.problemDescriptionLabel}>Descripción:</Text>
-                    <Text style={styles.problemDescription}>{currentProblem.problemDescription}</Text>
+                    <Text style={styles.problemDescription}>{currentItem.problemDescription}</Text>
                   </View>
                 )}
               </View>
 
-              {/* Card de Archivos del Problema */}
-              {currentProblem.problemFiles && currentProblem.problemFiles.length > 0 && (
+              {/* Card de Archivos del Problema (SOLO estructura antigua) */}
+              {!isNewStructure && currentItem.problemFiles && currentItem.problemFiles.length > 0 && (
                 <View style={styles.filesCard}>
                   <View style={styles.filesHeader}>
                     <Ionicons name="images-outline" size={18} color={colors.secondary} />
-                    <Text style={styles.filesCardTitle}>Archivos adjuntos ({currentProblem.problemFiles.length})</Text>
+                    <Text style={styles.filesCardTitle}>Archivos adjuntos ({currentItem.problemFiles.length})</Text>
                   </View>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    {currentProblem.problemFiles.map((url, index) => (
+                    {currentItem.problemFiles.map((url, index) => (
                       <TouchableOpacity
                         key={index}
-                        onPress={() => openMediaViewer(url, currentProblem.problemFiles)}
+                        onPress={() => openMediaViewer(url, currentItem.problemFiles)}
                         activeOpacity={0.8}
                       >
                         <View style={styles.mediaContainer}>
@@ -619,18 +646,24 @@ const ProblemDetailScreen = () => {
                 <View style={styles.iconBadge}>
                   <Ionicons name="hammer" size={18} color="#FFD700" />
                 </View>
-                <Text style={styles.sectionTitle}>Actividades Realizadas</Text>
+                <Text style={styles.sectionTitle}>
+                  {isNewStructure ? 'SUB-PASOS' : 'Actividades Realizadas'}
+                </Text>
               </View>
 
-              {currentProblem.activities?.map((activity, index) => (
+              {(isNewStructure ? currentItem.subSteps : currentItem.activities)?.map((activity, index) => (
                 <View key={index} style={styles.activityWrapper}>
-                  {/* Card de Título de la Actividad */}
+                  {/* Card de Título del Sub-paso/Actividad */}
                   <View style={styles.activityCard}>
                     <View style={styles.cardHeader}>
-                      <Text style={styles.activityNumber}>Actividad {index + 1}</Text>
+                      <Text style={styles.activityNumber}>
+                        {isNewStructure ? `Sub-paso ${index + 1}` : `Actividad ${index + 1}`}
+                      </Text>
                     </View>
                     <View style={styles.activityTitleContainer}>
-                      <Text style={styles.activityTitleLabel}>Descripción de la actividad:</Text>
+                      <Text style={styles.activityTitleLabel}>
+                        {isNewStructure ? 'Descripción del sub-paso:' : 'Descripción de la actividad:'}
+                      </Text>
                       <Text style={styles.activityTitle}>{activity.title}</Text>
                     </View>
                   </View>
@@ -678,14 +711,16 @@ const ProblemDetailScreen = () => {
               ))}
             </View>
 
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <View style={styles.iconBadge}>
-                  <Ionicons name="bulb" size={18} color="#FFD700" />
+            {/* Soluciones (SOLO estructura antigua) */}
+            {!isNewStructure && (
+              <View style={styles.section}>
+                <View style={styles.sectionHeader}>
+                  <View style={styles.iconBadge}>
+                    <Ionicons name="bulb" size={18} color="#FFD700" />
+                  </View>
+                  <Text style={styles.sectionTitle}>Soluciones Aplicadas</Text>
                 </View>
-                <Text style={styles.sectionTitle}>Soluciones Aplicadas</Text>
-              </View>
-              {currentProblem.solutions?.map((solution, index) => (
+                {currentItem.solutions?.map((solution, index) => (
                 <View key={index} style={styles.solutionWrapper}>
                   {/* Card de Título de la Solución */}
                   <View style={styles.solutionCard}>
@@ -739,9 +774,10 @@ const ProblemDetailScreen = () => {
                   )}
                 </View>
               ))}
-            </View>
+              </View>
+            )}
 
-            {currentProblem.otherData && (
+            {currentItem.otherData && (
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
                   <View style={styles.iconBadge}>
@@ -750,7 +786,7 @@ const ProblemDetailScreen = () => {
                   <Text style={styles.sectionTitle}>Información Adicional</Text>
                 </View>
                 <View style={styles.otherDataCard}>
-                  <Text style={styles.otherDataText}>{currentProblem.otherData}</Text>
+                  <Text style={styles.otherDataText}>{currentItem.otherData}</Text>
                 </View>
               </View>
             )}
@@ -1595,11 +1631,12 @@ const styles = StyleSheet.create({
   },
   section: {
     padding: 16,
+    paddingTop: 24,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
     gap: 10,
   },
   iconBadge: {
@@ -1675,7 +1712,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: colors.border,
-    marginBottom: 12,
+    marginBottom: 16,
   },
   problemTitleContainer: {
     marginBottom: 12,
@@ -1769,7 +1806,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   activityWrapper: {
-    marginBottom: 16,
+    marginBottom: 24,
   },
   activityCard: {
     backgroundColor: colors.cardBackground,
@@ -1832,7 +1869,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   solutionWrapper: {
-    marginBottom: 16,
+    marginBottom: 24,
   },
   solutionCard: {
     backgroundColor: colors.cardBackground,

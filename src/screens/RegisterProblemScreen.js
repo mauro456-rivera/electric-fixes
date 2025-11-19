@@ -1,15 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { FlatList, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import ActivityItem from '../components/ActivityItem';
 import AppFooter from '../components/AppFooter';
 import CustomAlert from '../components/CustomAlert';
 import CustomButton from '../components/CustomButton';
 import FileUploader from '../components/FileUploader';
-import SolutionItem from '../components/SolutionItem';
-import WorkOrderAutocomplete from '../components/WorkOrderAutocomplete';
 import { useAuth } from '../context/AuthContext';
 import FirebaseFirestoreService from '../services/firebaseFirestore';
 import { colors } from '../styles/colors';
@@ -20,32 +18,15 @@ const RegisterProblemScreen = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [problemType, setProblemType] = useState('mechanical'); // 'mechanical' o 'electrical'
-  const [selectedWorkOrder, setSelectedWorkOrder] = useState(null);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showErrorAlert, setShowErrorAlert] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [showMinActivityAlert, setShowMinActivityAlert] = useState(false);
-  const [showMinSolutionAlert, setShowMinSolutionAlert] = useState(false);
   const [showMinProblemAlert, setShowMinProblemAlert] = useState(false);
   const [showUploadingAlert, setShowUploadingAlert] = useState(false);
   const [validationError, setValidationError] = useState('');
-  const [showTopicModal, setShowTopicModal] = useState(false);
-  const [isCustomTopic, setIsCustomTopic] = useState(false);
-
-  const topicOptions = [
-    'Diagnostico Freno Motor',
-    'Diagnostico Retarder',
-    'Diagnostico Sistema de Combustible',
-    'Diagnostico Frenos',
-    'Diagnostico Suspension',
-    'Diagnostico Luces',
-    'Diagnostico AdBlue',
-    'Diagnostico Potencia Motor',
-    'Otro'
-  ];
-
   const [generalData, setGeneralData] = useState({
-    topic: '',
+    diagnosticGuide: '',
     // Datos del Camión separados
     truckBrand: '', // Marca (ej: Freightliner, Kenworth, Peterbilt)
     truckModel: '', // Modelo (ej: Cascadia, T680, 579)
@@ -69,15 +50,12 @@ const RegisterProblemScreen = () => {
     safety: [{ id: Date.now() + 2, text: '' }], // Guantes, gafas, etc.
   });
 
-  // ARRAY DE PROBLEMAS (SIN CAMPOS GENERALES)
+  // ARRAY DE PASOS
   const [problems, setProblems] = useState([
     {
       id: Date.now(),
       problemTitle: '',
-      problemDescription: '',
-      problemFiles: [],
       activities: [{ id: Date.now(), title: '', files: [] }],
-      solutions: [{ id: Date.now() + 1, title: '', files: [] }],
       otherData: '',
     }
   ]);
@@ -145,18 +123,6 @@ const RegisterProblemScreen = () => {
     });
   };
 
-  // Manejar selección de tópico
-  const handleTopicSelection = (topic) => {
-    if (topic === 'Otro') {
-      setIsCustomTopic(true);
-      updateGeneralData('topic', '');
-      setShowTopicModal(false); // Cerrar dropdown al seleccionar "Otro"
-    } else {
-      setIsCustomTopic(false);
-      updateGeneralData('topic', topic);
-      setShowTopicModal(false); // Cerrar dropdown al seleccionar
-    }
-  };
 
   // ACTUALIZAR PROBLEMA ACTUAL
   const updateProblemField = (field, value) => {
@@ -195,42 +161,13 @@ const RegisterProblemScreen = () => {
     setProblems(updatedProblems);
   };
 
-  // SOLUCIONES
-  const addSolution = () => {
-    const updatedProblems = [...problems];
-    updatedProblems[currentProblemIndex].solutions.push({
-      id: Date.now(),
-      title: '',
-      files: [],
-    });
-    setProblems(updatedProblems);
-  };
 
-  const updateSolution = (index, updatedSolution) => {
-    const updatedProblems = [...problems];
-    updatedProblems[currentProblemIndex].solutions[index] = updatedSolution;
-    setProblems(updatedProblems);
-  };
-
-  const removeSolution = (index) => {
-    if (currentProblem.solutions.length === 1) {
-      setShowMinSolutionAlert(true);
-      return;
-    }
-    const updatedProblems = [...problems];
-    updatedProblems[currentProblemIndex].solutions.splice(index, 1);
-    setProblems(updatedProblems);
-  };
-
-  // AGREGAR NUEVO PROBLEMA (SIN CAMPOS GENERALES)
+  // AGREGAR NUEVO PASO
   const addProblem = () => {
     const newProblem = {
       id: Date.now(),
       problemTitle: '',
-      problemDescription: '',
-      problemFiles: [],
       activities: [{ id: Date.now(), title: '', files: [] }],
-      solutions: [{ id: Date.now() + 1, title: '', files: [] }],
       otherData: '',
     };
     setProblems([...problems, newProblem]);
@@ -254,8 +191,8 @@ const RegisterProblemScreen = () => {
 
   // VALIDACIÓN
   const validateForm = () => {
-    if (!generalData.topic.trim()) {
-      setValidationError('El tópico es requerido');
+    if (!generalData.diagnosticGuide.trim()) {
+      setValidationError('La Guía de Diagnóstico es requerida');
       return false;
     }
 
@@ -267,7 +204,7 @@ const RegisterProblemScreen = () => {
     for (let i = 0; i < problems.length; i++) {
       const problem = problems[i];
       if (!problem.problemTitle.trim()) {
-        setValidationError(`Problema ${i + 1}: El título del problema es requerido`);
+        setValidationError(`Paso ${i + 1}: El título del paso es requerido`);
         return false;
       }
     }
@@ -285,10 +222,9 @@ const RegisterProblemScreen = () => {
     setShowUploadingAlert(true); // Mostrar alerta de subiendo datos
 
     try {
-      // Preparar datos generales con Work Order completo, síntomas y herramientas
-      const generalDataWithWorkOrder = {
+      // Preparar datos generales con síntomas y herramientas
+      const generalDataWithDetails = {
         ...generalData,
-        workOrderDetails: selectedWorkOrder || null, // Guardar el objeto completo del Work Order
         reportedSymptoms: reportedSymptoms.filter(s => s.text.trim() !== ''), // Solo síntomas con texto
         requiredTools: {
           diagnostic: requiredTools.diagnostic.filter(t => t.text.trim() !== ''),
@@ -298,10 +234,10 @@ const RegisterProblemScreen = () => {
       };
 
       // Debug: Ver qué datos se están guardando
-      console.log('📊 Datos que se van a guardar:', JSON.stringify(generalDataWithWorkOrder, null, 2));
+      console.log('📊 Datos que se van a guardar:', JSON.stringify(generalDataWithDetails, null, 2));
 
       const problemId = await FirebaseFirestoreService.saveProblem(
-        generalDataWithWorkOrder,
+        generalDataWithDetails,
         problems,
         user,
         problemType // Pasar el tipo de problema
@@ -327,7 +263,6 @@ const RegisterProblemScreen = () => {
     { id: 'tools', type: 'tools' },
     { id: 'problem', type: 'problem' },
     { id: 'activities', type: 'activities' },
-    { id: 'solutions', type: 'solutions' },
     { id: 'other', type: 'other' },
     { id: 'buttons', type: 'buttons' },
   ];
@@ -394,32 +329,15 @@ const RegisterProblemScreen = () => {
             <View style={styles.generalSection}>
               <Text style={styles.generalTitle}>Información General</Text>
               
-              <View style={[styles.section, styles.topicSection]}>
-                <Text style={styles.label}>Tópico *</Text>
-                <TouchableOpacity
-                  activeOpacity={isCustomTopic ? 1 : 0.7}
-                  onPress={() => !isCustomTopic && setShowTopicModal(!showTopicModal)}
-                  style={styles.topicTouchableContainer}
-                >
-                  <View style={styles.topicInputWrapper}>
-                    <TextInput
-                      style={[styles.input, styles.topicInputField]}
-                      placeholder={isCustomTopic ? "Escriba el tópico" : "Seleccione tópico"}
-                      placeholderTextColor={colors.textSecondary}
-                      value={generalData.topic}
-                      onChangeText={(text) => updateGeneralData('topic', text)}
-                      editable={isCustomTopic}
-                      pointerEvents={isCustomTopic ? 'auto' : 'none'}
-                    />
-                    <View style={styles.topicIconContainer}>
-                      <Ionicons
-                        name={showTopicModal ? "chevron-up" : "chevron-down"}
-                        size={20}
-                        color={colors.textSecondary}
-                      />
-                    </View>
-                  </View>
-                </TouchableOpacity>
+              <View style={[styles.section, styles.lowerSection]}>
+                <Text style={styles.label}>GUÍA DE DIAGNÓSTICO *</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Ej: MOTOR NO ARRANCA - VOLVO D13 (2014-2020)"
+                  placeholderTextColor={colors.textSecondary}
+                  value={generalData.diagnosticGuide}
+                  onChangeText={(text) => updateGeneralData('diagnosticGuide', text)}
+                />
               </View>
 
               <View style={[styles.section, styles.lowerSection]}>
@@ -465,13 +383,12 @@ const RegisterProblemScreen = () => {
 
               <View style={[styles.section, styles.lowerSection]}>
                 <Text style={styles.label}>Work Order</Text>
-                <WorkOrderAutocomplete
-                  value={generalData.workOrder}
-                  onSelect={(displayText, workOrderObject) => {
-                    updateGeneralData('workOrder', displayText);
-                    setSelectedWorkOrder(workOrderObject);
-                  }}
+                <TextInput
+                  style={styles.input}
                   placeholder="WO-TA-####"
+                  placeholderTextColor={colors.textSecondary}
+                  value={generalData.workOrder}
+                  onChangeText={(text) => updateGeneralData('workOrder', text)}
                 />
               </View>
             </View>
@@ -672,38 +589,18 @@ const RegisterProblemScreen = () => {
       case 'problem':
         return (
           <>
-            <Text style={styles.problemNumber}>Problema {currentProblemIndex + 1}</Text>
+            <Text style={styles.problemNumber}>PASO {currentProblemIndex + 1}</Text>
 
             <View style={styles.section}>
-              <Text style={styles.label}>Título del Problema *</Text>
+              <Text style={styles.label}>Título del Paso *</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Título del problema"
+                placeholder="Ej: PASO 1: SISTEMA REFRIGERACIÓN"
                 placeholderTextColor={colors.textSecondary}
                 value={currentProblem.problemTitle}
                 onChangeText={(text) => updateProblemField('problemTitle', text)}
               />
             </View>
-
-            <View style={styles.section}>
-              <Text style={styles.label}>Descripción del Problema</Text>
-              <TextInput
-                style={[styles.input, styles.textArea]}
-                placeholder="Describe el problema..."
-                placeholderTextColor={colors.textSecondary}
-                value={currentProblem.problemDescription}
-                onChangeText={(text) => updateProblemField('problemDescription', text)}
-                multiline
-                numberOfLines={4}
-                textAlignVertical="top"
-              />
-            </View>
-
-            <FileUploader
-              files={currentProblem.problemFiles}
-              onFilesChange={(files) => updateProblemField('problemFiles', files)}
-              label="Adjuntar archivos del problema"
-            />
           </>
         );
 
@@ -711,7 +608,7 @@ const RegisterProblemScreen = () => {
         return (
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Actividades Realizadas</Text>
+              <Text style={styles.sectionTitle}>SUB-PASOS</Text>
               <TouchableOpacity onPress={addActivity} style={styles.addButton}>
                 <Ionicons name="add-circle" size={24} color={colors.secondary} />
               </TouchableOpacity>
@@ -724,28 +621,6 @@ const RegisterProblemScreen = () => {
                 onUpdate={(updated) => updateActivity(index, updated)}
                 onRemove={() => removeActivity(index)}
                 showRemove={currentProblem.activities.length > 1}
-              />
-            ))}
-          </View>
-        );
-
-      case 'solutions':
-        return (
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Soluciones</Text>
-              <TouchableOpacity onPress={addSolution} style={styles.addButton}>
-                <Ionicons name="add-circle" size={24} color={colors.secondary} />
-              </TouchableOpacity>
-            </View>
-
-            {currentProblem.solutions.map((solution, index) => (
-              <SolutionItem
-                key={solution.id}
-                solution={{ ...solution, index: index + 1 }}
-                onUpdate={(updated) => updateSolution(index, updated)}
-                onRemove={() => removeSolution(index)}
-                showRemove={currentProblem.solutions.length > 1}
               />
             ))}
           </View>
@@ -772,7 +647,7 @@ const RegisterProblemScreen = () => {
         return (
           <View style={styles.buttonsContainer}>
             <CustomButton
-              title="Agregar Problema +"
+              title="Agregar Paso +"
               onPress={addProblem}
               variant="secondary"
               style={styles.addProblemButton}
@@ -824,7 +699,7 @@ const RegisterProblemScreen = () => {
         >
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Registrar Problema</Text>
+        <Text style={styles.headerTitle}>Registrar Guía de Diagnóstico</Text>
         {problems.length > 1 && (
           <TouchableOpacity onPress={removeProblem} style={styles.deleteButton}>
             <Ionicons name="trash-outline" size={24} color={colors.error} />
@@ -833,7 +708,7 @@ const RegisterProblemScreen = () => {
         {problems.length === 1 && <View style={{ width: 24 }} />}
       </View>
 
-      {/* NAVEGACIÓN ENTRE PROBLEMAS */}
+      {/* NAVEGACIÓN ENTRE PASOS */}
       {problems.length > 1 && (
         <View style={styles.problemNav}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -852,7 +727,7 @@ const RegisterProblemScreen = () => {
                     currentProblemIndex === index && styles.problemTabTextActive,
                   ]}
                 >
-                  Problema {index + 1}
+                  Paso {index + 1}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -872,52 +747,6 @@ const RegisterProblemScreen = () => {
         showsVerticalScrollIndicator={false}
       />
 
-      {/* Modal de Dropdown de Tópicos */}
-      <Modal
-        visible={showTopicModal}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setShowTopicModal(false)}
-      >
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setShowTopicModal(false)}
-        >
-          <View style={styles.modalContent}>
-            <View style={styles.topicDropdownModal}>
-              <Text style={styles.dropdownTitle}>Seleccione un tópico</Text>
-              <FlatList
-                data={topicOptions}
-                keyExtractor={(item, index) => `topic-${index}`}
-                showsVerticalScrollIndicator={true}
-                bounces={true}
-                renderItem={({ item: topic }) => (
-                  <TouchableOpacity
-                    style={[
-                      styles.topicDropdownItem,
-                      generalData.topic === topic && !isCustomTopic && styles.topicDropdownItemSelected
-                    ]}
-                    onPress={() => handleTopicSelection(topic)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={[
-                      styles.topicDropdownText,
-                      generalData.topic === topic && !isCustomTopic && styles.topicDropdownTextSelected
-                    ]}>
-                      {topic}
-                    </Text>
-                    {generalData.topic === topic && !isCustomTopic && (
-                      <Ionicons name="checkmark" size={20} color={colors.primary} />
-                    )}
-                  </TouchableOpacity>
-                )}
-              />
-            </View>
-          </View>
-        </TouchableOpacity>
-      </Modal>
-
       {/* Alert de Subiendo Datos */}
       <CustomAlert
         visible={showUploadingAlert}
@@ -933,7 +762,7 @@ const RegisterProblemScreen = () => {
         onClose={() => setShowSuccessAlert(false)}
         type="success"
         title="Éxito"
-        message="Problemas registrados correctamente en Firebase"
+        message="Guía de diagnóstico registrada correctamente"
         buttons={[
           {
             text: 'OK',
@@ -965,13 +794,13 @@ const RegisterProblemScreen = () => {
         ]}
       />
 
-      {/* Alert de Eliminar Problema */}
+      {/* Alert de Eliminar Paso */}
       <CustomAlert
         visible={showDeleteAlert}
         onClose={() => setShowDeleteAlert(false)}
         type="warning"
-        title="Eliminar Problema"
-        message="¿Estás seguro de eliminar este problema?"
+        title="Eliminar Paso"
+        message="¿Estás seguro de eliminar este paso?"
         buttons={[
           {
             text: 'Eliminar',
@@ -985,31 +814,22 @@ const RegisterProblemScreen = () => {
         ]}
       />
 
-      {/* Alert Mínimo de Actividades */}
+      {/* Alert Mínimo de Sub-pasos */}
       <CustomAlert
         visible={showMinActivityAlert}
         onClose={() => setShowMinActivityAlert(false)}
         type="info"
         title="Aviso"
-        message="Debe haber al menos una actividad"
+        message="Debe haber al menos un sub-paso"
       />
 
-      {/* Alert Mínimo de Soluciones */}
-      <CustomAlert
-        visible={showMinSolutionAlert}
-        onClose={() => setShowMinSolutionAlert(false)}
-        type="info"
-        title="Aviso"
-        message="Debe haber al menos una solución"
-      />
-
-      {/* Alert Mínimo de Problemas */}
+      {/* Alert Mínimo de Pasos */}
       <CustomAlert
         visible={showMinProblemAlert}
         onClose={() => setShowMinProblemAlert(false)}
         type="info"
         title="Aviso"
-        message="Debe haber al menos un problema"
+        message="Debe haber al menos un paso"
       />
 
       <AppFooter />
@@ -1095,13 +915,9 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 20,
-    zIndex: 1,
-  },
-  topicSection: {
-    zIndex: 1000,
   },
   lowerSection: {
-    zIndex: 0,
+    marginBottom: 12,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -1207,71 +1023,6 @@ const styles = StyleSheet.create({
   typeOptionTextActiveElectrical: {
     color: colors.electrical,
     fontWeight: '700',
-  },
-  topicTouchableContainer: {
-    width: '100%',
-  },
-  topicInputWrapper: {
-    position: 'relative',
-    width: '100%',
-  },
-  topicInputField: {
-    paddingRight: 40,
-  },
-  topicIconContainer: {
-    position: 'absolute',
-    right: 12,
-    top: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    width: '85%',
-    maxHeight: '60%',
-  },
-  topicDropdownModal: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    overflow: 'hidden',
-    maxHeight: 400,
-  },
-  dropdownTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    backgroundColor: colors.cardBackground,
-  },
-  topicDropdownItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  topicDropdownItemSelected: {
-    backgroundColor: colors.primary + '10',
-  },
-  topicDropdownText: {
-    fontSize: 15,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  topicDropdownTextSelected: {
-    color: colors.primary,
-    fontWeight: '600',
   },
   // Estilos para Urgencia
   urgencyContainer: {

@@ -23,7 +23,7 @@ class FirebaseStorageService {
       }
 
       // Validar que la URI comience con un protocolo válido
-      const validProtocols = ['file://', 'content://', 'http://', 'https://'];
+      const validProtocols = ['file://', 'content://', 'http://', 'https://', 'blob:'];
       const hasValidProtocol = validProtocols.some(protocol => file.uri.startsWith(protocol));
 
       if (!hasValidProtocol) {

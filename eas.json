@@ -28,6 +28,12 @@
       "ios": {
         "simulator": false
       }
+    },
+    "production-apk": {
+      "autoIncrement": true,
+      "android": {
+        "buildType": "apk"
+      }
     }
   },
   "submit": {

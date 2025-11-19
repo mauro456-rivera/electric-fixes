@@ -13,10 +13,10 @@ class FirebaseFirestoreService {
   }
 
   /**
-   * Guarda un problema completo en Firestore con sus archivos en Storage
-   * @param {Object} generalData - Datos generales del problema (topic, truckData, workOrder)
-   * @param {Array} problems - Array de problemas con sus actividades y soluciones
-   * @param {Object} user - Información del usuario que registra el problema
+   * Guarda una guía de diagnóstico completa en Firestore con sus archivos en Storage
+   * @param {Object} generalData - Datos generales (diagnosticGuide, truckData, workOrder, síntomas, herramientas)
+   * @param {Array} problems - Array de PASOS con sus SUB-PASOS
+   * @param {Object} user - Información del usuario que registra la guía
    * @param {string} problemType - Tipo de problema ('mechanical' o 'electrical')
    * @returns {Promise<string>} ID del documento creado en Firestore
    * @throws {Error} Si falla el guardado en Firebase
@@ -24,32 +24,22 @@ class FirebaseFirestoreService {
   async saveProblem(generalData, problems, user, problemType = 'mechanical') {
     try {
       const problemId = `problem_${Date.now()}`;
-      console.log(`💾 Iniciando guardado de problema: ${problemId}`);
+      console.log(`💾 Iniciando guardado de guía de diagnóstico: ${problemId}`);
 
-      // Procesa cada problema subiendo sus archivos a Storage
+      // Procesa cada PASO subiendo sus archivos a Storage
       const processedProblems = await Promise.all(
         problems.map(async (problem, index) => {
-          console.log(`📋 Procesando problema ${index + 1}/${problems.length}`);
+          console.log(`📋 Procesando PASO ${index + 1}/${problems.length}`);
 
-          // Sube archivos adjuntos del problema si existen
-          let problemFileUrls = [];
-          if (problem.problemFiles && problem.problemFiles.length > 0) {
-            console.log(`📎 Subiendo ${problem.problemFiles.length} archivos del problema`);
-            problemFileUrls = await FirebaseStorageService.uploadMultipleFiles(
-              problem.problemFiles,
-              `problems/${problemId}/problem_${index}/files`
-            );
-          }
-
-          // Procesa y sube archivos de cada actividad del problema
+          // Procesa y sube archivos de cada SUB-PASO (antes "actividades")
           const processedActivities = await Promise.all(
             problem.activities.map(async (activity, actIndex) => {
               let activityFileUrls = [];
               if (activity.files && activity.files.length > 0) {
-                console.log(`📎 Subiendo ${activity.files.length} archivos de actividad ${actIndex + 1}`);
+                console.log(`📎 Subiendo ${activity.files.length} archivos de SUB-PASO ${actIndex + 1}`);
                 activityFileUrls = await FirebaseStorageService.uploadMultipleFiles(
                   activity.files,
-                  `problems/${problemId}/problem_${index}/activities/activity_${actIndex}`
+                  `problems/${problemId}/step_${index}/substeps/substep_${actIndex}`
                 );
               }
               return {
@@ -59,31 +49,10 @@ class FirebaseFirestoreService {
             })
           );
 
-          // Procesa y sube archivos de cada solución del problema
-          const processedSolutions = await Promise.all(
-            problem.solutions.map(async (solution, solIndex) => {
-              let solutionFileUrls = [];
-              if (solution.files && solution.files.length > 0) {
-                console.log(`📎 Subiendo ${solution.files.length} archivos de solución ${solIndex + 1}`);
-                solutionFileUrls = await FirebaseStorageService.uploadMultipleFiles(
-                  solution.files,
-                  `problems/${problemId}/problem_${index}/solutions/solution_${solIndex}`
-                );
-              }
-              return {
-                title: solution.title,
-                files: solutionFileUrls,
-              };
-            })
-          );
-
-          // Retorna el problema procesado con todas las URLs de archivos
+          // Retorna el PASO procesado con todas las URLs de archivos de los SUB-PASOS
           return {
-            problemTitle: problem.problemTitle,
-            problemDescription: problem.problemDescription,
-            problemFiles: problemFileUrls,
-            activities: processedActivities,
-            solutions: processedSolutions,
+            stepTitle: problem.problemTitle, // Título del PASO
+            subSteps: processedActivities,    // SUB-PASOS (antes "activities")
             otherData: problem.otherData,
           };
         })
@@ -93,16 +62,15 @@ class FirebaseFirestoreService {
       const collectionName = this.getCollectionName(problemType);
       const docData = {
         generalData: {
-          topic: generalData.topic,
-          // Datos del camión separados (nuevo formato)
+          diagnosticGuide: generalData.diagnosticGuide || '', // GUÍA DE DIAGNÓSTICO (antes "topic")
+          // Datos del camión separados
           truckBrand: generalData.truckBrand || '',
           truckModel: generalData.truckModel || '',
           truckYear: generalData.truckYear || '',
           // Mantener truckData para compatibilidad con registros antiguos
           truckData: generalData.truckData || `${generalData.truckBrand || ''} ${generalData.truckModel || ''} ${generalData.truckYear || ''}`.trim(),
-          workOrder: generalData.workOrder, // Código del Work Order (texto)
-          workOrderDetails: generalData.workOrderDetails || null, // Objeto completo del Work Order
-          // Información Básica (según metodología PDF)
+          workOrder: generalData.workOrder || '', // Código del Work Order (texto manual, sin BD)
+          // Información Básica
           mainSymptom: generalData.mainSymptom || '',
           urgency: generalData.urgency || 'Media',
           estimatedDiagnosticTime: generalData.estimatedDiagnosticTime || '',
@@ -115,7 +83,7 @@ class FirebaseFirestoreService {
             safety: [],
           },
         },
-        problems: processedProblems,
+        steps: processedProblems, // PASOS (antes "problems")
         registeredBy: {
           userId: user.id,
           name: user.name || 'Usuario Desconocido',
@@ -130,7 +98,7 @@ class FirebaseFirestoreService {
       // Guarda el documento en la colección correspondiente
       console.log(`💾 Guardando documento en colección: ${collectionName}...`);
       const docRef = await addDoc(collection(db, collectionName), docData);
-      console.log(`✅ Problema guardado exitosamente con ID: ${docRef.id}`);
+      console.log(`✅ Guía de diagnóstico guardada exitosamente con ID: ${docRef.id}`);
 
       return docRef.id;
     } catch (error) {

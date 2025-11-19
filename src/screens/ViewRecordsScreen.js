@@ -92,6 +92,14 @@ const ViewRecordsScreen = () => {
   };
 
   const renderProblemCard = ({ item }) => {
+    // Detectar si es estructura NUEVA o ANTIGUA
+    const isNewStructure = !!item.generalData?.diagnosticGuide;
+
+    // Estructura NUEVA (con steps)
+    const firstStep = item.steps && item.steps[0];
+    const stepCount = item.steps ? item.steps.length : 0;
+
+    // Estructura ANTIGUA (con problems)
     const firstProblem = item.problems && item.problems[0];
     const problemCount = item.problems ? item.problems.length : 0;
 
@@ -104,9 +112,15 @@ const ViewRecordsScreen = () => {
         {/* Header del card */}
         <View style={styles.cardHeader}>
           <View style={styles.topicContainer}>
-            <Ionicons name="pricetag" size={isSmallScreen ? 14 : 16} color={colors.primary} />
+            <Ionicons
+              name={isNewStructure ? "book-outline" : "pricetag"}
+              size={isSmallScreen ? 14 : 16}
+              color={colors.primary}
+            />
             <Text style={styles.topic} numberOfLines={1}>
-              {item.generalData?.topic || 'Sin tópico'}
+              {isNewStructure
+                ? (item.generalData?.diagnosticGuide || 'Sin guía')
+                : (item.generalData?.topic || 'Sin tópico')}
             </Text>
           </View>
           <Text style={styles.date} numberOfLines={1}>
@@ -114,9 +128,11 @@ const ViewRecordsScreen = () => {
           </Text>
         </View>
 
-        {/* Título del primer problema */}
+        {/* Título del primer paso/problema */}
         <Text style={styles.problemTitle} numberOfLines={2}>
-          {firstProblem?.problemTitle || 'Sin título'}
+          {isNewStructure
+            ? (firstStep?.stepTitle || 'Sin título')
+            : (firstProblem?.problemTitle || 'Sin título')}
         </Text>
 
         {/* Información adicional */}
@@ -149,10 +165,18 @@ const ViewRecordsScreen = () => {
               {item.registeredBy?.name || 'Desconocido'}
             </Text>
           </View>
-          {problemCount > 1 && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{problemCount} problemas</Text>
-            </View>
+          {isNewStructure ? (
+            stepCount > 1 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{stepCount} pasos</Text>
+              </View>
+            )
+          ) : (
+            problemCount > 1 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{problemCount} problemas</Text>
+              </View>
+            )
           )}
         </View>
       </TouchableOpacity>
