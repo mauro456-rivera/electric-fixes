@@ -1,13 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import ActivityItem from '../components/ActivityItem';
 import AppFooter from '../components/AppFooter';
 import CustomAlert from '../components/CustomAlert';
 import CustomButton from '../components/CustomButton';
-import FileUploader from '../components/FileUploader';
 import { useAuth } from '../context/AuthContext';
 import FirebaseFirestoreService from '../services/firebaseFirestore';
 import { colors } from '../styles/colors';
@@ -20,7 +19,6 @@ const RegisterProblemScreen = () => {
   const [problemType, setProblemType] = useState('mechanical'); // 'mechanical' o 'electrical'
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showErrorAlert, setShowErrorAlert] = useState(false);
-  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [showMinActivityAlert, setShowMinActivityAlert] = useState(false);
   const [showMinProblemAlert, setShowMinProblemAlert] = useState(false);
   const [showUploadingAlert, setShowUploadingAlert] = useState(false);
@@ -55,13 +53,13 @@ const RegisterProblemScreen = () => {
     {
       id: Date.now(),
       problemTitle: '',
-      activities: [{ id: Date.now(), title: '', files: [] }],
+      activities: [{ id: Date.now(), title: '', files: [], notes: [{ id: Date.now(), text: '' }] }],
       otherData: '',
+      isExpanded: true,
     }
   ]);
 
-  const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
-  const currentProblem = problems[currentProblemIndex];
+  // Ya no necesitamos currentProblemIndex, mostraremos todos los PASOS
 
   // ACTUALIZAR DATOS GENERALES
   const updateGeneralData = (field, value) => {
@@ -125,39 +123,40 @@ const RegisterProblemScreen = () => {
 
 
   // ACTUALIZAR PROBLEMA ACTUAL
-  const updateProblemField = (field, value) => {
+  const updateProblemField = (problemIndex, field, value) => {
     const updatedProblems = [...problems];
-    updatedProblems[currentProblemIndex] = {
-      ...updatedProblems[currentProblemIndex],
+    updatedProblems[problemIndex] = {
+      ...updatedProblems[problemIndex],
       [field]: value,
     };
     setProblems(updatedProblems);
   };
 
   // ACTIVIDADES
-  const addActivity = () => {
+  const addActivity = (problemIndex) => {
     const updatedProblems = [...problems];
-    updatedProblems[currentProblemIndex].activities.push({
+    updatedProblems[problemIndex].activities.push({
       id: Date.now(),
       title: '',
       files: [],
+      notes: [{ id: Date.now(), text: '' }],
     });
     setProblems(updatedProblems);
   };
 
-  const updateActivity = (index, updatedActivity) => {
+  const updateActivity = (problemIndex, activityIndex, updatedActivity) => {
     const updatedProblems = [...problems];
-    updatedProblems[currentProblemIndex].activities[index] = updatedActivity;
+    updatedProblems[problemIndex].activities[activityIndex] = updatedActivity;
     setProblems(updatedProblems);
   };
 
-  const removeActivity = (index) => {
-    if (currentProblem.activities.length === 1) {
+  const removeActivity = (problemIndex, activityIndex) => {
+    if (problems[problemIndex].activities.length === 1) {
       setShowMinActivityAlert(true);
       return;
     }
     const updatedProblems = [...problems];
-    updatedProblems[currentProblemIndex].activities.splice(index, 1);
+    updatedProblems[problemIndex].activities.splice(activityIndex, 1);
     setProblems(updatedProblems);
   };
 
@@ -167,26 +166,21 @@ const RegisterProblemScreen = () => {
     const newProblem = {
       id: Date.now(),
       problemTitle: '',
-      activities: [{ id: Date.now(), title: '', files: [] }],
+      activities: [{ id: Date.now(), title: '', files: [], notes: [{ id: Date.now(), text: '' }] }],
       otherData: '',
+      isExpanded: true,
     };
     setProblems([...problems, newProblem]);
-    setCurrentProblemIndex(problems.length);
   };
 
   // ELIMINAR PROBLEMA
-  const removeProblem = () => {
+  const removeProblem = (problemIndex) => {
     if (problems.length === 1) {
       setShowMinProblemAlert(true);
       return;
     }
-    setShowDeleteAlert(true);
-  };
-
-  const confirmDeleteProblem = () => {
-    const updatedProblems = problems.filter((_, idx) => idx !== currentProblemIndex);
+    const updatedProblems = problems.filter((_, idx) => idx !== problemIndex);
     setProblems(updatedProblems);
-    setCurrentProblemIndex(Math.max(0, currentProblemIndex - 1));
   };
 
   // VALIDACIÓN
@@ -236,7 +230,7 @@ const RegisterProblemScreen = () => {
       // Debug: Ver qué datos se están guardando
       console.log('📊 Datos que se van a guardar:', JSON.stringify(generalDataWithDetails, null, 2));
 
-      const problemId = await FirebaseFirestoreService.saveProblem(
+      await FirebaseFirestoreService.saveProblem(
         generalDataWithDetails,
         problems,
         user,
@@ -255,22 +249,24 @@ const RegisterProblemScreen = () => {
     }
   };
 
-  // SECCIONES DEL FORMULARIO PARA FLATLIST
+  // SECCIONES DEL FORMULARIO PARA FLATLIST (dinámico para todos los PASOS)
   const formSections = [
     { id: 'type-selector', type: 'type-selector' },
     { id: 'general', type: 'general' },
     { id: 'symptoms', type: 'symptoms' },
     { id: 'tools', type: 'tools' },
-    { id: 'problem', type: 'problem' },
-    { id: 'activities', type: 'activities' },
-    { id: 'other', type: 'other' },
+    // Generar secciones para cada PASO
+    ...problems.flatMap((problem, index) => [
+      { id: `problem-${index}`, type: 'problem', problemIndex: index },
+      { id: `activities-${index}`, type: 'activities', problemIndex: index },
+      { id: `other-${index}`, type: 'other', problemIndex: index },
+    ]),
     { id: 'buttons', type: 'buttons' },
   ];
 
   const renderSection = ({ item }) => {
     switch (item.type) {
       case 'type-selector':
-        if (currentProblemIndex !== 0) return null;
         return (
           <View style={styles.typeSelectorSection}>
             <Text style={styles.typeSelectorTitle}>Tipo de Problema</Text>
@@ -323,7 +319,6 @@ const RegisterProblemScreen = () => {
         );
 
       case 'general':
-        if (currentProblemIndex !== 0) return null;
         return (
           <>
             <View style={styles.generalSection}>
@@ -454,7 +449,6 @@ const RegisterProblemScreen = () => {
         );
 
       case 'symptoms':
-        if (currentProblemIndex !== 0) return null;
         return (
           <>
             <View style={styles.symptomsSection}>
@@ -494,7 +488,6 @@ const RegisterProblemScreen = () => {
         );
 
       case 'tools':
-        if (currentProblemIndex !== 0) return null;
         return (
           <>
             <View style={styles.toolsSection}>
@@ -586,47 +579,81 @@ const RegisterProblemScreen = () => {
           </>
         );
 
-      case 'problem':
+      case 'problem': {
+        const problemIndex = item.problemIndex;
+        const problem = problems[problemIndex];
         return (
           <>
-            <Text style={styles.problemNumber}>PASO {currentProblemIndex + 1}</Text>
+            {problemIndex === 0 && (
+              <Text style={styles.procedureTitle}>procedimiento diagnostico:</Text>
+            )}
 
-            <View style={styles.section}>
-              <Text style={styles.label}>Título del Paso *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ej: PASO 1: SISTEMA REFRIGERACIÓN"
-                placeholderTextColor={colors.textSecondary}
-                value={currentProblem.problemTitle}
-                onChangeText={(text) => updateProblemField('problemTitle', text)}
-              />
+            <View style={styles.pasoContainer}>
+              {problemIndex === 0 && (
+                <View style={styles.pasoHeader}>
+                  <Text style={styles.pasoLabel}>PASOS:</Text>
+                </View>
+              )}
+
+              <View style={styles.pasoContent}>
+                    <View style={styles.pasoTitleRow}>
+                      <Text style={styles.pasoNumber}>PASO {problemIndex + 1}:</Text>
+                      <View style={styles.pasoButtonsRow}>
+                        <View style={styles.pasoEditButton}>
+                          <Ionicons name="create-outline" size={18} color="#0A1628" />
+                        </View>
+                        {problems.length > 1 && (
+                          <TouchableOpacity onPress={() => removeProblem(problemIndex)} style={styles.pasoDeleteButton}>
+                            <Ionicons name="trash-outline" size={20} color={colors.error} />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    </View>
+
+                    <View style={styles.section}>
+                      <Text style={styles.label}>LECTURA DE PARAMETROS</Text>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="Ej: SISTEMA REFRIGERACIÓN"
+                        placeholderTextColor={colors.textSecondary}
+                        value={problem.problemTitle}
+                        onChangeText={(text) => updateProblemField(problemIndex, 'problemTitle', text)}
+                      />
+                    </View>
+                  </View>
             </View>
           </>
         );
+      }
 
-      case 'activities':
+      case 'activities': {
+        const problemIndex = item.problemIndex;
+        const problem = problems[problemIndex];
         return (
-          <View style={styles.section}>
+          <View style={styles.activitiesSection}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>SUB-PASOS</Text>
-              <TouchableOpacity onPress={addActivity} style={styles.addButton}>
-                <Ionicons name="add-circle" size={24} color={colors.secondary} />
+              <Text style={styles.activitiesTitle}>ACTIVIDADES:</Text>
+              <TouchableOpacity onPress={() => addActivity(problemIndex)} style={styles.addButton}>
+                <Ionicons name="add-circle" size={24} color="#FFD700" />
               </TouchableOpacity>
             </View>
 
-            {currentProblem.activities.map((activity, index) => (
+            {problem.activities.map((activity, activityIndex) => (
               <ActivityItem
                 key={activity.id}
-                activity={{ ...activity, index: index + 1 }}
-                onUpdate={(updated) => updateActivity(index, updated)}
-                onRemove={() => removeActivity(index)}
-                showRemove={currentProblem.activities.length > 1}
+                activity={{ ...activity, index: activityIndex + 1 }}
+                onUpdate={(updated) => updateActivity(problemIndex, activityIndex, updated)}
+                onRemove={() => removeActivity(problemIndex, activityIndex)}
+                showRemove={problem.activities.length > 1}
               />
             ))}
           </View>
         );
+      }
 
-      case 'other':
+      case 'other': {
+        const problemIndex = item.problemIndex;
+        const problem = problems[problemIndex];
         return (
           <View style={styles.section}>
             <Text style={styles.label}>Otros Datos</Text>
@@ -634,14 +661,15 @@ const RegisterProblemScreen = () => {
               style={[styles.input, styles.textArea]}
               placeholder="Información adicional..."
               placeholderTextColor={colors.textSecondary}
-              value={currentProblem.otherData}
-              onChangeText={(text) => updateProblemField('otherData', text)}
+              value={problem.otherData}
+              onChangeText={(text) => updateProblemField(problemIndex, 'otherData', text)}
               multiline
               numberOfLines={3}
               textAlignVertical="top"
             />
           </View>
         );
+      }
 
       case 'buttons':
         return (
@@ -700,40 +728,8 @@ const RegisterProblemScreen = () => {
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Registrar Guía de Diagnóstico</Text>
-        {problems.length > 1 && (
-          <TouchableOpacity onPress={removeProblem} style={styles.deleteButton}>
-            <Ionicons name="trash-outline" size={24} color={colors.error} />
-          </TouchableOpacity>
-        )}
-        {problems.length === 1 && <View style={{ width: 24 }} />}
+        <View style={{ width: 24 }} />
       </View>
-
-      {/* NAVEGACIÓN ENTRE PASOS */}
-      {problems.length > 1 && (
-        <View style={styles.problemNav}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {problems.map((_, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  styles.problemTab,
-                  currentProblemIndex === index && styles.problemTabActive,
-                ]}
-                onPress={() => setCurrentProblemIndex(index)}
-              >
-                <Text
-                  style={[
-                    styles.problemTabText,
-                    currentProblemIndex === index && styles.problemTabTextActive,
-                  ]}
-                >
-                  Paso {index + 1}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      )}
 
       {/* FORMULARIO CON FLATLIST */}
       <KeyboardAwareFlatList
@@ -789,26 +785,6 @@ const RegisterProblemScreen = () => {
         buttons={[
           {
             text: 'OK',
-            style: 'cancel'
-          }
-        ]}
-      />
-
-      {/* Alert de Eliminar Paso */}
-      <CustomAlert
-        visible={showDeleteAlert}
-        onClose={() => setShowDeleteAlert(false)}
-        type="warning"
-        title="Eliminar Paso"
-        message="¿Estás seguro de eliminar este paso?"
-        buttons={[
-          {
-            text: 'Eliminar',
-            style: 'destructive',
-            onPress: confirmDeleteProblem
-          },
-          {
-            text: 'Cancelar',
             style: 'cancel'
           }
         ]}
@@ -1148,6 +1124,75 @@ const styles = StyleSheet.create({
   },
   removeToolButton: {
     padding: 4,
+  },
+  // Estilos para procedimiento diagnostico
+  procedureTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#FFD700', // Yellow color matching the design
+    marginBottom: 16,
+    textTransform: 'lowercase',
+  },
+  // Estilos para PASOS
+  pasoContainer: {
+    backgroundColor: colors.cardBackground,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  pasoHeader: {
+    marginBottom: 12,
+  },
+  pasoHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  pasoLabel: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  pasoContent: {
+    marginTop: 8,
+  },
+  pasoTitleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  pasoNumber: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  pasoButtonsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  pasoEditButton: {
+    backgroundColor: '#FFD700',
+    borderRadius: 20,
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pasoDeleteButton: {
+    padding: 4,
+  },
+  // Estilos para ACTIVIDADES
+  activitiesSection: {
+    marginBottom: 20,
+  },
+  activitiesTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
   },
 });
 
