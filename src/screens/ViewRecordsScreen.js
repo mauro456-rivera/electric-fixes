@@ -12,17 +12,17 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const isSmallScreen = SCREEN_WIDTH < 375;
-const isMediumScreen = SCREEN_WIDTH >= 375 && SCREEN_WIDTH < 414;
-const isLargeScreen = SCREEN_WIDTH >= 414;
 import AppFooter from '../components/AppFooter';
 import CustomAlert from '../components/CustomAlert';
 import { useAuth } from '../context/AuthContext';
 import FirebaseFirestoreService from '../services/firebaseFirestore';
 import { colors } from '../styles/colors';
 import { globalStyles } from '../styles/globalStyles';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const isSmallScreen = SCREEN_WIDTH < 375;
+const isMediumScreen = SCREEN_WIDTH >= 375 && SCREEN_WIDTH < 414;
+const isLargeScreen = SCREEN_WIDTH >= 414;
 
 const ViewRecordsScreen = () => {
   const router = useRouter();
