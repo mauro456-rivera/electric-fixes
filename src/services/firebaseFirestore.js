@@ -94,9 +94,26 @@ class FirebaseFirestoreService {
       const docData = {
         generalData: {
           topic: generalData.topic,
-          truckData: generalData.truckData,
+          // Datos del camión separados (nuevo formato)
+          truckBrand: generalData.truckBrand || '',
+          truckModel: generalData.truckModel || '',
+          truckYear: generalData.truckYear || '',
+          // Mantener truckData para compatibilidad con registros antiguos
+          truckData: generalData.truckData || `${generalData.truckBrand || ''} ${generalData.truckModel || ''} ${generalData.truckYear || ''}`.trim(),
           workOrder: generalData.workOrder, // Código del Work Order (texto)
           workOrderDetails: generalData.workOrderDetails || null, // Objeto completo del Work Order
+          // Información Básica (según metodología PDF)
+          mainSymptom: generalData.mainSymptom || '',
+          urgency: generalData.urgency || 'Media',
+          estimatedDiagnosticTime: generalData.estimatedDiagnosticTime || '',
+          // Síntomas Reportados (array dinámico)
+          reportedSymptoms: generalData.reportedSymptoms || [],
+          // Herramientas Requeridas (objeto con categorías)
+          requiredTools: generalData.requiredTools || {
+            diagnostic: [],
+            tools: [],
+            safety: [],
+          },
         },
         problems: processedProblems,
         registeredBy: {
