@@ -132,10 +132,10 @@ const RegisterProblemScreen = () => {
     setProblems(updatedProblems);
   };
 
-  // ACTIVIDADES
+  // ACTIVIDADES (agregar al inicio)
   const addActivity = (problemIndex) => {
     const updatedProblems = [...problems];
-    updatedProblems[problemIndex].activities.push({
+    updatedProblems[problemIndex].activities.unshift({ // unshift para agregar al inicio (la nueva aparece arriba)
       id: Date.now(),
       title: '',
       files: [],
@@ -161,7 +161,7 @@ const RegisterProblemScreen = () => {
   };
 
 
-  // AGREGAR NUEVO PASO
+  // AGREGAR NUEVO PASO (al inicio del array)
   const addProblem = () => {
     const newProblem = {
       id: Date.now(),
@@ -170,7 +170,7 @@ const RegisterProblemScreen = () => {
       otherData: '',
       isExpanded: true,
     };
-    setProblems([...problems, newProblem]);
+    setProblems([newProblem, ...problems]); // Agregar al inicio (el nuevo aparece arriba)
   };
 
   // ELIMINAR PROBLEMA
@@ -588,39 +588,34 @@ const RegisterProblemScreen = () => {
               <Text style={styles.procedureTitle}>procedimiento diagnostico:</Text>
             )}
 
+            {problemIndex === 0 && (
+              <View style={styles.pasosHeaderContainer}>
+                <Text style={styles.pasosHeaderLabel}>PASOS:</Text>
+                <TouchableOpacity onPress={addProblem} style={styles.addPasoButton}>
+                  <Ionicons name="add-circle" size={24} color="#FFD700" />
+                </TouchableOpacity>
+              </View>
+            )}
+
             <View style={styles.pasoContainer}>
-              {problemIndex === 0 && (
-                <View style={styles.pasoHeader}>
-                  <Text style={styles.pasoLabel}>PASOS:</Text>
+              <View style={styles.pasoHeader}>
+                <Text style={styles.pasoNumber}>PASO {problemIndex + 1}:</Text>
+                <View style={styles.pasoButtonsRow}>
+                  {problems.length > 1 && (
+                    <TouchableOpacity onPress={() => removeProblem(problemIndex)} style={styles.pasoDeleteButton}>
+                      <Ionicons name="trash-outline" size={20} color={colors.error} />
+                    </TouchableOpacity>
+                  )}
                 </View>
-              )}
+              </View>
 
-              <View style={styles.pasoContent}>
-                    <View style={styles.pasoTitleRow}>
-                      <Text style={styles.pasoNumber}>PASO {problemIndex + 1}:</Text>
-                      <View style={styles.pasoButtonsRow}>
-                        <View style={styles.pasoEditButton}>
-                          <Ionicons name="create-outline" size={18} color="#0A1628" />
-                        </View>
-                        {problems.length > 1 && (
-                          <TouchableOpacity onPress={() => removeProblem(problemIndex)} style={styles.pasoDeleteButton}>
-                            <Ionicons name="trash-outline" size={20} color={colors.error} />
-                          </TouchableOpacity>
-                        )}
-                      </View>
-                    </View>
-
-                    <View style={styles.section}>
-                      <Text style={styles.label}>LECTURA DE PARAMETROS</Text>
-                      <TextInput
-                        style={styles.input}
-                        placeholder="Ej: SISTEMA REFRIGERACIÓN"
-                        placeholderTextColor={colors.textSecondary}
-                        value={problem.problemTitle}
-                        onChangeText={(text) => updateProblemField(problemIndex, 'problemTitle', text)}
-                      />
-                    </View>
-                  </View>
+              <TextInput
+                style={styles.pasoTitleInput}
+                placeholder="LECTURA DE PARAMETROS"
+                placeholderTextColor="#6B7280"
+                value={problem.problemTitle}
+                onChangeText={(text) => updateProblemField(problemIndex, 'problemTitle', text)}
+              />
             </View>
           </>
         );
@@ -631,9 +626,9 @@ const RegisterProblemScreen = () => {
         const problem = problems[problemIndex];
         return (
           <View style={styles.activitiesSection}>
-            <View style={styles.sectionHeader}>
+            <View style={styles.activitiesHeader}>
               <Text style={styles.activitiesTitle}>ACTIVIDADES:</Text>
-              <TouchableOpacity onPress={() => addActivity(problemIndex)} style={styles.addButton}>
+              <TouchableOpacity onPress={() => addActivity(problemIndex)} style={styles.addActivityButton}>
                 <Ionicons name="add-circle" size={24} color="#FFD700" />
               </TouchableOpacity>
             </View>
@@ -674,12 +669,6 @@ const RegisterProblemScreen = () => {
       case 'buttons':
         return (
           <View style={styles.buttonsContainer}>
-            <CustomButton
-              title="Agregar Paso +"
-              onPress={addProblem}
-              variant="secondary"
-              style={styles.addProblemButton}
-            />
             <View style={styles.actionButtons}>
               <CustomButton
                 title="Guardar"
@@ -933,9 +922,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingBottom: 20,
   },
-  addProblemButton: {
-    marginBottom: 12,
-  },
   actionButtons: {
     flexDirection: 'row',
     gap: 12,
@@ -1125,40 +1111,39 @@ const styles = StyleSheet.create({
   removeToolButton: {
     padding: 4,
   },
-  // Estilos para procedimiento diagnostico
+  // Estilos para procedimiento diagnostico - ACTUALIZADOS para coincidir con la imagen
   procedureTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#FFD700', // Yellow color matching the design
+    color: '#FFD700', // Amarillo como en la imagen
     marginBottom: 16,
     textTransform: 'lowercase',
   },
-  // Estilos para PASOS
-  pasoContainer: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  pasoHeader: {
-    marginBottom: 12,
-  },
-  pasoHeaderLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  pasoLabel: {
+  pasosHeaderLabel: {
     fontSize: 16,
     fontWeight: '700',
     color: colors.text,
+    marginBottom: 12,
   },
-  pasoContent: {
-    marginTop: 8,
+  pasosHeaderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
   },
-  pasoTitleRow: {
+  addPasoButton: {
+    padding: 4,
+  },
+  // Estilos para PASOS - ACTUALIZADOS para coincidir con la imagen
+  pasoContainer: {
+    backgroundColor: '#1E293B', // Fondo oscuro como en la imagen
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  pasoHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -1175,7 +1160,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   pasoEditButton: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#FFD700', // Amarillo como en la imagen
     borderRadius: 20,
     width: 32,
     height: 32,
@@ -1185,14 +1170,33 @@ const styles = StyleSheet.create({
   pasoDeleteButton: {
     padding: 4,
   },
-  // Estilos para ACTIVIDADES
+  pasoTitleInput: {
+    backgroundColor: '#0F172A', // Fondo más oscuro para el input
+    borderRadius: 8,
+    padding: 12,
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '500',
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  // Estilos para ACTIVIDADES - ACTUALIZADOS
   activitiesSection: {
-    marginBottom: 20,
+    marginBottom: 16,
+  },
+  activitiesHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
   },
   activitiesTitle: {
     fontSize: 16,
     fontWeight: '700',
     color: colors.text,
+  },
+  addActivityButton: {
+    padding: 4,
   },
 });
 
