@@ -14,7 +14,7 @@ class FirebaseFirestoreService {
 
   /**
    * Guarda una guía de diagnóstico completa en Firestore con sus archivos en Storage
-   * @param {Object} generalData - Datos generales (diagnosticGuide, truckData, workOrder, síntomas, herramientas)
+   * @param {Object} generalData - Datos generales (diagnosticGuide, truckData, síntomas, herramientas)
    * @param {Array} problems - Array de PASOS con sus SUB-PASOS
    * @param {Object} user - Información del usuario que registra la guía
    * @param {string} problemType - Tipo de problema ('mechanical' o 'electrical')
@@ -70,7 +70,6 @@ class FirebaseFirestoreService {
           truckYear: generalData.truckYear || '',
           // Mantener truckData para compatibilidad con registros antiguos
           truckData: generalData.truckData || `${generalData.truckBrand || ''} ${generalData.truckModel || ''} ${generalData.truckYear || ''}`.trim(),
-          workOrder: generalData.workOrder || '', // Código del Work Order (texto manual, sin BD)
           // Información Básica
           mainSymptom: generalData.mainSymptom || '',
           urgency: generalData.urgency || 'Media',

@@ -29,7 +29,6 @@ const RegisterProblemScreen = () => {
     truckBrand: '', // Marca (ej: Freightliner, Kenworth, Peterbilt)
     truckModel: '', // Modelo (ej: Cascadia, T680, 579)
     truckYear: '', // Año (ej: 2020, 2021)
-    workOrder: 'WO-TA-',
     // Campos de Información Básica (según metodología PDF)
     mainSymptom: '',
     urgency: 'Media', // Crítica/Media/Leve
@@ -372,17 +371,6 @@ const RegisterProblemScreen = () => {
                     keyboardType="numeric"
                   />
                 </View>
-              </View>
-
-              <View style={[styles.section, styles.lowerSection]}>
-                <Text style={styles.label}>Work Order</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="WO-TA-####"
-                  placeholderTextColor={colors.textSecondary}
-                  value={generalData.workOrder}
-                  onChangeText={(text) => updateGeneralData('workOrder', text)}
-                />
               </View>
             </View>
 

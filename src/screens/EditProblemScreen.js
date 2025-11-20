@@ -24,7 +24,6 @@ const EditProblemScreen = () => {
   const [showUploadingAlert, setShowUploadingAlert] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [problem, setProblem] = useState(null);
-  const [selectedWorkOrder, setSelectedWorkOrder] = useState(null);
 
   const [generalData, setGeneralData] = useState({
     topic: '',
@@ -32,7 +31,6 @@ const EditProblemScreen = () => {
     truckBrand: '',
     truckModel: '',
     truckYear: '',
-    workOrder: '',
     // Información Básica
     mainSymptom: '',
     urgency: 'Media',
@@ -84,17 +82,11 @@ const EditProblemScreen = () => {
         truckBrand: data.generalData?.truckBrand || '',
         truckModel: data.generalData?.truckModel || '',
         truckYear: data.generalData?.truckYear || '',
-        workOrder: data.generalData?.workOrder || '',
         // Información Básica
         mainSymptom: data.generalData?.mainSymptom || '',
         urgency: data.generalData?.urgency || 'Media',
         estimatedDiagnosticTime: data.generalData?.estimatedDiagnosticTime || '',
       });
-
-      // Cargar Work Order completo si existe
-      if (data.generalData?.workOrderDetails) {
-        setSelectedWorkOrder(data.generalData.workOrderDetails);
-      }
 
       // Cargar síntomas reportados (convertir de string a objeto si es necesario)
       if (data.generalData?.reportedSymptoms && data.generalData.reportedSymptoms.length > 0) {
@@ -360,8 +352,6 @@ const EditProblemScreen = () => {
         'generalData.truckModel': generalData.truckModel,
         'generalData.truckYear': generalData.truckYear,
         'generalData.truckData': `${generalData.truckBrand} ${generalData.truckModel} ${generalData.truckYear}`.trim(),
-        'generalData.workOrder': generalData.workOrder,
-        'generalData.workOrderDetails': selectedWorkOrder || null,
         'generalData.mainSymptom': generalData.mainSymptom,
         'generalData.urgency': generalData.urgency,
         'generalData.estimatedDiagnosticTime': generalData.estimatedDiagnosticTime,
@@ -485,20 +475,6 @@ const EditProblemScreen = () => {
                 onChangeText={(text) => updateGeneralData('truckYear', text)}
                 keyboardType="numeric"
               />
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.label}>Work Order (No editable)</Text>
-              <TextInput
-                style={[styles.input, styles.inputReadOnly]}
-                placeholder="Work Order"
-                placeholderTextColor={colors.textSecondary}
-                value={generalData.workOrder}
-                editable={false}
-              />
-              <Text style={styles.helperText}>
-                El Work Order no puede modificarse después de registrar el problema
-              </Text>
             </View>
           </View>
         );
