@@ -666,6 +666,19 @@ const ProblemDetailScreen = () => {
                       </Text>
                       <Text style={styles.activityTitle}>{activity.title}</Text>
                     </View>
+
+                    {/* Notas/Medidas */}
+                    {activity.notes && activity.notes.length > 0 && (
+                      <View style={styles.notesContainer}>
+                        <Text style={styles.notesLabel}>Notas/Medidas:</Text>
+                        {activity.notes.map((note, noteIdx) => (
+                          <View key={noteIdx} style={styles.noteItem}>
+                            <Ionicons name="ellipse" size={6} color={colors.textSecondary} style={styles.noteBullet} />
+                            <Text style={styles.noteText}>{note}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    )}
                   </View>
 
                   {/* Card de Archivos de la Actividad */}
@@ -1631,7 +1644,7 @@ const styles = StyleSheet.create({
   },
   section: {
     padding: 16,
-    paddingTop: 24,
+    paddingTop: 16,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -1658,6 +1671,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.cardBackground,
     borderRadius: 12,
     padding: 16,
+    marginBottom: 16,
     borderWidth: 1,
     borderColor: colors.border,
   },
@@ -1806,7 +1820,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   activityWrapper: {
-    marginBottom: 24,
+    marginBottom: 16,
   },
   activityCard: {
     backgroundColor: colors.cardBackground,
@@ -1824,7 +1838,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   cardHeader: {
-    marginBottom: 8,
+    marginBottom: 12,
   },
   activityNumber: {
     fontSize: 12,
@@ -1834,7 +1848,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   activityTitleContainer: {
-    marginTop: 8,
+    marginTop: 0,
   },
   activityTitleLabel: {
     fontSize: 12,
@@ -1849,6 +1863,36 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontWeight: '500',
     lineHeight: 21,
+  },
+  notesContainer: {
+    marginTop: 16,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  notesLabel: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 8,
+  },
+  noteItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 6,
+    paddingLeft: 8,
+  },
+  noteBullet: {
+    marginRight: 8,
+    marginTop: 6,
+  },
+  noteText: {
+    flex: 1,
+    fontSize: 14,
+    color: colors.text,
+    lineHeight: 20,
   },
   smallThumbnail: {
     width: 80,

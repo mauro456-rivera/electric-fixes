@@ -74,8 +74,12 @@ const EditProblemScreen = () => {
         requiredTools: data.generalData?.requiredTools,
       });
 
+      // Detectar estructura (nueva con diagnosticGuide/steps vs antigua con topic/problems)
+      const isNewStructure = !!data.generalData?.diagnosticGuide;
+
       setGeneralData({
-        topic: data.generalData?.topic || '',
+        topic: isNewStructure ? (data.generalData?.diagnosticGuide || '') : (data.generalData?.topic || ''),
+        diagnosticGuide: data.generalData?.diagnosticGuide || data.generalData?.topic || '',
         // Datos del Camión (priorizar campos separados)
         truckBrand: data.generalData?.truckBrand || '',
         truckModel: data.generalData?.truckModel || '',
@@ -92,42 +96,61 @@ const EditProblemScreen = () => {
         setSelectedWorkOrder(data.generalData.workOrderDetails);
       }
 
-      // Cargar síntomas reportados
+      // Cargar síntomas reportados (convertir de string a objeto si es necesario)
       if (data.generalData?.reportedSymptoms && data.generalData.reportedSymptoms.length > 0) {
-        setReportedSymptoms(data.generalData.reportedSymptoms);
+        const symptomsArray = data.generalData.reportedSymptoms.map((symptom, idx) => {
+          if (typeof symptom === 'string') {
+            return { id: Date.now() + idx, text: symptom };
+          }
+          return symptom.id ? symptom : { id: Date.now() + idx, text: symptom.text || '' };
+        });
+        setReportedSymptoms(symptomsArray);
       }
 
-      // Cargar herramientas requeridas
+      // Cargar herramientas requeridas (convertir de string a objeto si es necesario)
       if (data.generalData?.requiredTools) {
+        const convertToolsArray = (tools) => {
+          if (!tools || tools.length === 0) return [{ id: Date.now(), text: '' }];
+          return tools.map((tool, idx) => {
+            if (typeof tool === 'string') {
+              return { id: Date.now() + idx, text: tool };
+            }
+            return tool.id ? tool : { id: Date.now() + idx, text: tool.text || '' };
+          });
+        };
+
         setRequiredTools({
-          diagnostic: data.generalData.requiredTools.diagnostic?.length > 0
-            ? data.generalData.requiredTools.diagnostic
-            : [{ id: Date.now(), text: '' }],
-          tools: data.generalData.requiredTools.tools?.length > 0
-            ? data.generalData.requiredTools.tools
-            : [{ id: Date.now() + 1, text: '' }],
-          safety: data.generalData.requiredTools.safety?.length > 0
-            ? data.generalData.requiredTools.safety
-            : [{ id: Date.now() + 2, text: '' }],
+          diagnostic: convertToolsArray(data.generalData.requiredTools.diagnostic),
+          tools: convertToolsArray(data.generalData.requiredTools.tools),
+          safety: convertToolsArray(data.generalData.requiredTools.safety),
         });
       }
 
-      const loadedProblems = data.problems?.map(prob => ({
+      // Cargar pasos/problemas según la estructura
+      const sourceData = isNewStructure ? data.steps : data.problems;
+      const loadedProblems = sourceData?.map(item => ({
         id: Date.now() + Math.random(),
-        problemTitle: prob.problemTitle || '',
-        problemDescription: prob.problemDescription || '',
-        problemFiles: [], 
-        activities: prob.activities?.map(act => ({
-          id: Date.now() + Math.random(),
+        problemTitle: isNewStructure ? (item.stepTitle || '') : (item.problemTitle || ''),
+        problemDescription: item.problemDescription || '',
+        problemFiles: [],
+        activities: (isNewStructure ? item.subSteps : item.activities)?.map((act, idx) => ({
+          id: Date.now() + Math.random() + idx,
           title: act.title || '',
-          files: []
-        })) || [{ id: Date.now(), title: '', files: [] }],
-        solutions: prob.solutions?.map(sol => ({
-          id: Date.now() + Math.random(),
+          files: [],
+          notes: act.notes ? (Array.isArray(act.notes)
+            ? act.notes.map((note, noteIdx) => ({
+                id: Date.now() + Math.random() + noteIdx,
+                text: typeof note === 'string' ? note : (note.text || '')
+              }))
+            : [{ id: Date.now(), text: '' }]
+          ) : [{ id: Date.now(), text: '' }]
+        })) || [{ id: Date.now(), title: '', files: [], notes: [{ id: Date.now(), text: '' }] }],
+        solutions: item.solutions?.map((sol, idx) => ({
+          id: Date.now() + Math.random() + idx,
           title: sol.title || '',
           files: []
         })) || [{ id: Date.now() + 1, title: '', files: [] }],
-        otherData: prob.otherData || '',
+        otherData: item.otherData || '',
       })) || [];
 
       setProblems(loadedProblems);
@@ -297,10 +320,42 @@ const EditProblemScreen = () => {
         safety: requiredTools.safety.filter(t => t.text.trim() !== ''),
       };
 
+      // Detectar si es estructura nueva o antigua
+      const isNewStructure = !!problem.generalData?.diagnosticGuide;
+
+      // Preparar datos de pasos/problemas con notas
+      const processedData = problems.map(prob => {
+        const baseData = {
+          problemTitle: prob.problemTitle,
+          stepTitle: prob.problemTitle, // Para nueva estructura
+          problemDescription: prob.problemDescription,
+          problemFiles: [],
+          otherData: prob.otherData,
+        };
+
+        // Procesar actividades/subSteps con notas
+        const processedActivities = prob.activities.map(act => ({
+          title: act.title,
+          files: [],
+          notes: act.notes ? act.notes.filter(note => note.text.trim() !== '').map(note => note.text) : []
+        }));
+
+        if (isNewStructure) {
+          baseData.subSteps = processedActivities;
+        } else {
+          baseData.activities = processedActivities;
+          baseData.solutions = prob.solutions.map(sol => ({
+            title: sol.title,
+            files: []
+          }));
+        }
+
+        return baseData;
+      });
+
       // Actualizar el documento
       const docRef = doc(db, collectionName, problemId);
-      await updateDoc(docRef, {
-        'generalData.topic': generalData.topic,
+      const updateData = {
         'generalData.truckBrand': generalData.truckBrand,
         'generalData.truckModel': generalData.truckModel,
         'generalData.truckYear': generalData.truckYear,
@@ -310,23 +365,24 @@ const EditProblemScreen = () => {
         'generalData.mainSymptom': generalData.mainSymptom,
         'generalData.urgency': generalData.urgency,
         'generalData.estimatedDiagnosticTime': generalData.estimatedDiagnosticTime,
-        'generalData.reportedSymptoms': filteredSymptoms,
-        'generalData.requiredTools': filteredTools,
-        problems: problems.map(prob => ({
-          problemTitle: prob.problemTitle,
-          problemDescription: prob.problemDescription,
-          problemFiles: [],
-          activities: prob.activities.map(act => ({
-            title: act.title,
-            files: []
-          })),
-          solutions: prob.solutions.map(sol => ({
-            title: sol.title,
-            files: []
-          })),
-          otherData: prob.otherData,
-        }))
-      });
+        'generalData.reportedSymptoms': filteredSymptoms.map(s => s.text),
+        'generalData.requiredTools': {
+          diagnostic: filteredTools.diagnostic.map(t => t.text),
+          tools: filteredTools.tools.map(t => t.text),
+          safety: filteredTools.safety.map(t => t.text),
+        },
+      };
+
+      // Agregar campo específico según la estructura
+      if (isNewStructure) {
+        updateData['generalData.diagnosticGuide'] = generalData.diagnosticGuide || generalData.topic;
+        updateData.steps = processedData;
+      } else {
+        updateData['generalData.topic'] = generalData.topic;
+        updateData.problems = processedData;
+      }
+
+      await updateDoc(docRef, updateData);
 
       setShowUploadingAlert(false);
       setShowSuccessAlert(true);

@@ -255,12 +255,10 @@ const RegisterProblemScreen = () => {
     { id: 'general', type: 'general' },
     { id: 'symptoms', type: 'symptoms' },
     { id: 'tools', type: 'tools' },
-    // Generar secciones para cada PASO
-    ...problems.flatMap((problem, index) => [
-      { id: `problem-${index}`, type: 'problem', problemIndex: index },
-      { id: `activities-${index}`, type: 'activities', problemIndex: index },
-      { id: `other-${index}`, type: 'other', problemIndex: index },
-    ]),
+    // Generar secciones para cada PASO (ahora incluye actividades y otros datos dentro)
+    ...problems.map((problem, index) => (
+      { id: `problem-${index}`, type: 'problem', problemIndex: index }
+    )),
     { id: 'buttons', type: 'buttons' },
   ];
 
@@ -597,73 +595,76 @@ const RegisterProblemScreen = () => {
               </View>
             )}
 
-            <View style={styles.pasoContainer}>
-              <View style={styles.pasoHeader}>
-                <Text style={styles.pasoNumber}>PASO {problemIndex + 1}:</Text>
-                <View style={styles.pasoButtonsRow}>
-                  {problems.length > 1 && (
-                    <TouchableOpacity onPress={() => removeProblem(problemIndex)} style={styles.pasoDeleteButton}>
-                      <Ionicons name="trash-outline" size={20} color={colors.error} />
-                    </TouchableOpacity>
-                  )}
+            {/* Contenedor que agrupa PASO #, ACTIVIDADES y OTROS DATOS */}
+            <View style={styles.pasoWithActivitiesContainer}>
+              <View style={styles.pasoContainer}>
+                <View style={styles.pasoHeader}>
+                  <Text style={styles.pasoNumber}>PASO {problems.length - problemIndex}:</Text>
+                  <View style={styles.pasoButtonsRow}>
+                    {problems.length > 1 && (
+                      <TouchableOpacity onPress={() => removeProblem(problemIndex)} style={styles.pasoDeleteButton}>
+                        <Ionicons name="trash-outline" size={20} color={colors.error} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
                 </View>
+
+                <TextInput
+                  style={styles.pasoTitleInput}
+                  placeholder="LECTURA DE PARAMETROS"
+                  placeholderTextColor="#6B7280"
+                  value={problem.problemTitle}
+                  onChangeText={(text) => updateProblemField(problemIndex, 'problemTitle', text)}
+                />
               </View>
 
-              <TextInput
-                style={styles.pasoTitleInput}
-                placeholder="LECTURA DE PARAMETROS"
-                placeholderTextColor="#6B7280"
-                value={problem.problemTitle}
-                onChangeText={(text) => updateProblemField(problemIndex, 'problemTitle', text)}
-              />
+              {/* ACTIVIDADES dentro del mismo contenedor */}
+              <View style={styles.activitiesSection}>
+                <View style={styles.activitiesHeader}>
+                  <Text style={styles.activitiesTitle}>ACTIVIDADES:</Text>
+                  <TouchableOpacity onPress={() => addActivity(problemIndex)} style={styles.addActivityButton}>
+                    <Ionicons name="add-circle" size={24} color="#FFD700" />
+                  </TouchableOpacity>
+                </View>
+
+                {problem.activities.map((activity, activityIndex) => (
+                  <ActivityItem
+                    key={activity.id}
+                    activity={{ ...activity, index: activityIndex + 1 }}
+                    onUpdate={(updated) => updateActivity(problemIndex, activityIndex, updated)}
+                    onRemove={() => removeActivity(problemIndex, activityIndex)}
+                    showRemove={problem.activities.length > 1}
+                  />
+                ))}
+              </View>
+
+              {/* OTROS DATOS dentro del mismo contenedor */}
+              <View style={styles.otherDataSection}>
+                <Text style={styles.otherDataLabel}>Otros Datos</Text>
+                <TextInput
+                  style={[styles.input, styles.textArea]}
+                  placeholder="Información adicional..."
+                  placeholderTextColor={colors.textSecondary}
+                  value={problem.otherData}
+                  onChangeText={(text) => updateProblemField(problemIndex, 'otherData', text)}
+                  multiline
+                  numberOfLines={3}
+                  textAlignVertical="top"
+                />
+              </View>
             </View>
           </>
         );
       }
 
       case 'activities': {
-        const problemIndex = item.problemIndex;
-        const problem = problems[problemIndex];
-        return (
-          <View style={styles.activitiesSection}>
-            <View style={styles.activitiesHeader}>
-              <Text style={styles.activitiesTitle}>ACTIVIDADES:</Text>
-              <TouchableOpacity onPress={() => addActivity(problemIndex)} style={styles.addActivityButton}>
-                <Ionicons name="add-circle" size={24} color="#FFD700" />
-              </TouchableOpacity>
-            </View>
-
-            {problem.activities.map((activity, activityIndex) => (
-              <ActivityItem
-                key={activity.id}
-                activity={{ ...activity, index: activityIndex + 1 }}
-                onUpdate={(updated) => updateActivity(problemIndex, activityIndex, updated)}
-                onRemove={() => removeActivity(problemIndex, activityIndex)}
-                showRemove={problem.activities.length > 1}
-              />
-            ))}
-          </View>
-        );
+        // Ya no se renderiza por separado, se renderiza dentro de 'problem'
+        return null;
       }
 
       case 'other': {
-        const problemIndex = item.problemIndex;
-        const problem = problems[problemIndex];
-        return (
-          <View style={styles.section}>
-            <Text style={styles.label}>Otros Datos</Text>
-            <TextInput
-              style={[styles.input, styles.textArea]}
-              placeholder="Información adicional..."
-              placeholderTextColor={colors.textSecondary}
-              value={problem.otherData}
-              onChangeText={(text) => updateProblemField(problemIndex, 'otherData', text)}
-              multiline
-              numberOfLines={3}
-              textAlignVertical="top"
-            />
-          </View>
-        );
+        // Ya no se renderiza por separado, se renderiza dentro de 'problem'
+        return null;
       }
 
       case 'buttons':
@@ -1134,14 +1135,18 @@ const styles = StyleSheet.create({
   addPasoButton: {
     padding: 4,
   },
-  // Estilos para PASOS - ACTUALIZADOS para coincidir con la imagen
-  pasoContainer: {
+  // Contenedor que agrupa PASO y ACTIVIDADES juntos
+  pasoWithActivitiesContainer: {
     backgroundColor: '#1E293B', // Fondo oscuro como en la imagen
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: '#334155',
+  },
+  // Estilos para PASOS - ACTUALIZADOS para coincidir con la imagen
+  pasoContainer: {
+    marginBottom: 16,
   },
   pasoHeader: {
     flexDirection: 'row',
@@ -1197,6 +1202,16 @@ const styles = StyleSheet.create({
   },
   addActivityButton: {
     padding: 4,
+  },
+  // Estilos para OTROS DATOS
+  otherDataSection: {
+    marginTop: 4,
+  },
+  otherDataLabel: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: 12,
   },
 });
 

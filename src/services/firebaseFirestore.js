@@ -45,6 +45,7 @@ class FirebaseFirestoreService {
               return {
                 title: activity.title,
                 files: activityFileUrls,
+                notes: activity.notes ? activity.notes.filter(note => note.text.trim() !== '').map(note => note.text) : [],
               };
             })
           );
