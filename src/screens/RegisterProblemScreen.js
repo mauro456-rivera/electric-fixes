@@ -630,7 +630,7 @@ const RegisterProblemScreen = () => {
                 {problem.activities.map((activity, activityIndex) => (
                   <ActivityItem
                     key={activity.id}
-                    activity={{ ...activity, index: activityIndex + 1 }}
+                    activity={{ ...activity, index: problem.activities.length - activityIndex }}
                     onUpdate={(updated) => updateActivity(problemIndex, activityIndex, updated)}
                     onRemove={() => removeActivity(problemIndex, activityIndex)}
                     showRemove={problem.activities.length > 1}
