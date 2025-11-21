@@ -1,12 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { Animated, ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, PanResponder } from 'react-native';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import ActivityItem from '../components/ActivityItem';
 import AppFooter from '../components/AppFooter';
 import CustomAlert from '../components/CustomAlert';
-import CustomButton from '../components/CustomButton';
 import SolutionItem from '../components/SolutionItem';
 import { useAuth } from '../context/AuthContext';
 import FirebaseFirestoreService from '../services/firebaseFirestore';
@@ -51,6 +50,11 @@ const EditProblemScreen = () => {
   const [problems, setProblems] = useState([]);
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
   const currentProblem = problems[currentProblemIndex];
+
+  // Estados y referencias para FAB arrastrable
+  const [isFabExpanded, setIsFabExpanded] = useState(false);
+  const pan = useRef(new Animated.ValueXY({ x: 0, y: -100 })).current;
+  const expandAnimation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     loadProblemData();
@@ -154,6 +158,40 @@ const EditProblemScreen = () => {
       setLoading(false);
     }
   };
+
+  // FUNCIONES PARA FAB ARRASTRABLE
+  const toggleFabExpansion = () => {
+    const toValue = isFabExpanded ? 0 : 1;
+    Animated.spring(expandAnimation, {
+      toValue,
+      useNativeDriver: true,
+      friction: 5,
+    }).start();
+    setIsFabExpanded(!isFabExpanded);
+  };
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponder: (_, gesture) => {
+        return Math.abs(gesture.dx) > 5 || Math.abs(gesture.dy) > 5;
+      },
+      onPanResponderGrant: () => {
+        pan.setOffset({
+          x: pan.x._value,
+          y: pan.y._value,
+        });
+        pan.setValue({ x: 0, y: 0 });
+      },
+      onPanResponderMove: Animated.event(
+        [null, { dx: pan.x, dy: pan.y }],
+        { useNativeDriver: false }
+      ),
+      onPanResponderRelease: () => {
+        pan.flattenOffset();
+      },
+    })
+  ).current;
 
   const updateGeneralData = (field, value) => {
     setGeneralData({
@@ -423,7 +461,6 @@ const EditProblemScreen = () => {
     { id: 'activities', type: 'activities' },
     { id: 'solutions', type: 'solutions' },
     { id: 'other', type: 'other' },
-    { id: 'buttons', type: 'buttons' },
   ];
 
   const renderSection = ({ item }) => {
@@ -811,34 +848,6 @@ const EditProblemScreen = () => {
           </View>
         );
 
-      case 'buttons':
-        return (
-          <View style={styles.buttonsContainer}>
-            <View style={styles.actionButtons}>
-              <CustomButton
-                title="Guardar"
-                onPress={handleSave}
-                variant="primary"
-                style={styles.saveButton}
-                loading={saving}
-                disabled={saving}
-              />
-              <CustomButton
-                title="Cancelar"
-                onPress={() => {
-                  if (router.canGoBack()) {
-                    router.back();
-                  } else {
-                    router.replace('/menu');
-                  }
-                }}
-                variant="gray"
-                style={styles.cancelButton}
-              />
-            </View>
-          </View>
-        );
-
       default:
         return null;
     }
@@ -899,6 +908,95 @@ const EditProblemScreen = () => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       />
+
+      {/* FAB ARRASTRABLE */}
+      <Animated.View
+        style={[
+          styles.fabContainer,
+          {
+            transform: [
+              { translateX: pan.x },
+              { translateY: pan.y },
+            ],
+          },
+        ]}
+        {...panResponder.panHandlers}
+      >
+        {/* Botones desplegables */}
+        {isFabExpanded && (
+          <Animated.View
+            style={[
+              styles.fabOptionsContainer,
+              {
+                opacity: expandAnimation,
+                transform: [
+                  {
+                    translateY: expandAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [20, 0],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          >
+            {/* Botón Guardar */}
+            <TouchableOpacity
+              style={[styles.fabOption, styles.fabSaveOption]}
+              onPress={() => {
+                toggleFabExpansion();
+                handleSave();
+              }}
+              disabled={saving}
+            >
+              <Ionicons name="checkmark" size={24} color="#fff" />
+              <Text style={styles.fabOptionText}>Guardar</Text>
+            </TouchableOpacity>
+
+            {/* Botón Cancelar - Sale de la pantalla */}
+            <TouchableOpacity
+              style={[styles.fabOption, styles.fabCancelOption]}
+              onPress={() => {
+                toggleFabExpansion();
+                setTimeout(() => {
+                  if (router.canGoBack()) {
+                    router.back();
+                  } else {
+                    router.replace('/menu');
+                  }
+                }, 300);
+              }}
+            >
+              <Ionicons name="close" size={24} color="#fff" />
+              <Text style={styles.fabOptionText}>Cancelar</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+
+        {/* Botón principal FAB */}
+        <TouchableOpacity
+          onPress={toggleFabExpansion}
+          activeOpacity={0.8}
+        >
+          <Animated.View
+            style={[
+              styles.fabButton,
+              {
+                transform: [
+                  {
+                    rotate: expandAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: ['0deg', '45deg'],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          >
+            <Ionicons name="add" size={32} color="#fff" />
+          </Animated.View>
+        </TouchableOpacity>
+      </Animated.View>
 
       <CustomAlert
         visible={showUploadingAlert}
@@ -1071,19 +1169,58 @@ const styles = StyleSheet.create({
   addButton: {
     padding: 4,
   },
-  buttonsContainer: {
-    marginTop: 20,
-    paddingBottom: 20,
+  // Estilos para FAB arrastrable
+  fabContainer: {
+    position: 'absolute',
+    bottom: 80,
+    right: 20,
+    alignItems: 'center',
+    zIndex: 1000,
   },
-  actionButtons: {
-    flexDirection: 'row',
+  fabButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  fabOptionsContainer: {
+    position: 'absolute',
+    bottom: 70,
+    alignItems: 'center',
     gap: 12,
   },
-  saveButton: {
-    flex: 1,
+  fabOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    minWidth: 140,
   },
-  cancelButton: {
-    flex: 1,
+  fabSaveOption: {
+    backgroundColor: '#10B981', // Verde
+  },
+  fabCancelOption: {
+    backgroundColor: '#6B7280', // Gris
+  },
+  fabOptionText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   sublabel: {
     color: colors.textSecondary,

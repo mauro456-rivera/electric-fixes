@@ -54,7 +54,6 @@ class FirebaseFirestoreService {
           return {
             stepTitle: problem.problemTitle, // Título del PASO
             subSteps: processedActivities,    // SUB-PASOS (antes "activities")
-            otherData: problem.otherData,
           };
         })
       );

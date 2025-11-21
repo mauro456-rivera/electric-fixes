@@ -1,12 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { Animated, StyleSheet, Text, TextInput, TouchableOpacity, View, PanResponder } from 'react-native';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import ActivityItem from '../components/ActivityItem';
 import AppFooter from '../components/AppFooter';
 import CustomAlert from '../components/CustomAlert';
-import CustomButton from '../components/CustomButton';
 import { useAuth } from '../context/AuthContext';
 import FirebaseFirestoreService from '../services/firebaseFirestore';
 import { colors } from '../styles/colors';
@@ -16,7 +15,7 @@ const RegisterProblemScreen = () => {
   const router = useRouter();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [problemType, setProblemType] = useState('mechanical'); // 'mechanical' o 'electrical'
+  const problemType = 'mechanical'; // Tipo fijo - ya no seleccionable por el usuario
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showErrorAlert, setShowErrorAlert] = useState(false);
   const [showMinActivityAlert, setShowMinActivityAlert] = useState(false);
@@ -53,10 +52,14 @@ const RegisterProblemScreen = () => {
       id: Date.now(),
       problemTitle: '',
       activities: [{ id: Date.now(), title: '', files: [], notes: [{ id: Date.now(), text: '' }] }],
-      otherData: '',
       isExpanded: true,
     }
   ]);
+
+  // Estados y referencias para FAB arrastrable
+  const [isFabExpanded, setIsFabExpanded] = useState(false);
+  const pan = useRef(new Animated.ValueXY({ x: 0, y: -100 })).current; // Posición inicial (abajo derecha)
+  const expandAnimation = useRef(new Animated.Value(0)).current; // Animación de expansión
 
   // Ya no necesitamos currentProblemIndex, mostraremos todos los PASOS
 
@@ -120,6 +123,40 @@ const RegisterProblemScreen = () => {
     });
   };
 
+  // FUNCIONES PARA FAB ARRASTRABLE
+  const toggleFabExpansion = () => {
+    const toValue = isFabExpanded ? 0 : 1;
+    Animated.spring(expandAnimation, {
+      toValue,
+      useNativeDriver: true,
+      friction: 5,
+    }).start();
+    setIsFabExpanded(!isFabExpanded);
+  };
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponder: (_, gesture) => {
+        // Solo activar el pan responder si hay movimiento significativo
+        return Math.abs(gesture.dx) > 5 || Math.abs(gesture.dy) > 5;
+      },
+      onPanResponderGrant: () => {
+        pan.setOffset({
+          x: pan.x._value,
+          y: pan.y._value,
+        });
+        pan.setValue({ x: 0, y: 0 });
+      },
+      onPanResponderMove: Animated.event(
+        [null, { dx: pan.x, dy: pan.y }],
+        { useNativeDriver: false }
+      ),
+      onPanResponderRelease: () => {
+        pan.flattenOffset();
+      },
+    })
+  ).current;
 
   // ACTUALIZAR PROBLEMA ACTUAL
   const updateProblemField = (problemIndex, field, value) => {
@@ -166,7 +203,6 @@ const RegisterProblemScreen = () => {
       id: Date.now(),
       problemTitle: '',
       activities: [{ id: Date.now(), title: '', files: [], notes: [{ id: Date.now(), text: '' }] }],
-      otherData: '',
       isExpanded: true,
     };
     setProblems([newProblem, ...problems]); // Agregar al inicio (el nuevo aparece arriba)
@@ -250,7 +286,6 @@ const RegisterProblemScreen = () => {
 
   // SECCIONES DEL FORMULARIO PARA FLATLIST (dinámico para todos los PASOS)
   const formSections = [
-    { id: 'type-selector', type: 'type-selector' },
     { id: 'general', type: 'general' },
     { id: 'symptoms', type: 'symptoms' },
     { id: 'tools', type: 'tools' },
@@ -258,63 +293,10 @@ const RegisterProblemScreen = () => {
     ...problems.map((problem, index) => (
       { id: `problem-${index}`, type: 'problem', problemIndex: index }
     )),
-    { id: 'buttons', type: 'buttons' },
   ];
 
   const renderSection = ({ item }) => {
     switch (item.type) {
-      case 'type-selector':
-        return (
-          <View style={styles.typeSelectorSection}>
-            <Text style={styles.typeSelectorTitle}>Tipo de Problema</Text>
-            <View style={styles.typeOptions}>
-              <TouchableOpacity
-                style={[
-                  styles.typeOption,
-                  problemType === 'mechanical' && styles.typeOptionActive,
-                ]}
-                onPress={() => setProblemType('mechanical')}
-              >
-                <Ionicons
-                  name="construct"
-                  size={32}
-                  color={problemType === 'mechanical' ? colors.mechanical : colors.textSecondary}
-                />
-                <Text
-                  style={[
-                    styles.typeOptionText,
-                    problemType === 'mechanical' && styles.typeOptionTextActiveMechanical,
-                  ]}
-                >
-                  Mecánico
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.typeOption,
-                  problemType === 'electrical' && styles.typeOptionActiveElectrical,
-                ]}
-                onPress={() => setProblemType('electrical')}
-              >
-                <Ionicons
-                  name="flash"
-                  size={32}
-                  color={problemType === 'electrical' ? colors.electrical : colors.textSecondary}
-                />
-                <Text
-                  style={[
-                    styles.typeOptionText,
-                    problemType === 'electrical' && styles.typeOptionTextActiveElectrical,
-                  ]}
-                >
-                  Eléctrico
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        );
-
       case 'general':
         return (
           <>
@@ -625,21 +607,6 @@ const RegisterProblemScreen = () => {
                   />
                 ))}
               </View>
-
-              {/* OTROS DATOS dentro del mismo contenedor */}
-              <View style={styles.otherDataSection}>
-                <Text style={styles.otherDataLabel}>Otros Datos</Text>
-                <TextInput
-                  style={[styles.input, styles.textArea]}
-                  placeholder="Información adicional..."
-                  placeholderTextColor={colors.textSecondary}
-                  value={problem.otherData}
-                  onChangeText={(text) => updateProblemField(problemIndex, 'otherData', text)}
-                  multiline
-                  numberOfLines={3}
-                  textAlignVertical="top"
-                />
-              </View>
             </View>
           </>
         );
@@ -654,35 +621,6 @@ const RegisterProblemScreen = () => {
         // Ya no se renderiza por separado, se renderiza dentro de 'problem'
         return null;
       }
-
-      case 'buttons':
-        return (
-          <View style={styles.buttonsContainer}>
-            <View style={styles.actionButtons}>
-              <CustomButton
-                title="Guardar"
-                onPress={handleSave}
-                variant="primary"
-                style={styles.saveButton}
-                loading={loading}
-                disabled={loading}
-              />
-              <CustomButton
-                title="Cancelar"
-                onPress={() => {
-                  if (router.canGoBack()) {
-                    router.back();
-                  } else {
-                    router.replace('/menu');
-                  }
-                }}
-                variant="gray"
-                style={styles.cancelButton}
-              />
-            </View>
-          </View>
-          
-        );
 
       default:
         return null;
@@ -720,6 +658,95 @@ const RegisterProblemScreen = () => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       />
+
+      {/* FAB ARRASTRABLE */}
+      <Animated.View
+        style={[
+          styles.fabContainer,
+          {
+            transform: [
+              { translateX: pan.x },
+              { translateY: pan.y },
+            ],
+          },
+        ]}
+        {...panResponder.panHandlers}
+      >
+        {/* Botones desplegables */}
+        {isFabExpanded && (
+          <Animated.View
+            style={[
+              styles.fabOptionsContainer,
+              {
+                opacity: expandAnimation,
+                transform: [
+                  {
+                    translateY: expandAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [20, 0],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          >
+            {/* Botón Guardar */}
+            <TouchableOpacity
+              style={[styles.fabOption, styles.fabSaveOption]}
+              onPress={() => {
+                toggleFabExpansion();
+                handleSave();
+              }}
+              disabled={loading}
+            >
+              <Ionicons name="checkmark" size={24} color="#fff" />
+              <Text style={styles.fabOptionText}>Guardar</Text>
+            </TouchableOpacity>
+
+            {/* Botón Cancelar - Sale de la pantalla */}
+            <TouchableOpacity
+              style={[styles.fabOption, styles.fabCancelOption]}
+              onPress={() => {
+                toggleFabExpansion();
+                setTimeout(() => {
+                  if (router.canGoBack()) {
+                    router.back();
+                  } else {
+                    router.replace('/menu');
+                  }
+                }, 300); // Espera a que termine la animación
+              }}
+            >
+              <Ionicons name="close" size={24} color="#fff" />
+              <Text style={styles.fabOptionText}>Cancelar</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+
+        {/* Botón principal FAB */}
+        <TouchableOpacity
+          onPress={toggleFabExpansion}
+          activeOpacity={0.8}
+        >
+          <Animated.View
+            style={[
+              styles.fabButton,
+              {
+                transform: [
+                  {
+                    rotate: expandAnimation.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: ['0deg', '45deg'],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          >
+            <Ionicons name="add" size={32} color="#fff" />
+          </Animated.View>
+        </TouchableOpacity>
+      </Animated.View>
 
       {/* Alert de Subiendo Datos */}
       <CustomAlert
@@ -839,7 +866,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 40,
+    paddingBottom: 40, // Espacio reducido para FAB circular
   },
   generalSection: {
     backgroundColor: colors.cardBackground,
@@ -907,73 +934,58 @@ const styles = StyleSheet.create({
   addButton: {
     padding: 4,
   },
-  buttonsContainer: {
-    marginTop: 20,
-    paddingBottom: 20,
+  // Estilos para FAB arrastrable
+  fabContainer: {
+    position: 'absolute',
+    bottom: 80,
+    right: 20,
+    alignItems: 'center',
+    zIndex: 1000,
   },
-  actionButtons: {
-    flexDirection: 'row',
+  fabButton: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  fabOptionsContainer: {
+    position: 'absolute',
+    bottom: 70,
+    alignItems: 'center',
     gap: 12,
   },
-  saveButton: {
-    flex: 1,
-  },
-  cancelButton: {
-    flex: 1,
-  },
-  typeSelectorSection: {
-    backgroundColor: colors.cardBackground,
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  typeSelectorTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  typeOptions: {
+  fabOption: {
     flexDirection: 'row',
-    gap: 12,
-  },
-  typeOption: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: colors.border,
-    backgroundColor: colors.background,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    minWidth: 140,
   },
-  typeOptionActive: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primary + '10',
+  fabSaveOption: {
+    backgroundColor: '#10B981', // Verde
   },
-  typeOptionActiveElectrical: {
-    borderColor: colors.electrical,
-    backgroundColor: colors.electrical + '10',
+  fabCancelOption: {
+    backgroundColor: '#6B7280', // Gris
   },
-  typeOptionText: {
+  fabOptionText: {
+    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
-    color: colors.textSecondary,
-    marginTop: 8,
-  },
-  typeOptionTextActive: {
-    color: colors.text,
-  },
-  typeOptionTextActiveMechanical: {
-    color: colors.mechanical,
-    fontWeight: '700',
-  },
-  typeOptionTextActiveElectrical: {
-    color: colors.electrical,
-    fontWeight: '700',
   },
   // Estilos para Urgencia
   urgencyContainer: {
@@ -1190,16 +1202,6 @@ const styles = StyleSheet.create({
   },
   addActivityButton: {
     padding: 4,
-  },
-  // Estilos para OTROS DATOS
-  otherDataSection: {
-    marginTop: 4,
-  },
-  otherDataLabel: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: 12,
   },
 });
 
