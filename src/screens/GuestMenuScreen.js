@@ -81,9 +81,7 @@ const GuestMenuScreen = () => {
           </Text>
           <Text style={styles.headerSubtitle}>TRUCK RALLY TEAM</Text>
           <View style={styles.appNamesContainer}>
-            <Text style={styles.mechanicText}>MECANIC-FIXES</Text>
-            <Text style={styles.separator}>|</Text>
-            <Text style={styles.electricText}>ELECTRIC-FIXES</Text>
+            <Text style={styles.appNameText}>DS WIKI</Text>
           </View>
           <View style={styles.guestBadge}>
             <Ionicons name="person-outline" size={14} color="#ffffff" />
@@ -247,6 +245,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  appNameText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: colors.primary,
+    letterSpacing: 1,
   },
   mechanicText: {
     fontSize: 11,
