@@ -217,12 +217,32 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const deleteAccount = async () => {
+    try {
+      setLoading(true);
+      console.log('🔵 Eliminando cuenta...');
+
+      // Llamar al servicio para eliminar la cuenta
+      await userService.deleteAccount();
+
+      console.log('✅ Cuenta eliminada exitosamente');
+      // onAuthStateChanged detectará automáticamente que el usuario fue eliminado
+      // y limpiará el estado
+    } catch (error) {
+      console.error('❌ Error en deleteAccount:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value = {
     user,
     token,
     loading,
     signIn,
     signOut,
+    deleteAccount,
     isAuthenticated: !!user,
     isAdmin: user?.role === 'admin',
     isUser: user?.role === 'user',

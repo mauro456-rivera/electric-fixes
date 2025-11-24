@@ -10,9 +10,10 @@ import { globalStyles } from '../styles/globalStyles';
 
 const GuestMenuScreen = () => {
   const router = useRouter();
-  const { user, signOut, loading } = useAuth();
+  const { user, signOut, deleteAccount, loading } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+  const [showDeleteAccountAlert, setShowDeleteAccountAlert] = useState(false);
   const [showWelcomeAlert, setShowWelcomeAlert] = useState(false);
 
   // Protección de ruta: Si no hay usuario autenticado y no está cargando, redirigir al login
@@ -46,6 +47,23 @@ const GuestMenuScreen = () => {
     } catch (error) {
       console.error('❌ Error al cerrar sesión:', error);
       router.replace('/login');
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    setShowUserMenu(false);
+    setShowDeleteAccountAlert(true);
+  };
+
+  const confirmDeleteAccount = async () => {
+    try {
+      setShowDeleteAccountAlert(false);
+      await deleteAccount();
+      router.replace('/login');
+    } catch (error) {
+      console.error('❌ Error al eliminar cuenta:', error);
+      // Mostrar error al usuario
+      alert(error.message || 'Error al eliminar la cuenta. Por favor, intenta nuevamente.');
     }
   };
 
@@ -169,6 +187,17 @@ const GuestMenuScreen = () => {
 
             <TouchableOpacity
               style={styles.userMenuItem}
+              onPress={handleDeleteAccount}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="trash-outline" size={24} color="#ff6b6b" />
+              <Text style={styles.userMenuItemTextDelete}>Eliminar Cuenta</Text>
+            </TouchableOpacity>
+
+            <View style={styles.menuDivider} />
+
+            <TouchableOpacity
+              style={styles.userMenuItem}
               onPress={handleLogout}
               activeOpacity={0.7}
             >
@@ -208,6 +237,25 @@ const GuestMenuScreen = () => {
             text: 'Cerrar Sesión',
             style: 'destructive',
             onPress: confirmLogout
+          },
+          {
+            text: 'Cancelar',
+            style: 'cancel'
+          }
+        ]}
+      />
+
+      <CustomAlert
+        visible={showDeleteAccountAlert}
+        onClose={() => setShowDeleteAccountAlert(false)}
+        type="error"
+        title="Eliminar Cuenta"
+        message="¿Estás seguro de que deseas eliminar tu cuenta? Esta acción NO se puede deshacer y perderás acceso a todas las soluciones."
+        buttons={[
+          {
+            text: 'Eliminar Cuenta',
+            style: 'destructive',
+            onPress: confirmDeleteAccount
           },
           {
             text: 'Cancelar',
@@ -450,6 +498,12 @@ const styles = StyleSheet.create({
   },
   userMenuItemTextLogout: {
     color: colors.error,
+    fontSize: 16,
+    marginLeft: 12,
+    fontWeight: '600',
+  },
+  userMenuItemTextDelete: {
+    color: '#ff6b6b',
     fontSize: 16,
     marginLeft: 12,
     fontWeight: '600',

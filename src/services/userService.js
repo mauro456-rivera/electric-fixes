@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initializeApp } from 'firebase/app';
-import { createUserWithEmailAndPassword, getReactNativePersistence, initializeAuth } from 'firebase/auth';
+import { createUserWithEmailAndPassword, deleteUser, getReactNativePersistence, initializeAuth } from 'firebase/auth';
 import {
   collection,
   deleteDoc,
@@ -377,6 +377,53 @@ class UserService {
       return newUserId;
     } catch (error) {
       console.error('❌ Error registrando usuario invitado:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Elimina la cuenta del usuario actual (cumple con requisitos del App Store)
+   * - Elimina el documento de Firestore
+   * - Elimina el usuario de Firebase Auth
+   * Solo para usuarios que se auto-registraron (rol: invitado)
+   * @returns {Promise<void>}
+   */
+  async deleteAccount() {
+    try {
+      console.log('🔵 Iniciando eliminación de cuenta...');
+
+      if (!auth.currentUser) {
+        throw new Error('Debes estar autenticado para eliminar tu cuenta');
+      }
+
+      const userId = auth.currentUser.uid;
+      console.log('🔵 Eliminando cuenta del usuario:', userId);
+
+      // 1. Primero eliminar el documento de Firestore
+      try {
+        const userDocRef = doc(db, 'users', userId);
+        await deleteDoc(userDocRef);
+        console.log('✅ Documento de Firestore eliminado:', userId);
+      } catch (firestoreError) {
+        console.error('⚠️ Error eliminando documento de Firestore:', firestoreError);
+        // Continuar con la eliminación del usuario de Auth aunque falle Firestore
+      }
+
+      // 2. Luego eliminar el usuario de Firebase Auth
+      // IMPORTANTE: Esto requiere que el usuario haya iniciado sesión recientemente
+      await deleteUser(auth.currentUser);
+      console.log('✅ Usuario eliminado de Firebase Auth:', userId);
+      console.log('✅ Cuenta eliminada completamente');
+    } catch (error) {
+      console.error('❌ Error eliminando cuenta:', error);
+
+      // Si el error es por re-autenticación requerida, lanzar error específico
+      if (error.code === 'auth/requires-recent-login') {
+        const reAuthError = new Error('Por seguridad, debes cerrar sesión e iniciar sesión nuevamente antes de eliminar tu cuenta');
+        reAuthError.code = 'auth/requires-recent-login';
+        throw reAuthError;
+      }
+
       throw error;
     }
   }
