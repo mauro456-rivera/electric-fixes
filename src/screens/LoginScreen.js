@@ -40,10 +40,8 @@ const LoginScreen = () => {
   };
 
   const handleEmailBlur = () => {
-    // Al perder el foco, agregar automáticamente @dieselsoft.co si no tiene @
-    if (email && !email.includes('@')) {
-      setEmail(email + '@dieselsoft.co');
-    }
+    // Ya no agregamos nada automáticamente
+    // El AuthContext se encargará de detectar si es username o email
   };
 
 const handleLogin = async () => {
@@ -108,12 +106,11 @@ const handleLogin = async () => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="example@example.com"
+                placeholder="usuario o email"
                 placeholderTextColor={colors.textSecondary}
                 value={email}
                 onChangeText={handleEmailChange}
                 onBlur={handleEmailBlur}
-                keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
                 editable={!loginLoading}

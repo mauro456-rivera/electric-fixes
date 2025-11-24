@@ -21,7 +21,7 @@ const RegisterGuestScreen = () => {
   const router = useRouter();
 
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -35,15 +35,21 @@ const RegisterGuestScreen = () => {
       return;
     }
 
-    if (!email.trim()) {
-      Alert.alert("Error", "Por favor ingrese un email válido");
+    if (!username.trim()) {
+      Alert.alert("Error", "Por favor ingrese un nombre de usuario");
       return;
     }
 
-    // Validar formato de email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      Alert.alert("Error", "Por favor ingrese un email válido");
+    // Validar que el username solo contenga letras, números y guiones bajos
+    const usernameRegex = /^[a-z0-9_]+$/;
+    const usernameLower = username.toLowerCase().trim();
+    if (!usernameRegex.test(usernameLower)) {
+      Alert.alert("Error", "El nombre de usuario solo puede contener letras minúsculas, números y guiones bajos");
+      return;
+    }
+
+    if (usernameLower.length < 3) {
+      Alert.alert("Error", "El nombre de usuario debe tener al menos 3 caracteres");
       return;
     }
 
@@ -65,13 +71,11 @@ const RegisterGuestScreen = () => {
     setLoading(true);
 
     try {
-      const emailTrimmed = email.toLowerCase().trim();
-
       console.log('🔵 Registrando nuevo usuario invitado...');
 
       // Registrar usuario con role 'invitado'
       await userService.registerGuest({
-        email: emailTrimmed,
+        username: usernameLower,
         password: password,
         name: name.trim(),
       });
@@ -80,7 +84,7 @@ const RegisterGuestScreen = () => {
 
       Alert.alert(
         "Registro Exitoso",
-        "Tu cuenta ha sido creada. Ahora puedes iniciar sesión.",
+        `Tu cuenta ha sido creada con el usuario "${usernameLower}". Ahora puedes iniciar sesión.`,
         [
           {
             text: "OK",
@@ -95,9 +99,9 @@ const RegisterGuestScreen = () => {
       let errorMessage = "No se pudo completar el registro";
 
       if (error.code === 'auth/email-already-in-use') {
-        errorMessage = "Este email ya está registrado";
+        errorMessage = "Este nombre de usuario ya está registrado";
       } else if (error.code === 'auth/invalid-email') {
-        errorMessage = "Email inválido";
+        errorMessage = "Nombre de usuario inválido";
       } else if (error.code === 'auth/weak-password') {
         errorMessage = "La contraseña es muy débil";
       } else if (error.message) {
@@ -155,18 +159,17 @@ const RegisterGuestScreen = () => {
 
             <View style={styles.inputContainer}>
               <Ionicons
-                name="mail-outline"
+                name="at-outline"
                 size={20}
                 color={colors.textSecondary}
                 style={styles.icon}
               />
               <TextInput
                 style={styles.input}
-                placeholder="correo@ejemplo.com"
+                placeholder="nombre_de_usuario"
                 placeholderTextColor={colors.textSecondary}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
+                value={username}
+                onChangeText={setUsername}
                 autoCapitalize="none"
                 autoCorrect={false}
                 editable={!loading}

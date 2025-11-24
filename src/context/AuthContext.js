@@ -112,10 +112,18 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  const signIn = async (email, password) => {
+  const signIn = async (emailOrUsername, password) => {
     try {
       setLoading(true);
       console.log('🔵 Iniciando login con Firebase Auth directamente...');
+
+      // Detectar si es username (sin @) o email completo
+      let email = emailOrUsername;
+      if (!emailOrUsername.includes('@')) {
+        // Es un username, convertir a email
+        email = `${emailOrUsername.toLowerCase()}@mecanic-fixes.app`;
+        console.log('🔄 Username detectado, convertido a email:', email);
+      }
 
       // Autenticación directa con Firebase
       const userCredential = await signInWithEmailAndPassword(auth, email, password);

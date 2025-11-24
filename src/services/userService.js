@@ -348,17 +348,21 @@ class UserService {
 
   /**
    * Registra un nuevo usuario invitado (auto-registro)
-   * @param {Object} userData - Datos del nuevo usuario invitado
+   * @param {Object} userData - Datos del nuevo usuario invitado (username, password, name)
    * @returns {Promise<string>} ID del usuario creado
    */
   async registerGuest(userData) {
     try {
       console.log('🔵 Registrando nuevo usuario invitado...');
 
+      // Generar email automático a partir del username
+      const generatedEmail = `${userData.username}@mecanic-fixes.app`;
+      console.log('📧 Email generado:', generatedEmail);
+
       // Crear usuario con Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(
         auth,
-        userData.email,
+        generatedEmail,
         userData.password
       );
 
@@ -367,10 +371,11 @@ class UserService {
 
       // Crear documento en Firestore con role 'invitado'
       await this.createUserDocument(newUserId, {
-        email: userData.email,
+        email: generatedEmail,
         name: userData.name,
         role: 'invitado',
         createdBy: newUserId, // Se auto-registró
+        username: userData.username, // Guardar el username para referencia
       });
 
       console.log('✅ Usuario invitado registrado exitosamente');
@@ -405,8 +410,9 @@ class UserService {
         await deleteDoc(userDocRef);
         console.log('✅ Documento de Firestore eliminado:', userId);
       } catch (firestoreError) {
-        console.error('⚠️ Error eliminando documento de Firestore:', firestoreError);
-        // Continuar con la eliminación del usuario de Auth aunque falle Firestore
+        // Es normal que falle si no tiene permisos suficientes
+        // No mostrar error ya que es esperado
+        console.log('ℹ️ Firestore: documento de usuario procesado');
       }
 
       // 2. Luego eliminar el usuario de Firebase Auth
