@@ -26,6 +26,7 @@ const EditProblemScreen = () => {
 
   const [generalData, setGeneralData] = useState({
     topic: '',
+    workorder: '', // Work Order
     // Datos del Camión separados
     truckBrand: '',
     truckModel: '',
@@ -82,6 +83,7 @@ const EditProblemScreen = () => {
       setGeneralData({
         topic: isNewStructure ? (data.generalData?.diagnosticGuide || '') : (data.generalData?.topic || ''),
         diagnosticGuide: data.generalData?.diagnosticGuide || data.generalData?.topic || '',
+        workorder: data.generalData?.workorder || '',
         // Datos del Camión (priorizar campos separados)
         truckBrand: data.generalData?.truckBrand || '',
         truckModel: data.generalData?.truckModel || '',
@@ -386,6 +388,7 @@ const EditProblemScreen = () => {
       // Actualizar el documento
       const docRef = doc(db, collectionName, problemId);
       const updateData = {
+        'generalData.workorder': generalData.workorder,
         'generalData.truckBrand': generalData.truckBrand,
         'generalData.truckModel': generalData.truckModel,
         'generalData.truckYear': generalData.truckYear,
@@ -479,6 +482,17 @@ const EditProblemScreen = () => {
                 placeholderTextColor={colors.textSecondary}
                 value={generalData.topic}
                 onChangeText={(text) => updateGeneralData('topic', text)}
+              />
+            </View>
+
+            <View style={styles.section}>
+              <Text style={styles.label}>Work Order</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Ej: WO-TA-001"
+                placeholderTextColor={colors.textSecondary}
+                value={generalData.workorder}
+                onChangeText={(text) => updateGeneralData('workorder', text)}
               />
             </View>
 
