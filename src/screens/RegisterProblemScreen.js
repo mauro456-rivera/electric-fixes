@@ -24,7 +24,7 @@ const RegisterProblemScreen = () => {
   const [validationError, setValidationError] = useState('');
   const [generalData, setGeneralData] = useState({
     diagnosticGuide: '',
-    workorder: 'WO-TA-', // Work Order manual con prefijo inicial
+    workOrder: 'WO-TA-', // Work Order manual con prefijo inicial
     // Datos del Camión separados
     truckBrand: '', // Marca (ej: Freightliner, Kenworth, Peterbilt)
     truckModel: '', // Modelo (ej: Cascadia, T680, 579)
@@ -321,8 +321,8 @@ const RegisterProblemScreen = () => {
                   style={styles.input}
                   placeholder="Ej: WO-2024-001"
                   placeholderTextColor={colors.textSecondary}
-                  value={generalData.workorder}
-                  onChangeText={(text) => updateGeneralData('workorder', text)}
+                  value={generalData.workOrder}
+                  onChangeText={(text) => updateGeneralData('workOrder', text)}
                 />
               </View>
 

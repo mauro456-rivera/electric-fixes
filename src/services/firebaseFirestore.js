@@ -63,6 +63,7 @@ class FirebaseFirestoreService {
       const docData = {
         generalData: {
           diagnosticGuide: generalData.diagnosticGuide || '', // GUÍA DE DIAGNÓSTICO (antes "topic")
+          workOrder: generalData.workOrder || '', // Work Order
           // Datos del camión separados
           truckBrand: generalData.truckBrand || '',
           truckModel: generalData.truckModel || '',
