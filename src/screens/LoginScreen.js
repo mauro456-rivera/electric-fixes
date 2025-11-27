@@ -21,7 +21,7 @@ const LoginScreen = () => {
   const router = useRouter();
   const { signIn, isAuthenticated } = useAuth();
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("@dieselsoft.co");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
@@ -36,30 +36,32 @@ const LoginScreen = () => {
   }, [isAuthenticated, loginLoading, router]);
 
   const handleEmailChange = (text) => {
-    setEmail(text);
-  };
-
-  const handleEmailBlur = () => {
-    // Al perder el foco, agregar automáticamente @dieselsoft.co si no tiene @
-    if (email && !email.includes('@')) {
-      setEmail(email + '@dieselsoft.co');
+    // Asegurar que siempre termine con @dieselsoft.co
+    if (!text.includes('@dieselsoft.co')) {
+      setEmail('@dieselsoft.co');
+    } else {
+      const parts = text.split('@dieselsoft.co');
+      const username = parts[0] || '';
+      setEmail(username + '@dieselsoft.co');
     }
   };
 
 const handleLogin = async () => {
-  if (!email.trim() || !password.trim()) {
-    Alert.alert("Error", "Por favor ingrese email y contraseña");
+  const username = email.split('@')[0];
+
+  if (!username.trim() || !password.trim()) {
+    Alert.alert("Error", "Por favor ingrese usuario y contraseña");
     return;
   }
 
   setLoginLoading(true);
 
   try {
-    const emailTrimmed = email.toLowerCase().trim();
+    const fullEmail = email.toLowerCase().trim();
 
     console.log('🔵 Iniciando login con Firebase Auth...');
 
-    await signIn(emailTrimmed, password);
+    await signIn(fullEmail, password);
 
     console.log('✅ Login exitoso. El useEffect navegará automáticamente al menú...');
 
@@ -106,11 +108,10 @@ const handleLogin = async () => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="example@example.com"
+                placeholder="usuario@dieselsoft.co"
                 placeholderTextColor={colors.textSecondary}
                 value={email}
                 onChangeText={handleEmailChange}
-                onBlur={handleEmailBlur}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
