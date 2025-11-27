@@ -305,7 +305,7 @@ const RegisterProblemScreen = () => {
               <Text style={styles.generalTitle}>Información General</Text>
               
               <View style={[styles.section, styles.lowerSection]}>
-                <Text style={styles.label}>GUÍA DE DIAGNÓSTICO *</Text>
+                <Text style={styles.label}>Guía de diagnóstico *</Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Ej: MOTOR NO ARRANCA - VOLVO D13 (2014-2020)"
@@ -316,7 +316,7 @@ const RegisterProblemScreen = () => {
               </View>
 
               <View style={[styles.section, styles.lowerSection]}>
-                <Text style={styles.label}>WORK ORDER</Text>
+                <Text style={styles.label}>Work order</Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Ej: WO-2024-001"
@@ -613,6 +613,7 @@ const RegisterProblemScreen = () => {
                   <ActivityItem
                     key={activity.id}
                     activity={{ ...activity, index: problem.activities.length - activityIndex }}
+                    stepNumber={problems.length - problemIndex}
                     onUpdate={(updated) => updateActivity(problemIndex, activityIndex, updated)}
                     onRemove={() => removeActivity(problemIndex, activityIndex)}
                     showRemove={problem.activities.length > 1}
@@ -1151,7 +1152,8 @@ const styles = StyleSheet.create({
   pasoWithActivitiesContainer: {
     backgroundColor: '#1E293B', // Fondo oscuro como en la imagen
     borderRadius: 12,
-    padding: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 0,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: '#334155',
@@ -1159,6 +1161,7 @@ const styles = StyleSheet.create({
   // Estilos para PASOS - ACTUALIZADOS para coincidir con la imagen
   pasoContainer: {
     marginBottom: 16,
+    paddingHorizontal: 16,
   },
   pasoHeader: {
     flexDirection: 'row',
@@ -1206,6 +1209,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
+    paddingHorizontal: 16,
   },
   activitiesTitle: {
     fontSize: 16,

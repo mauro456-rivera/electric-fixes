@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import FirebaseStorageService from './firebaseStorage';
 
@@ -26,14 +26,20 @@ class FirebaseFirestoreService {
       const problemId = `problem_${Date.now()}`;
       console.log(`💾 Iniciando guardado de guía de diagnóstico: ${problemId}`);
 
+      // Invertir el orden de los problemas para que se guarden en el orden correcto
+      const reversedProblems = [...problems].reverse();
+
       // Procesa cada PASO subiendo sus archivos a Storage
       const processedProblems = await Promise.all(
-        problems.map(async (problem, index) => {
+        reversedProblems.map(async (problem, index) => {
           console.log(`📋 Procesando PASO ${index + 1}/${problems.length}`);
+
+          // Invertir el orden de las actividades para que se guarden en el orden correcto
+          const reversedActivities = [...problem.activities].reverse();
 
           // Procesa y sube archivos de cada SUB-PASO (antes "actividades")
           const processedActivities = await Promise.all(
-            problem.activities.map(async (activity, actIndex) => {
+            reversedActivities.map(async (activity, actIndex) => {
               let activityFileUrls = [];
               if (activity.files && activity.files.length > 0) {
                 console.log(`📎 Subiendo ${activity.files.length} archivos de SUB-PASO ${actIndex + 1}`);
@@ -45,7 +51,11 @@ class FirebaseFirestoreService {
               return {
                 title: activity.title,
                 files: activityFileUrls,
-                notes: activity.notes ? activity.notes.filter(note => note.text.trim() !== '').map(note => note.text) : [],
+                notes: activity.notes ? activity.notes.filter(note => note.text.trim() !== '').map(note => ({
+                  text: note.text,
+                  bugContent: note.bugContent || '',
+                  checkContent: note.checkContent || '',
+                })) : [],
               };
             })
           );
@@ -104,6 +114,116 @@ class FirebaseFirestoreService {
     } catch (error) {
       console.error('❌ Error al guardar problema:', error.message);
       throw new Error(`Error al guardar el problema: ${error.message}`);
+    }
+  }
+
+  /**
+   * Actualiza un problema existente en Firestore
+   * @param {string} problemId - ID del documento a actualizar
+   * @param {string} collectionName - Nombre de la colección
+   * @param {Object} generalData - Datos generales del problema
+   * @param {Array} problems - Array de pasos/problemas
+   * @param {Object} user - Usuario que realiza la actualización
+   * @param {string} problemType - Tipo de problema
+   * @returns {Promise<void>}
+   * @throws {Error} Si falla la actualización
+   */
+  async updateProblem(problemId, collectionName, generalData, problems, user, problemType = 'mechanical') {
+    try {
+      console.log(`💾 Iniciando actualización de guía: ${problemId}`);
+
+      // Invertir el orden de los problemas para que se guarden en el orden correcto
+      const reversedProblems = [...problems].reverse();
+
+      // Procesa cada PASO subiendo sus archivos a Storage
+      const processedProblems = await Promise.all(
+        reversedProblems.map(async (problem, index) => {
+          console.log(`📋 Procesando PASO ${index + 1}/${problems.length}`);
+
+          // Invertir el orden de las actividades para que se guarden en el orden correcto
+          const reversedActivities = [...problem.activities].reverse();
+
+          // Procesa y sube archivos de cada SUB-PASO
+          const processedActivities = await Promise.all(
+            reversedActivities.map(async (activity, actIndex) => {
+              let activityFileUrls = [];
+
+              // Separar archivos nuevos (con uri) de URLs existentes
+              const newFiles = (activity.files || []).filter(file =>
+                typeof file === 'object' && file.uri && !file.uri.startsWith('http')
+              );
+              const existingUrls = (activity.files || []).filter(file =>
+                typeof file === 'string' || (typeof file === 'object' && file.uri && file.uri.startsWith('http'))
+              ).map(file => typeof file === 'string' ? file : file.uri);
+
+              // Subir solo archivos nuevos
+              if (newFiles.length > 0) {
+                console.log(`📎 Subiendo ${newFiles.length} archivos nuevos de SUB-PASO ${actIndex + 1}`);
+                const newUrls = await FirebaseStorageService.uploadMultipleFiles(
+                  newFiles,
+                  `problems/${problemId}/step_${index}/substeps/substep_${actIndex}`
+                );
+                activityFileUrls = [...existingUrls, ...newUrls];
+              } else {
+                activityFileUrls = existingUrls;
+              }
+
+              return {
+                title: activity.title,
+                files: activityFileUrls,
+                notes: activity.notes ? activity.notes.filter(note => note.text.trim() !== '').map(note => ({
+                  text: note.text,
+                  bugContent: note.bugContent || '',
+                  checkContent: note.checkContent || '',
+                })) : [],
+              };
+            })
+          );
+
+          return {
+            stepTitle: problem.problemTitle,
+            subSteps: processedActivities,
+          };
+        })
+      );
+
+      // Construye el documento actualizado
+      const docData = {
+        generalData: {
+          diagnosticGuide: generalData.diagnosticGuide || '',
+          workOrder: generalData.workOrder || '',
+          truckBrand: generalData.truckBrand || '',
+          truckModel: generalData.truckModel || '',
+          truckYear: generalData.truckYear || '',
+          truckData: `${generalData.truckBrand || ''} ${generalData.truckModel || ''} ${generalData.truckYear || ''}`.trim(),
+          mainSymptom: generalData.mainSymptom || '',
+          urgency: generalData.urgency || 'Media',
+          estimatedDiagnosticTime: generalData.estimatedDiagnosticTime || '',
+          reportedSymptoms: generalData.reportedSymptoms || [],
+          requiredTools: generalData.requiredTools || {
+            diagnostic: [],
+            tools: [],
+            safety: [],
+          },
+        },
+        steps: processedProblems,
+        updatedAt: serverTimestamp(),
+        updatedBy: {
+          userId: user.id,
+          name: user.name || 'Usuario Desconocido',
+          email: user.email,
+        },
+      };
+
+      // Actualiza el documento
+      console.log(`💾 Actualizando documento en colección: ${collectionName}...`);
+      const docRef = doc(db, collectionName, problemId);
+      await updateDoc(docRef, docData);
+      console.log(`✅ Guía de diagnóstico actualizada exitosamente`);
+
+    } catch (error) {
+      console.error('❌ Error al actualizar problema:', error.message);
+      throw new Error(`Error al actualizar el problema: ${error.message}`);
     }
   }
 

@@ -1,12 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState, useRef } from 'react';
-import { Animated, ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, PanResponder } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { Animated, ActivityIndicator, StyleSheet, Text, TextInput, TouchableOpacity, View, PanResponder } from 'react-native';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import ActivityItem from '../components/ActivityItem';
 import AppFooter from '../components/AppFooter';
 import CustomAlert from '../components/CustomAlert';
-import SolutionItem from '../components/SolutionItem';
 import { useAuth } from '../context/AuthContext';
 import FirebaseFirestoreService from '../services/firebaseFirestore';
 import { colors } from '../styles/colors';
@@ -18,26 +17,25 @@ const EditProblemScreen = () => {
   const { problemId, collectionName } = useLocalSearchParams();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const problemType = 'mechanical';
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showErrorAlert, setShowErrorAlert] = useState(false);
+  const [showMinActivityAlert, setShowMinActivityAlert] = useState(false);
+  const [showMinProblemAlert, setShowMinProblemAlert] = useState(false);
   const [showUploadingAlert, setShowUploadingAlert] = useState(false);
   const [validationError, setValidationError] = useState('');
-  const [problem, setProblem] = useState(null);
 
   const [generalData, setGeneralData] = useState({
-    topic: '',
-    workOrder: '', // Work Order
-    // Datos del Camión separados
+    diagnosticGuide: '',
+    workOrder: 'WO-TA-',
     truckBrand: '',
     truckModel: '',
     truckYear: '',
-    // Información Básica
     mainSymptom: '',
     urgency: 'Media',
     estimatedDiagnosticTime: '',
   });
 
-  // Estados para síntomas y herramientas
   const [reportedSymptoms, setReportedSymptoms] = useState([
     { id: Date.now(), text: '' }
   ]);
@@ -48,15 +46,20 @@ const EditProblemScreen = () => {
     safety: [{ id: Date.now() + 2, text: '' }],
   });
 
-  const [problems, setProblems] = useState([]);
-  const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
-  const currentProblem = problems[currentProblemIndex];
+  const [problems, setProblems] = useState([
+    {
+      id: Date.now(),
+      problemTitle: '',
+      activities: [{ id: Date.now(), title: '', files: [], notes: [{ id: Date.now(), text: '' }] }],
+      isExpanded: true,
+    }
+  ]);
 
-  // Estados y referencias para FAB arrastrable
   const [isFabExpanded, setIsFabExpanded] = useState(false);
   const pan = useRef(new Animated.ValueXY({ x: 0, y: -100 })).current;
   const expandAnimation = useRef(new Animated.Value(0)).current;
 
+  // Cargar datos del problema al iniciar
   useEffect(() => {
     loadProblemData();
   }, [problemId]);
@@ -65,95 +68,70 @@ const EditProblemScreen = () => {
     try {
       setLoading(true);
       const data = await FirebaseFirestoreService.getProblemById(problemId, collectionName);
-      setProblem(data);
 
-      console.log('📥 Datos cargados de Firestore:', {
-        truckBrand: data.generalData?.truckBrand,
-        truckModel: data.generalData?.truckModel,
-        truckYear: data.generalData?.truckYear,
-        mainSymptom: data.generalData?.mainSymptom,
-        urgency: data.generalData?.urgency,
-        reportedSymptoms: data.generalData?.reportedSymptoms,
-        requiredTools: data.generalData?.requiredTools,
-      });
-
-      // Detectar estructura (nueva con diagnosticGuide/steps vs antigua con topic/problems)
-      const isNewStructure = !!data.generalData?.diagnosticGuide;
-
+      // Cargar datos generales
       setGeneralData({
-        topic: isNewStructure ? (data.generalData?.diagnosticGuide || '') : (data.generalData?.topic || ''),
-        diagnosticGuide: data.generalData?.diagnosticGuide || data.generalData?.topic || '',
+        diagnosticGuide: data.generalData?.diagnosticGuide || '',
         workOrder: data.generalData?.workOrder || '',
-        // Datos del Camión (priorizar campos separados)
         truckBrand: data.generalData?.truckBrand || '',
         truckModel: data.generalData?.truckModel || '',
         truckYear: data.generalData?.truckYear || '',
-        // Información Básica
         mainSymptom: data.generalData?.mainSymptom || '',
         urgency: data.generalData?.urgency || 'Media',
         estimatedDiagnosticTime: data.generalData?.estimatedDiagnosticTime || '',
       });
 
-      // Cargar síntomas reportados (convertir de string a objeto si es necesario)
+      // Cargar síntomas reportados
       if (data.generalData?.reportedSymptoms && data.generalData.reportedSymptoms.length > 0) {
-        const symptomsArray = data.generalData.reportedSymptoms.map((symptom, idx) => {
-          if (typeof symptom === 'string') {
-            return { id: Date.now() + idx, text: symptom };
-          }
-          return symptom.id ? symptom : { id: Date.now() + idx, text: symptom.text || '' };
-        });
-        setReportedSymptoms(symptomsArray);
+        setReportedSymptoms(data.generalData.reportedSymptoms.map((symptom, idx) => ({
+          id: Date.now() + idx,
+          text: typeof symptom === 'string' ? symptom : symptom.text
+        })));
       }
 
-      // Cargar herramientas requeridas (convertir de string a objeto si es necesario)
+      // Cargar herramientas requeridas
       if (data.generalData?.requiredTools) {
-        const convertToolsArray = (tools) => {
-          if (!tools || tools.length === 0) return [{ id: Date.now(), text: '' }];
-          return tools.map((tool, idx) => {
-            if (typeof tool === 'string') {
-              return { id: Date.now() + idx, text: tool };
-            }
-            return tool.id ? tool : { id: Date.now() + idx, text: tool.text || '' };
-          });
-        };
-
         setRequiredTools({
-          diagnostic: convertToolsArray(data.generalData.requiredTools.diagnostic),
-          tools: convertToolsArray(data.generalData.requiredTools.tools),
-          safety: convertToolsArray(data.generalData.requiredTools.safety),
+          diagnostic: (data.generalData.requiredTools.diagnostic || []).map((tool, idx) => ({
+            id: Date.now() + idx,
+            text: typeof tool === 'string' ? tool : tool.text
+          })),
+          tools: (data.generalData.requiredTools.tools || []).map((tool, idx) => ({
+            id: Date.now() + 1000 + idx,
+            text: typeof tool === 'string' ? tool : tool.text
+          })),
+          safety: (data.generalData.requiredTools.safety || []).map((tool, idx) => ({
+            id: Date.now() + 2000 + idx,
+            text: typeof tool === 'string' ? tool : tool.text
+          })),
         });
       }
 
-      // Cargar pasos/problemas según la estructura
-      const sourceData = isNewStructure ? data.steps : data.problems;
-      const loadedProblems = sourceData?.map(item => ({
-        id: Date.now() + Math.random(),
-        problemTitle: isNewStructure ? (item.stepTitle || '') : (item.problemTitle || ''),
-        problemDescription: item.problemDescription || '',
-        problemFiles: [],
-        activities: (isNewStructure ? item.subSteps : item.activities)?.map((act, idx) => ({
-          id: Date.now() + Math.random() + idx,
-          title: act.title || '',
-          files: [],
-          notes: act.notes ? (Array.isArray(act.notes)
-            ? act.notes.map((note, noteIdx) => ({
-                id: Date.now() + Math.random() + noteIdx,
-                text: typeof note === 'string' ? note : (note.text || '')
-              }))
-            : [{ id: Date.now(), text: '' }]
-          ) : [{ id: Date.now(), text: '' }]
-        })) || [{ id: Date.now(), title: '', files: [], notes: [{ id: Date.now(), text: '' }] }],
-        solutions: item.solutions?.map((sol, idx) => ({
-          id: Date.now() + Math.random() + idx,
-          title: sol.title || '',
-          files: []
-        })) || [{ id: Date.now() + 1, title: '', files: [] }],
-        otherData: item.otherData || '',
-      })) || [];
+      // Cargar pasos y actividades
+      if (data.steps && data.steps.length > 0) {
+        const loadedProblems = data.steps.map((step, stepIdx) => ({
+          id: Date.now() + 10000 + stepIdx,
+          problemTitle: step.stepTitle || '',
+          activities: (step.subSteps || []).map((subStep, actIdx) => ({
+            id: Date.now() + 20000 + stepIdx * 100 + actIdx,
+            title: subStep.title || '',
+            files: subStep.files || [],
+            notes: subStep.notes && subStep.notes.length > 0
+              ? subStep.notes.map((note, noteIdx) => ({
+                  id: Date.now() + 30000 + stepIdx * 1000 + actIdx * 100 + noteIdx,
+                  text: typeof note === 'string' ? note : (note.text || ''),
+                  bugContent: typeof note === 'object' ? (note.bugContent || '') : '',
+                  checkContent: typeof note === 'object' ? (note.checkContent || '') : '',
+                }))
+              : [{ id: Date.now() + 30000 + stepIdx * 1000 + actIdx * 100, text: '', bugContent: '', checkContent: '' }]
+          })),
+          isExpanded: true,
+        }));
+        setProblems(loadedProblems);
+      }
 
-      setProblems(loadedProblems);
     } catch (error) {
-      console.error('Error cargando problema:', error);
+      console.error('Error cargando datos:', error);
       setValidationError('No se pudo cargar el problema');
       setShowErrorAlert(true);
     } finally {
@@ -161,7 +139,61 @@ const EditProblemScreen = () => {
     }
   };
 
-  // FUNCIONES PARA FAB ARRASTRABLE
+  // FUNCIONES DE ACTUALIZACIÓN (igual que RegisterProblemScreen)
+  const updateGeneralData = (field, value) => {
+    setGeneralData({
+      ...generalData,
+      [field]: value,
+    });
+  };
+
+  // FUNCIONES PARA SÍNTOMAS
+  const addSymptom = () => {
+    setReportedSymptoms([
+      ...reportedSymptoms,
+      { id: Date.now(), text: '' }
+    ]);
+  };
+
+  const updateSymptom = (id, text) => {
+    setReportedSymptoms(
+      reportedSymptoms.map(symptom =>
+        symptom.id === id ? { ...symptom, text } : symptom
+      )
+    );
+  };
+
+  const removeSymptom = (id) => {
+    if (reportedSymptoms.length === 1) return;
+    setReportedSymptoms(reportedSymptoms.filter(symptom => symptom.id !== id));
+  };
+
+  // FUNCIONES PARA HERRAMIENTAS
+  const addTool = (category) => {
+    setRequiredTools({
+      ...requiredTools,
+      [category]: [...requiredTools[category], { id: Date.now(), text: '' }]
+    });
+  };
+
+  const updateTool = (category, id, text) => {
+    setRequiredTools({
+      ...requiredTools,
+      [category]: requiredTools[category].map(tool =>
+        tool.id === id ? { ...tool, text } : tool
+      )
+    });
+  };
+
+  const removeTool = (category, id) => {
+    if (requiredTools[category].length === 1) return;
+    setRequiredTools({
+      ...requiredTools,
+      [category]: requiredTools[category].filter(tool => tool.id !== id)
+    });
+  };
+
+  // FUNCIONES FAB
   const toggleFabExpansion = () => {
     const toValue = isFabExpanded ? 0 : 1;
     Animated.spring(expandAnimation, {
@@ -195,122 +227,66 @@ const EditProblemScreen = () => {
     })
   ).current;
 
-  const updateGeneralData = (field, value) => {
-    setGeneralData({
-      ...generalData,
-      [field]: value,
-    });
-  };
-
-  const updateProblemField = (field, value) => {
+  // FUNCIONES PARA PROBLEMAS/PASOS
+  const updateProblemField = (problemIndex, field, value) => {
     const updatedProblems = [...problems];
-    updatedProblems[currentProblemIndex] = {
-      ...updatedProblems[currentProblemIndex],
+    updatedProblems[problemIndex] = {
+      ...updatedProblems[problemIndex],
       [field]: value,
     };
     setProblems(updatedProblems);
   };
 
-  const addActivity = () => {
+  const addActivity = (problemIndex) => {
     const updatedProblems = [...problems];
-    updatedProblems[currentProblemIndex].activities.push({
+    updatedProblems[problemIndex].activities.unshift({
       id: Date.now(),
       title: '',
       files: [],
+      notes: [{ id: Date.now(), text: '' }],
     });
     setProblems(updatedProblems);
   };
 
-  const updateActivity = (index, updatedActivity) => {
+  const updateActivity = (problemIndex, activityIndex, updatedActivity) => {
     const updatedProblems = [...problems];
-    updatedProblems[currentProblemIndex].activities[index] = updatedActivity;
+    updatedProblems[problemIndex].activities[activityIndex] = updatedActivity;
     setProblems(updatedProblems);
   };
 
-  const removeActivity = (index) => {
-    if (currentProblem.activities.length === 1) {
-      setValidationError('Debe haber al menos una actividad');
-      setShowErrorAlert(true);
+  const removeActivity = (problemIndex, activityIndex) => {
+    if (problems[problemIndex].activities.length === 1) {
+      setShowMinActivityAlert(true);
       return;
     }
     const updatedProblems = [...problems];
-    updatedProblems[currentProblemIndex].activities.splice(index, 1);
+    updatedProblems[problemIndex].activities.splice(activityIndex, 1);
     setProblems(updatedProblems);
   };
 
-  const addSolution = () => {
-    const updatedProblems = [...problems];
-    updatedProblems[currentProblemIndex].solutions.push({
+  const addProblem = () => {
+    const newProblem = {
       id: Date.now(),
-      title: '',
-      files: [],
-    });
-    setProblems(updatedProblems);
+      problemTitle: '',
+      activities: [{ id: Date.now(), title: '', files: [], notes: [{ id: Date.now(), text: '' }] }],
+      isExpanded: true,
+    };
+    setProblems([newProblem, ...problems]);
   };
 
-  const updateSolution = (index, updatedSolution) => {
-    const updatedProblems = [...problems];
-    updatedProblems[currentProblemIndex].solutions[index] = updatedSolution;
-    setProblems(updatedProblems);
-  };
-
-  const removeSolution = (index) => {
-    if (currentProblem.solutions.length === 1) {
-      setValidationError('Debe haber al menos una solución');
-      setShowErrorAlert(true);
+  const removeProblem = (problemIndex) => {
+    if (problems.length === 1) {
+      setShowMinProblemAlert(true);
       return;
     }
-    const updatedProblems = [...problems];
-    updatedProblems[currentProblemIndex].solutions.splice(index, 1);
+    const updatedProblems = problems.filter((_, idx) => idx !== problemIndex);
     setProblems(updatedProblems);
   };
 
-  // Funciones para manejar Síntomas Reportados
-  const addSymptom = () => {
-    setReportedSymptoms([...reportedSymptoms, { id: Date.now(), text: '' }]);
-  };
-
-  const updateSymptom = (id, text) => {
-    setReportedSymptoms(reportedSymptoms.map(symptom =>
-      symptom.id === id ? { ...symptom, text } : symptom
-    ));
-  };
-
-  const removeSymptom = (id) => {
-    if (reportedSymptoms.length > 1) {
-      setReportedSymptoms(reportedSymptoms.filter(symptom => symptom.id !== id));
-    }
-  };
-
-  // Funciones para manejar Herramientas Requeridas
-  const addTool = (category) => {
-    setRequiredTools({
-      ...requiredTools,
-      [category]: [...requiredTools[category], { id: Date.now(), text: '' }]
-    });
-  };
-
-  const updateTool = (category, id, text) => {
-    setRequiredTools({
-      ...requiredTools,
-      [category]: requiredTools[category].map(tool =>
-        tool.id === id ? { ...tool, text } : tool
-      )
-    });
-  };
-
-  const removeTool = (category, id) => {
-    if (requiredTools[category].length > 1) {
-      setRequiredTools({
-        ...requiredTools,
-        [category]: requiredTools[category].filter(tool => tool.id !== id)
-      });
-    }
-  };
-
+  // VALIDACIÓN
   const validateForm = () => {
-    if (!generalData.topic.trim()) {
-      setValidationError('El tópico es requerido');
+    if (!generalData.diagnosticGuide.trim()) {
+      setValidationError('La Guía de Diagnóstico es requerida');
       return false;
     }
 
@@ -320,17 +296,17 @@ const EditProblemScreen = () => {
     }
 
     for (let i = 0; i < problems.length; i++) {
-      const prob = problems[i];
-      if (!prob.problemTitle.trim()) {
-        setValidationError(`Problema ${i + 1}: El título del problema es requerido`);
+      const problem = problems[i];
+      if (!problem.problemTitle.trim()) {
+        setValidationError(`Paso ${i + 1}: El título del paso es requerido`);
         return false;
       }
     }
     return true;
   };
 
-  // GUARDAR CAMBIOS
-  const handleSave = async () => {
+  // ACTUALIZAR (en lugar de guardar nuevo)
+  const handleUpdate = async () => {
     if (!validateForm()) {
       setShowErrorAlert(true);
       return;
@@ -340,90 +316,372 @@ const EditProblemScreen = () => {
     setShowUploadingAlert(true);
 
     try {
-      // Importar funciones de Firebase
-      const { updateDoc, doc } = await import('firebase/firestore');
-      const { db } = await import('../config/firebase');
-
-      // Filtrar síntomas y herramientas que no estén vacíos
-      const filteredSymptoms = reportedSymptoms.filter(s => s.text.trim() !== '');
-      const filteredTools = {
-        diagnostic: requiredTools.diagnostic.filter(t => t.text.trim() !== ''),
-        tools: requiredTools.tools.filter(t => t.text.trim() !== ''),
-        safety: requiredTools.safety.filter(t => t.text.trim() !== ''),
-      };
-
-      // Detectar si es estructura nueva o antigua
-      const isNewStructure = !!problem.generalData?.diagnosticGuide;
-
-      // Preparar datos de pasos/problemas con notas
-      const processedData = problems.map(prob => {
-        const baseData = {
-          problemTitle: prob.problemTitle,
-          stepTitle: prob.problemTitle, // Para nueva estructura
-          problemDescription: prob.problemDescription,
-          problemFiles: [],
-          otherData: prob.otherData,
-        };
-
-        // Procesar actividades/subSteps con notas
-        const processedActivities = prob.activities.map(act => ({
-          title: act.title,
-          files: [],
-          notes: act.notes ? act.notes.filter(note => note.text.trim() !== '').map(note => note.text) : []
-        }));
-
-        if (isNewStructure) {
-          baseData.subSteps = processedActivities;
-        } else {
-          baseData.activities = processedActivities;
-          baseData.solutions = prob.solutions.map(sol => ({
-            title: sol.title,
-            files: []
-          }));
-        }
-
-        return baseData;
-      });
-
-      // Actualizar el documento
-      const docRef = doc(db, collectionName, problemId);
-      const updateData = {
-        'generalData.workOrder': generalData.workOrder,
-        'generalData.truckBrand': generalData.truckBrand,
-        'generalData.truckModel': generalData.truckModel,
-        'generalData.truckYear': generalData.truckYear,
-        'generalData.truckData': `${generalData.truckBrand} ${generalData.truckModel} ${generalData.truckYear}`.trim(),
-        'generalData.mainSymptom': generalData.mainSymptom,
-        'generalData.urgency': generalData.urgency,
-        'generalData.estimatedDiagnosticTime': generalData.estimatedDiagnosticTime,
-        'generalData.reportedSymptoms': filteredSymptoms.map(s => s.text),
-        'generalData.requiredTools': {
-          diagnostic: filteredTools.diagnostic.map(t => t.text),
-          tools: filteredTools.tools.map(t => t.text),
-          safety: filteredTools.safety.map(t => t.text),
+      const generalDataWithDetails = {
+        ...generalData,
+        reportedSymptoms: reportedSymptoms.filter(s => s.text.trim() !== ''),
+        requiredTools: {
+          diagnostic: requiredTools.diagnostic.filter(t => t.text.trim() !== ''),
+          tools: requiredTools.tools.filter(t => t.text.trim() !== ''),
+          safety: requiredTools.safety.filter(t => t.text.trim() !== ''),
         },
       };
 
-      // Agregar campo específico según la estructura
-      if (isNewStructure) {
-        updateData['generalData.diagnosticGuide'] = generalData.diagnosticGuide || generalData.topic;
-        updateData.steps = processedData;
-      } else {
-        updateData['generalData.topic'] = generalData.topic;
-        updateData.problems = processedData;
-      }
-
-      await updateDoc(docRef, updateData);
+      await FirebaseFirestoreService.updateProblem(
+        problemId,
+        collectionName,
+        generalDataWithDetails,
+        problems,
+        user,
+        problemType
+      );
 
       setShowUploadingAlert(false);
       setShowSuccessAlert(true);
     } catch (error) {
-      console.error('Error guardando cambios:', error);
-      setValidationError('No se pudieron guardar los cambios. Intenta de nuevo.');
+      console.error('Error actualizando:', error);
+      setValidationError('No se pudo actualizar el problema. Intenta de nuevo.');
       setShowUploadingAlert(false);
       setShowErrorAlert(true);
     } finally {
       setSaving(false);
+    }
+  };
+
+  // SECCIONES DEL FORMULARIO
+  const formSections = [
+    { id: 'general', type: 'general' },
+    { id: 'symptoms', type: 'symptoms' },
+    { id: 'tools', type: 'tools' },
+    ...problems.map((problem, index) => (
+      { id: `problem-${index}`, type: 'problem', problemIndex: index }
+    )),
+  ];
+
+  const renderSection = ({ item }) => {
+    switch (item.type) {
+      case 'general':
+        return (
+          <>
+            <View style={styles.generalSection}>
+              <Text style={styles.generalTitle}>Información General</Text>
+
+              <View style={[styles.section, styles.lowerSection]}>
+                <Text style={styles.label}>Guía de diagnóstico *</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Ej: MOTOR NO ARRANCA - VOLVO D13 (2014-2020)"
+                  placeholderTextColor={colors.textSecondary}
+                  value={generalData.diagnosticGuide}
+                  onChangeText={(text) => updateGeneralData('diagnosticGuide', text)}
+                />
+              </View>
+
+              <View style={[styles.section, styles.lowerSection]}>
+                <Text style={styles.label}>Work order</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Ej: WO-2024-001"
+                  placeholderTextColor={colors.textSecondary}
+                  value={generalData.workOrder}
+                  onChangeText={(text) => updateGeneralData('workOrder', text)}
+                />
+              </View>
+
+              <View style={[styles.section, styles.lowerSection]}>
+                <Text style={styles.label}>Datos del Camión</Text>
+
+                <View style={styles.truckFieldContainer}>
+                  <Text style={styles.truckFieldLabel}>Marca</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Ej: Freightliner, Kenworth, Peterbilt"
+                    placeholderTextColor={colors.textSecondary}
+                    value={generalData.truckBrand}
+                    onChangeText={(text) => updateGeneralData('truckBrand', text)}
+                  />
+                </View>
+
+                <View style={styles.truckFieldContainer}>
+                  <Text style={styles.truckFieldLabel}>Modelo</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Ej: Cascadia, T680, 579"
+                    placeholderTextColor={colors.textSecondary}
+                    value={generalData.truckModel}
+                    onChangeText={(text) => updateGeneralData('truckModel', text)}
+                  />
+                </View>
+
+                <View style={styles.truckFieldContainer}>
+                  <Text style={styles.truckFieldLabel}>Año</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Ej: 2020, 2021, 2022"
+                    placeholderTextColor={colors.textSecondary}
+                    value={generalData.truckYear}
+                    onChangeText={(text) => updateGeneralData('truckYear', text)}
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.generalSection}>
+              <Text style={styles.generalTitle}>Información Básica</Text>
+
+              <View style={[styles.section, styles.lowerSection]}>
+                <Text style={styles.label}>Síntoma Principal *</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Descripción clara del síntoma principal"
+                  placeholderTextColor={colors.textSecondary}
+                  value={generalData.mainSymptom}
+                  onChangeText={(text) => updateGeneralData('mainSymptom', text)}
+                />
+              </View>
+
+              <View style={[styles.section, styles.lowerSection]}>
+                <Text style={styles.label}>Urgencia</Text>
+                <View style={styles.urgencyContainer}>
+                  {['Leve', 'Media', 'Crítica'].map((level) => (
+                    <TouchableOpacity
+                      key={level}
+                      style={[
+                        styles.urgencyButton,
+                        generalData.urgency === level && styles.urgencyButtonActive,
+                        generalData.urgency === level && level === 'Crítica' && styles.urgencyButtonCritical,
+                        generalData.urgency === level && level === 'Media' && styles.urgencyButtonMedium,
+                        generalData.urgency === level && level === 'Leve' && styles.urgencyButtonLow,
+                      ]}
+                      onPress={() => updateGeneralData('urgency', level)}
+                    >
+                      <Text
+                        style={[
+                          styles.urgencyButtonText,
+                          generalData.urgency === level && styles.urgencyButtonTextActive,
+                        ]}
+                      >
+                        {level}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+
+              <View style={[styles.section, styles.lowerSection]}>
+                <Text style={styles.label}>Tiempo Diagnóstico Estimado (minutos)</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Ej: 30, 60, 120"
+                  placeholderTextColor={colors.textSecondary}
+                  value={generalData.estimatedDiagnosticTime}
+                  onChangeText={(text) => updateGeneralData('estimatedDiagnosticTime', text)}
+                  keyboardType="numeric"
+                />
+              </View>
+            </View>
+
+            <View style={styles.separator} />
+          </>
+        );
+
+      case 'symptoms':
+        return (
+          <>
+            <View style={styles.symptomsSection}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.generalTitle}>Síntomas Reportados (+)</Text>
+                <TouchableOpacity onPress={addSymptom} style={styles.addButton}>
+                  <Ionicons name="add-circle" size={28} color={colors.secondary} />
+                </TouchableOpacity>
+              </View>
+
+              {reportedSymptoms.map((symptom, index) => (
+                <View key={symptom.id} style={styles.symptomItem}>
+                  <View style={styles.symptomRow}>
+                    <TextInput
+                      style={styles.symptomInput}
+                      placeholder={`Síntoma ${index + 1} (ej: Luz check engine encendida, Pérdida de potencia)`}
+                      placeholderTextColor={colors.textSecondary}
+                      value={symptom.text}
+                      onChangeText={(text) => updateSymptom(symptom.id, text)}
+                    />
+
+                    {reportedSymptoms.length > 1 && (
+                      <TouchableOpacity
+                        onPress={() => removeSymptom(symptom.id)}
+                        style={styles.removeSymptomButton}
+                      >
+                        <Ionicons name="close-circle" size={24} color={colors.error} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </View>
+              ))}
+            </View>
+
+            <View style={styles.separator} />
+          </>
+        );
+
+      case 'tools':
+        return (
+          <>
+            <View style={styles.toolsSection}>
+              <Text style={styles.generalTitle}>Herramientas Requeridas</Text>
+
+              {/* Diagnóstico */}
+              <View style={styles.toolCategory}>
+                <View style={styles.toolCategoryHeader}>
+                  <Ionicons name="medkit-outline" size={20} color={colors.primary} />
+                  <Text style={styles.toolCategoryTitle}>Diagnóstico</Text>
+                  <TouchableOpacity onPress={() => addTool('diagnostic')} style={styles.addToolButton}>
+                    <Ionicons name="add-circle-outline" size={22} color={colors.secondary} />
+                  </TouchableOpacity>
+                </View>
+                {requiredTools.diagnostic.map((tool, index) => (
+                  <View key={tool.id} style={styles.toolItemRow}>
+                    <TextInput
+                      style={styles.toolInput}
+                      placeholder={`Ej: Scanner ${index > 0 ? ', Multímetro' : ''}`}
+                      placeholderTextColor={colors.textSecondary}
+                      value={tool.text}
+                      onChangeText={(text) => updateTool('diagnostic', tool.id, text)}
+                    />
+                    {requiredTools.diagnostic.length > 1 && (
+                      <TouchableOpacity onPress={() => removeTool('diagnostic', tool.id)} style={styles.removeToolButton}>
+                        <Ionicons name="close-circle" size={20} color={colors.error} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ))}
+              </View>
+
+              {/* Herramientas */}
+              <View style={styles.toolCategory}>
+                <View style={styles.toolCategoryHeader}>
+                  <Ionicons name="construct-outline" size={20} color={colors.primary} />
+                  <Text style={styles.toolCategoryTitle}>Herramientas</Text>
+                  <TouchableOpacity onPress={() => addTool('tools')} style={styles.addToolButton}>
+                    <Ionicons name="add-circle-outline" size={22} color={colors.secondary} />
+                  </TouchableOpacity>
+                </View>
+                {requiredTools.tools.map((tool, index) => (
+                  <View key={tool.id} style={styles.toolItemRow}>
+                    <TextInput
+                      style={styles.toolInput}
+                      placeholder={`Ej: Llaves${index > 0 ? ', Sockets' : ''}`}
+                      placeholderTextColor={colors.textSecondary}
+                      value={tool.text}
+                      onChangeText={(text) => updateTool('tools', tool.id, text)}
+                    />
+                    {requiredTools.tools.length > 1 && (
+                      <TouchableOpacity onPress={() => removeTool('tools', tool.id)} style={styles.removeToolButton}>
+                        <Ionicons name="close-circle" size={20} color={colors.error} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ))}
+              </View>
+
+              {/* Equipo de Seguridad */}
+              <View style={styles.toolCategory}>
+                <View style={styles.toolCategoryHeader}>
+                  <Ionicons name="shield-checkmark-outline" size={20} color={colors.primary} />
+                  <Text style={styles.toolCategoryTitle}>Equipo Seguridad</Text>
+                  <TouchableOpacity onPress={() => addTool('safety')} style={styles.addToolButton}>
+                    <Ionicons name="add-circle-outline" size={22} color={colors.secondary} />
+                  </TouchableOpacity>
+                </View>
+                {requiredTools.safety.map((tool, index) => (
+                  <View key={tool.id} style={styles.toolItemRow}>
+                    <TextInput
+                      style={styles.toolInput}
+                      placeholder={`Ej: Guantes${index > 0 ? ', Gafas' : ''}`}
+                      placeholderTextColor={colors.textSecondary}
+                      value={tool.text}
+                      onChangeText={(text) => updateTool('safety', tool.id, text)}
+                    />
+                    {requiredTools.safety.length > 1 && (
+                      <TouchableOpacity onPress={() => removeTool('safety', tool.id)} style={styles.removeToolButton}>
+                        <Ionicons name="close-circle" size={20} color={colors.error} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.separator} />
+          </>
+        );
+
+      case 'problem': {
+        const problemIndex = item.problemIndex;
+        const problem = problems[problemIndex];
+        return (
+          <>
+            {problemIndex === 0 && (
+              <Text style={styles.procedureTitle}>procedimiento diagnostico:</Text>
+            )}
+
+            {problemIndex === 0 && (
+              <View style={styles.pasosHeaderContainer}>
+                <Text style={styles.pasosHeaderLabel}>PASOS:</Text>
+                <TouchableOpacity onPress={addProblem} style={styles.addPasoButton}>
+                  <Ionicons name="add-circle" size={24} color="#FFD700" />
+                </TouchableOpacity>
+              </View>
+            )}
+
+            <View style={styles.pasoWithActivitiesContainer}>
+              <View style={styles.pasoContainer}>
+                <View style={styles.pasoHeader}>
+                  <Text style={styles.pasoNumber}>PASO {problems.length - problemIndex}:</Text>
+                  <View style={styles.pasoButtonsRow}>
+                    {problems.length > 1 && (
+                      <TouchableOpacity onPress={() => removeProblem(problemIndex)} style={styles.pasoDeleteButton}>
+                        <Ionicons name="trash-outline" size={20} color={colors.error} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </View>
+
+                <TextInput
+                  style={styles.pasoTitleInput}
+                  placeholder="LECTURA DE PARAMETROS"
+                  placeholderTextColor="#6B7280"
+                  value={problem.problemTitle}
+                  onChangeText={(text) => updateProblemField(problemIndex, 'problemTitle', text)}
+                />
+              </View>
+
+              <View style={styles.activitiesSection}>
+                <View style={styles.activitiesHeader}>
+                  <Text style={styles.activitiesTitle}>ACTIVIDADES:</Text>
+                  <TouchableOpacity onPress={() => addActivity(problemIndex)} style={styles.addActivityButton}>
+                    <Ionicons name="add-circle" size={24} color="#FFD700" />
+                  </TouchableOpacity>
+                </View>
+
+                {problem.activities.map((activity, activityIndex) => (
+                  <ActivityItem
+                    key={activity.id}
+                    activity={{ ...activity, index: problem.activities.length - activityIndex }}
+                    stepNumber={problems.length - problemIndex}
+                    onUpdate={(updated) => updateActivity(problemIndex, activityIndex, updated)}
+                    onRemove={() => removeActivity(problemIndex, activityIndex)}
+                    showRemove={problem.activities.length > 1}
+                  />
+                ))}
+              </View>
+            </View>
+          </>
+        );
+      }
+
+      default:
+        return null;
     }
   };
 
@@ -432,18 +690,12 @@ const EditProblemScreen = () => {
       <View style={globalStyles.container}>
         <View style={styles.header}>
           <TouchableOpacity
-            onPress={() => {
-              if (router.canGoBack()) {
-                router.back();
-              } else {
-                router.replace('/menu');
-              }
-            }}
+            onPress={() => router.back()}
             style={styles.backButton}
           >
             <Ionicons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Editar Problema</Text>
+          <Text style={styles.headerTitle}>Editar Guía de Diagnóstico</Text>
           <View style={{ width: 24 }} />
         </View>
         <View style={styles.loadingContainer}>
@@ -453,419 +705,6 @@ const EditProblemScreen = () => {
       </View>
     );
   }
-
-  // SECCIONES DEL FORMULARIO
-  const formSections = [
-    { id: 'general', type: 'general' },
-    { id: 'basicInfo', type: 'basicInfo' },
-    { id: 'symptoms', type: 'symptoms' },
-    { id: 'tools', type: 'tools' },
-    { id: 'problem', type: 'problem' },
-    { id: 'activities', type: 'activities' },
-    { id: 'solutions', type: 'solutions' },
-    { id: 'other', type: 'other' },
-  ];
-
-  const renderSection = ({ item }) => {
-    switch (item.type) {
-      case 'general':
-        if (currentProblemIndex !== 0) return null;
-        return (
-          <View style={styles.generalSection}>
-            <Text style={styles.generalTitle}>Información General</Text>
-
-            <View style={styles.section}>
-              <Text style={styles.label}>Tópico *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ingrese el tópico"
-                placeholderTextColor={colors.textSecondary}
-                value={generalData.topic}
-                onChangeText={(text) => updateGeneralData('topic', text)}
-              />
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.label}>Work Order</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ej: WO-TA-001"
-                placeholderTextColor={colors.textSecondary}
-                value={generalData.workOrder}
-                onChangeText={(text) => updateGeneralData('workOrder', text)}
-              />
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.label}>Datos del Camión</Text>
-
-              <Text style={styles.sublabel}>Marca</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ej: Freightliner"
-                placeholderTextColor={colors.textSecondary}
-                value={generalData.truckBrand}
-                onChangeText={(text) => updateGeneralData('truckBrand', text)}
-              />
-
-              <Text style={[styles.sublabel, { marginTop: 12 }]}>Modelo</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ej: Cascadia"
-                placeholderTextColor={colors.textSecondary}
-                value={generalData.truckModel}
-                onChangeText={(text) => updateGeneralData('truckModel', text)}
-              />
-
-              <Text style={[styles.sublabel, { marginTop: 12 }]}>Año</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ej: 2020"
-                placeholderTextColor={colors.textSecondary}
-                value={generalData.truckYear}
-                onChangeText={(text) => updateGeneralData('truckYear', text)}
-                keyboardType="numeric"
-              />
-            </View>
-          </View>
-        );
-
-      case 'basicInfo':
-        if (currentProblemIndex !== 0) return null;
-        return (
-          <View style={styles.generalSection}>
-            <Text style={styles.generalTitle}>Información Básica</Text>
-
-            <View style={styles.section}>
-              <Text style={styles.label}>Síntoma Principal *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ej: Motor no arranca"
-                placeholderTextColor={colors.textSecondary}
-                value={generalData.mainSymptom}
-                onChangeText={(text) => updateGeneralData('mainSymptom', text)}
-              />
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.label}>Urgencia</Text>
-              <View style={styles.urgencyContainer}>
-                <TouchableOpacity
-                  style={[
-                    styles.urgencyButton,
-                    generalData.urgency === 'Crítica' && styles.urgencyButtonCritical,
-                  ]}
-                  onPress={() => updateGeneralData('urgency', 'Crítica')}
-                >
-                  <Text
-                    style={[
-                      styles.urgencyButtonText,
-                      generalData.urgency === 'Crítica' && styles.urgencyButtonTextActive,
-                    ]}
-                  >
-                    Crítica
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[
-                    styles.urgencyButton,
-                    generalData.urgency === 'Media' && styles.urgencyButtonMedium,
-                  ]}
-                  onPress={() => updateGeneralData('urgency', 'Media')}
-                >
-                  <Text
-                    style={[
-                      styles.urgencyButtonText,
-                      generalData.urgency === 'Media' && styles.urgencyButtonTextActive,
-                    ]}
-                  >
-                    Media
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[
-                    styles.urgencyButton,
-                    generalData.urgency === 'Leve' && styles.urgencyButtonLow,
-                  ]}
-                  onPress={() => updateGeneralData('urgency', 'Leve')}
-                >
-                  <Text
-                    style={[
-                      styles.urgencyButtonText,
-                      generalData.urgency === 'Leve' && styles.urgencyButtonTextActive,
-                    ]}
-                  >
-                    Leve
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.label}>Tiempo Estimado de Diagnóstico</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ej: 2 horas"
-                placeholderTextColor={colors.textSecondary}
-                value={generalData.estimatedDiagnosticTime}
-                onChangeText={(text) => updateGeneralData('estimatedDiagnosticTime', text)}
-              />
-            </View>
-          </View>
-        );
-
-      case 'symptoms':
-        if (currentProblemIndex !== 0) return null;
-        return (
-          <View style={styles.generalSection}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.generalTitle}>Síntomas Reportados</Text>
-              <TouchableOpacity onPress={addSymptom} style={styles.addButton}>
-                <Ionicons name="add-circle" size={28} color={colors.secondary} />
-              </TouchableOpacity>
-            </View>
-
-            {reportedSymptoms.map((symptom, index) => (
-              <View key={symptom.id} style={styles.dynamicItemContainer}>
-                <View style={styles.dynamicItemContent}>
-                  <Text style={styles.dynamicItemNumber}>{index + 1}.</Text>
-                  <TextInput
-                    style={styles.dynamicInput}
-                    placeholder="Describe el síntoma"
-                    placeholderTextColor={colors.textSecondary}
-                    value={symptom.text}
-                    onChangeText={(text) => updateSymptom(symptom.id, text)}
-                  />
-                </View>
-                {reportedSymptoms.length > 1 && (
-                  <TouchableOpacity
-                    onPress={() => removeSymptom(symptom.id)}
-                    style={styles.removeButton}
-                  >
-                    <Ionicons name="trash-outline" size={20} color={colors.danger} />
-                  </TouchableOpacity>
-                )}
-              </View>
-            ))}
-          </View>
-        );
-
-      case 'tools':
-        if (currentProblemIndex !== 0) return null;
-        return (
-          <View style={styles.generalSection}>
-            <Text style={styles.generalTitle}>Herramientas Requeridas</Text>
-
-            {/* Equipos de Diagnóstico */}
-            <View style={styles.section}>
-              <View style={styles.toolCategoryHeader}>
-                <Ionicons name="medkit-outline" size={20} color={colors.secondary} />
-                <Text style={styles.toolCategoryTitle}>Equipos de Diagnóstico</Text>
-                <TouchableOpacity
-                  onPress={() => addTool('diagnostic')}
-                  style={styles.addSmallButton}
-                >
-                  <Ionicons name="add-circle" size={24} color={colors.secondary} />
-                </TouchableOpacity>
-              </View>
-
-              {requiredTools.diagnostic.map((tool, index) => (
-                <View key={tool.id} style={styles.dynamicItemContainer}>
-                  <View style={styles.dynamicItemContent}>
-                    <Text style={styles.dynamicItemNumber}>{index + 1}.</Text>
-                    <TextInput
-                      style={styles.dynamicInput}
-                      placeholder="Ej: Scanner OBD2"
-                      placeholderTextColor={colors.textSecondary}
-                      value={tool.text}
-                      onChangeText={(text) => updateTool('diagnostic', tool.id, text)}
-                    />
-                  </View>
-                  {requiredTools.diagnostic.length > 1 && (
-                    <TouchableOpacity
-                      onPress={() => removeTool('diagnostic', tool.id)}
-                      style={styles.removeButton}
-                    >
-                      <Ionicons name="trash-outline" size={20} color={colors.danger} />
-                    </TouchableOpacity>
-                  )}
-                </View>
-              ))}
-            </View>
-
-            {/* Herramientas */}
-            <View style={styles.section}>
-              <View style={styles.toolCategoryHeader}>
-                <Ionicons name="construct-outline" size={20} color={colors.secondary} />
-                <Text style={styles.toolCategoryTitle}>Herramientas</Text>
-                <TouchableOpacity onPress={() => addTool('tools')} style={styles.addSmallButton}>
-                  <Ionicons name="add-circle" size={24} color={colors.secondary} />
-                </TouchableOpacity>
-              </View>
-
-              {requiredTools.tools.map((tool, index) => (
-                <View key={tool.id} style={styles.dynamicItemContainer}>
-                  <View style={styles.dynamicItemContent}>
-                    <Text style={styles.dynamicItemNumber}>{index + 1}.</Text>
-                    <TextInput
-                      style={styles.dynamicInput}
-                      placeholder="Ej: Llave de torque"
-                      placeholderTextColor={colors.textSecondary}
-                      value={tool.text}
-                      onChangeText={(text) => updateTool('tools', tool.id, text)}
-                    />
-                  </View>
-                  {requiredTools.tools.length > 1 && (
-                    <TouchableOpacity
-                      onPress={() => removeTool('tools', tool.id)}
-                      style={styles.removeButton}
-                    >
-                      <Ionicons name="trash-outline" size={20} color={colors.danger} />
-                    </TouchableOpacity>
-                  )}
-                </View>
-              ))}
-            </View>
-
-            {/* Equipo de Seguridad */}
-            <View style={styles.section}>
-              <View style={styles.toolCategoryHeader}>
-                <Ionicons name="shield-checkmark-outline" size={20} color={colors.secondary} />
-                <Text style={styles.toolCategoryTitle}>Equipo de Seguridad</Text>
-                <TouchableOpacity onPress={() => addTool('safety')} style={styles.addSmallButton}>
-                  <Ionicons name="add-circle" size={24} color={colors.secondary} />
-                </TouchableOpacity>
-              </View>
-
-              {requiredTools.safety.map((tool, index) => (
-                <View key={tool.id} style={styles.dynamicItemContainer}>
-                  <View style={styles.dynamicItemContent}>
-                    <Text style={styles.dynamicItemNumber}>{index + 1}.</Text>
-                    <TextInput
-                      style={styles.dynamicInput}
-                      placeholder="Ej: Guantes dieléctricos"
-                      placeholderTextColor={colors.textSecondary}
-                      value={tool.text}
-                      onChangeText={(text) => updateTool('safety', tool.id, text)}
-                    />
-                  </View>
-                  {requiredTools.safety.length > 1 && (
-                    <TouchableOpacity
-                      onPress={() => removeTool('safety', tool.id)}
-                      style={styles.removeButton}
-                    >
-                      <Ionicons name="trash-outline" size={20} color={colors.danger} />
-                    </TouchableOpacity>
-                  )}
-                </View>
-              ))}
-            </View>
-          </View>
-        );
-
-      case 'problem':
-        if (!currentProblem) return null;
-        return (
-          <>
-            <Text style={styles.problemNumber}>Problema {currentProblemIndex + 1}</Text>
-
-            <View style={styles.section}>
-              <Text style={styles.label}>Título del Problema *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Título del problema"
-                placeholderTextColor={colors.textSecondary}
-                value={currentProblem.problemTitle}
-                onChangeText={(text) => updateProblemField('problemTitle', text)}
-              />
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.label}>Descripción del Problema</Text>
-              <TextInput
-                style={[styles.input, styles.textArea]}
-                placeholder="Describe el problema..."
-                placeholderTextColor={colors.textSecondary}
-                value={currentProblem.problemDescription}
-                onChangeText={(text) => updateProblemField('problemDescription', text)}
-                multiline
-                numberOfLines={4}
-                textAlignVertical="top"
-              />
-            </View>
-          </>
-        );
-
-      case 'activities':
-        if (!currentProblem) return null;
-        return (
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Actividades Realizadas</Text>
-              <TouchableOpacity onPress={addActivity} style={styles.addButton}>
-                <Ionicons name="add-circle" size={24} color={colors.secondary} />
-              </TouchableOpacity>
-            </View>
-
-            {currentProblem.activities.map((activity, index) => (
-              <ActivityItem
-                key={activity.id}
-                activity={{ ...activity, index: index + 1 }}
-                onUpdate={(updated) => updateActivity(index, updated)}
-                onRemove={() => removeActivity(index)}
-                showRemove={currentProblem.activities.length > 1}
-              />
-            ))}
-          </View>
-        );
-
-      case 'solutions':
-        if (!currentProblem) return null;
-        return (
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Soluciones</Text>
-              <TouchableOpacity onPress={addSolution} style={styles.addButton}>
-                <Ionicons name="add-circle" size={24} color={colors.secondary} />
-              </TouchableOpacity>
-            </View>
-
-            {currentProblem.solutions.map((solution, index) => (
-              <SolutionItem
-                key={solution.id}
-                solution={{ ...solution, index: index + 1 }}
-                onUpdate={(updated) => updateSolution(index, updated)}
-                onRemove={() => removeSolution(index)}
-                showRemove={currentProblem.solutions.length > 1}
-              />
-            ))}
-          </View>
-        );
-
-      case 'other':
-        if (!currentProblem) return null;
-        return (
-          <View style={styles.section}>
-            <Text style={styles.label}>Otros Datos</Text>
-            <TextInput
-              style={[styles.input, styles.textArea]}
-              placeholder="Información adicional..."
-              placeholderTextColor={colors.textSecondary}
-              value={currentProblem.otherData}
-              onChangeText={(text) => updateProblemField('otherData', text)}
-              multiline
-              numberOfLines={3}
-              textAlignVertical="top"
-            />
-          </View>
-        );
-
-      default:
-        return null;
-    }
-  };
 
   return (
     <View style={globalStyles.container}>
@@ -882,35 +721,9 @@ const EditProblemScreen = () => {
         >
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Editar Problema</Text>
+        <Text style={styles.headerTitle}>Editar Guía de Diagnóstico</Text>
         <View style={{ width: 24 }} />
       </View>
-
-      {problems.length > 1 && (
-        <View style={styles.problemNav}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {problems.map((_, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  styles.problemTab,
-                  currentProblemIndex === index && styles.problemTabActive,
-                ]}
-                onPress={() => setCurrentProblemIndex(index)}
-              >
-                <Text
-                  style={[
-                    styles.problemTabText,
-                    currentProblemIndex === index && styles.problemTabTextActive,
-                  ]}
-                >
-                  Problema {index + 1}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      )}
 
       <KeyboardAwareFlatList
         data={formSections}
@@ -936,7 +749,6 @@ const EditProblemScreen = () => {
         ]}
         {...panResponder.panHandlers}
       >
-        {/* Botones desplegables */}
         {isFabExpanded && (
           <Animated.View
             style={[
@@ -954,20 +766,18 @@ const EditProblemScreen = () => {
               },
             ]}
           >
-            {/* Botón Guardar */}
             <TouchableOpacity
               style={[styles.fabOption, styles.fabSaveOption]}
               onPress={() => {
                 toggleFabExpansion();
-                handleSave();
+                handleUpdate();
               }}
               disabled={saving}
             >
               <Ionicons name="checkmark" size={24} color="#fff" />
-              <Text style={styles.fabOptionText}>Guardar</Text>
+              <Text style={styles.fabOptionText}>Actualizar</Text>
             </TouchableOpacity>
 
-            {/* Botón Cancelar - Sale de la pantalla */}
             <TouchableOpacity
               style={[styles.fabOption, styles.fabCancelOption]}
               onPress={() => {
@@ -987,7 +797,6 @@ const EditProblemScreen = () => {
           </Animated.View>
         )}
 
-        {/* Botón principal FAB */}
         <TouchableOpacity
           onPress={toggleFabExpansion}
           activeOpacity={0.8}
@@ -1016,8 +825,8 @@ const EditProblemScreen = () => {
         visible={showUploadingAlert}
         onClose={() => {}}
         type="loading"
-        title="Guardando Cambios"
-        message="Actualizando el problema..."
+        title="Actualizando Datos"
+        message="Guardando cambios..."
       />
 
       <CustomAlert
@@ -1025,11 +834,12 @@ const EditProblemScreen = () => {
         onClose={() => setShowSuccessAlert(false)}
         type="success"
         title="Éxito"
-        message="Los cambios se guardaron correctamente"
+        message="Guía de diagnóstico actualizada correctamente"
         buttons={[
           {
             text: 'OK',
             onPress: () => {
+              setShowSuccessAlert(false);
               if (router.canGoBack()) {
                 router.back();
               } else {
@@ -1040,7 +850,6 @@ const EditProblemScreen = () => {
         ]}
       />
 
-      {/* Alert de Error */}
       <CustomAlert
         visible={showErrorAlert}
         onClose={() => setShowErrorAlert(false)}
@@ -1053,6 +862,22 @@ const EditProblemScreen = () => {
             style: 'cancel'
           }
         ]}
+      />
+
+      <CustomAlert
+        visible={showMinActivityAlert}
+        onClose={() => setShowMinActivityAlert(false)}
+        type="info"
+        title="Aviso"
+        message="Debe haber al menos una actividad"
+      />
+
+      <CustomAlert
+        visible={showMinProblemAlert}
+        onClose={() => setShowMinProblemAlert(false)}
+        type="info"
+        title="Aviso"
+        message="Debe haber al menos un paso"
       />
 
       <AppFooter />
@@ -1088,30 +913,6 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginTop: 12,
   },
-  problemNav: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  problemTab: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginRight: 8,
-    borderRadius: 20,
-    backgroundColor: colors.cardBackground,
-  },
-  problemTabActive: {
-    backgroundColor: colors.primary,
-  },
-  problemTabText: {
-    color: colors.textSecondary,
-    fontSize: 14,
-  },
-  problemTabTextActive: {
-    color: colors.text,
-    fontWeight: '600',
-  },
   scrollContent: {
     padding: 20,
     paddingBottom: 40,
@@ -1123,6 +924,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
     borderColor: colors.border,
+    overflow: 'visible',
   },
   generalTitle: {
     fontSize: 20,
@@ -1130,25 +932,21 @@ const styles = StyleSheet.create({
     color: colors.primary,
     marginBottom: 16,
   },
-  problemNumber: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: colors.secondary,
-    marginBottom: 16,
+  separator: {
+    height: 2,
+    backgroundColor: colors.border,
+    marginVertical: 20,
   },
   section: {
     marginBottom: 20,
+  },
+  lowerSection: {
+    marginBottom: 12,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
     marginBottom: 12,
   },
   label: {
@@ -1166,24 +964,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  inputReadOnly: {
-    backgroundColor: colors.border + '40',
-    opacity: 0.7,
-  },
-  helperText: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: 6,
-    fontStyle: 'italic',
-  },
-  textArea: {
-    minHeight: 100,
-    textAlignVertical: 'top',
-  },
   addButton: {
     padding: 4,
   },
-  // Estilos para FAB arrastrable
   fabContainer: {
     position: 'absolute',
     bottom: 80,
@@ -1226,21 +1009,15 @@ const styles = StyleSheet.create({
     minWidth: 140,
   },
   fabSaveOption: {
-    backgroundColor: '#10B981', // Verde
+    backgroundColor: '#10B981',
   },
   fabCancelOption: {
-    backgroundColor: '#6B7280', // Gris
+    backgroundColor: '#6B7280',
   },
   fabOptionText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
-  },
-  sublabel: {
-    color: colors.textSecondary,
-    fontSize: 12,
-    marginBottom: 6,
-    fontWeight: '500',
   },
   urgencyContainer: {
     flexDirection: 'row',
@@ -1251,75 +1028,198 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 8,
-    backgroundColor: colors.inputBackground,
     borderWidth: 2,
     borderColor: colors.border,
+    backgroundColor: colors.inputBackground,
     alignItems: 'center',
   },
+  urgencyButtonActive: {
+    borderWidth: 2,
+  },
   urgencyButtonCritical: {
-    backgroundColor: colors.danger + '20',
-    borderColor: colors.danger,
+    borderColor: '#EF4444',
+    backgroundColor: '#EF444410',
   },
   urgencyButtonMedium: {
-    backgroundColor: '#FF8C00' + '20',
-    borderColor: '#FF8C00',
+    borderColor: '#F59E0B',
+    backgroundColor: '#F59E0B10',
   },
   urgencyButtonLow: {
-    backgroundColor: '#4CAF50' + '20',
-    borderColor: '#4CAF50',
+    borderColor: '#10B981',
+    backgroundColor: '#10B98110',
   },
   urgencyButtonText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '500',
     color: colors.textSecondary,
   },
   urgencyButtonTextActive: {
+    fontWeight: '700',
     color: colors.text,
   },
-  dynamicItemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  truckFieldContainer: {
     marginBottom: 12,
-    gap: 8,
   },
-  dynamicItemContent: {
-    flex: 1,
+  truckFieldLabel: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginBottom: 6,
+    fontWeight: '500',
+  },
+  symptomsSection: {
+    backgroundColor: colors.cardBackground,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  symptomItem: {
+    marginBottom: 12,
+  },
+  symptomRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-  dynamicItemNumber: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.secondary,
-    minWidth: 24,
-  },
-  dynamicInput: {
+  symptomInput: {
     flex: 1,
     backgroundColor: colors.inputBackground,
     borderRadius: 8,
     padding: 12,
     color: colors.text,
-    fontSize: 16,
+    fontSize: 15,
     borderWidth: 1,
     borderColor: colors.border,
   },
-  removeButton: {
-    padding: 8,
+  removeSymptomButton: {
+    padding: 4,
+  },
+  toolsSection: {
+    backgroundColor: colors.cardBackground,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  toolCategory: {
+    marginBottom: 16,
   },
   toolCategoryHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
     gap: 8,
   },
   toolCategoryTitle: {
-    flex: 1,
     fontSize: 16,
     fontWeight: '600',
     color: colors.text,
+    flex: 1,
   },
-  addSmallButton: {
+  addToolButton: {
+    padding: 2,
+  },
+  toolItemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 8,
+  },
+  toolInput: {
+    flex: 1,
+    backgroundColor: colors.inputBackground,
+    borderRadius: 8,
+    padding: 10,
+    color: colors.text,
+    fontSize: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  removeToolButton: {
+    padding: 4,
+  },
+  procedureTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#FFD700',
+    marginBottom: 16,
+    textTransform: 'lowercase',
+  },
+  pasosHeaderLabel: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: 12,
+  },
+  pasosHeaderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  addPasoButton: {
+    padding: 4,
+  },
+  pasoWithActivitiesContainer: {
+    backgroundColor: '#1E293B',
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 0,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  pasoContainer: {
+    marginBottom: 16,
+    paddingHorizontal: 16,
+  },
+  pasoHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  pasoNumber: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  pasoButtonsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  pasoDeleteButton: {
+    padding: 4,
+  },
+  pasoTitleInput: {
+    backgroundColor: '#0F172A',
+    borderRadius: 8,
+    padding: 12,
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '500',
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  activitiesSection: {
+    marginBottom: 16,
+  },
+  activitiesHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+    paddingHorizontal: 16,
+  },
+  activitiesTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  addActivityButton: {
     padding: 4,
   },
 });

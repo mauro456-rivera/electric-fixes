@@ -576,150 +576,144 @@ const ProblemDetailScreen = () => {
                   />
                 </View>
                 <Text style={styles.sectionTitle}>
-                  {isNewStructure ? 'Paso' : 'Problema'}
+                  {isNewStructure ? 'Procedimiento Diagnóstico' : 'Problema'}
                 </Text>
               </View>
 
-              {/* Card de Título del Paso/Problema */}
-              <View style={styles.problemCard}>
-                <View style={styles.problemTitleContainer}>
-                  <Text style={styles.problemTitleLabel}>
-                    {isNewStructure ? 'Título del paso:' : 'Título del problema:'}
-                  </Text>
-                  <Text style={styles.problemTitle}>
+              {/* Card que contiene PASO y ACTIVIDADES juntos */}
+              <View style={styles.stepCompleteCard}>
+                {/* Título del PASO */}
+                <View style={styles.stepHeader}>
+                  <Text style={styles.stepNumber}>PASO {selectedProblemIndex + 1}:</Text>
+                  <Text style={styles.stepTitle}>
                     {isNewStructure ? currentItem.stepTitle : currentItem.problemTitle}
                   </Text>
                 </View>
+
+                {/* Descripción (solo estructura antigua) */}
                 {!isNewStructure && currentItem.problemDescription && (
-                  <View style={styles.problemDescriptionContainer}>
-                    <Text style={styles.problemDescriptionLabel}>Descripción:</Text>
-                    <Text style={styles.problemDescription}>{currentItem.problemDescription}</Text>
+                  <View style={styles.stepDescriptionContainer}>
+                    <Text style={styles.stepDescription}>{currentItem.problemDescription}</Text>
                   </View>
                 )}
-              </View>
 
-              {/* Card de Archivos del Problema (SOLO estructura antigua) */}
-              {!isNewStructure && currentItem.problemFiles && currentItem.problemFiles.length > 0 && (
-                <View style={styles.filesCard}>
-                  <View style={styles.filesHeader}>
-                    <Ionicons name="images-outline" size={18} color={colors.secondary} />
-                    <Text style={styles.filesCardTitle}>Archivos adjuntos ({currentItem.problemFiles.length})</Text>
-                  </View>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    {currentItem.problemFiles.map((url, index) => (
-                      <TouchableOpacity
-                        key={index}
-                        onPress={() => openMediaViewer(url, currentItem.problemFiles)}
-                        activeOpacity={0.8}
-                      >
-                        <View style={styles.mediaContainer}>
-                          {isVideo(url) ? (
-                            <>
-                              <Image
-                                source={{ uri: url }}
-                                style={styles.thumbnail}
-                                resizeMode="cover"
-                              />
-                              <View style={styles.playIconOverlay}>
-                                <Ionicons name="play-circle" size={40} color="#fff" />
-                              </View>
-                            </>
-                          ) : (
-                            <Image
-                              source={{ uri: url }}
-                              style={styles.thumbnail}
-                              resizeMode="cover"
-                            />
-                          )}
+                {/* ACTIVIDADES dentro del mismo card */}
+                {(isNewStructure ? currentItem.subSteps : currentItem.activities)?.length > 0 && (
+                  <View style={styles.activitiesSection}>
+                    <Text style={styles.activitiesTitle}>ACTIVIDADES:</Text>
+
+                    {(isNewStructure ? currentItem.subSteps : currentItem.activities)?.map((activity, index) => (
+                      <View key={index} style={styles.activityItem}>
+                        {/* Número y título de la actividad */}
+                        <View style={styles.activityHeader}>
+                          <Text style={styles.activityNumber}>
+                            Actividad {selectedProblemIndex + 1}.{index + 1}
+                          </Text>
                         </View>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-                </View>
-              )}
-            </View>
 
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <View style={styles.iconBadge}>
-                  <Ionicons name="hammer" size={18} color="#FFD700" />
-                </View>
-                <Text style={styles.sectionTitle}>
-                  {isNewStructure ? 'SUB-PASOS' : 'Actividades Realizadas'}
-                </Text>
-              </View>
-
-              {(isNewStructure ? currentItem.subSteps : currentItem.activities)?.map((activity, index) => (
-                <View key={index} style={styles.activityWrapper}>
-                  {/* Card de Título del Sub-paso/Actividad */}
-                  <View style={styles.activityCard}>
-                    <View style={styles.cardHeader}>
-                      <Text style={styles.activityNumber}>
-                        {isNewStructure ? `Sub-paso ${index + 1}` : `Actividad ${index + 1}`}
-                      </Text>
-                    </View>
-                    <View style={styles.activityTitleContainer}>
-                      <Text style={styles.activityTitleLabel}>
-                        {isNewStructure ? 'Descripción del sub-paso:' : 'Descripción de la actividad:'}
-                      </Text>
-                      <Text style={styles.activityTitle}>{activity.title}</Text>
-                    </View>
+                        {/* Lectura */}
+                        <View style={styles.activityContentSection}>
+                          <Text style={styles.activityLabel}>Lectura:</Text>
+                          <Text style={styles.activityText}>{activity.title}</Text>
+                        </View>
 
                     {/* Notas/Medidas */}
                     {activity.notes && activity.notes.length > 0 && (
                       <View style={styles.notesContainer}>
                         <Text style={styles.notesLabel}>Notas/Medidas:</Text>
-                        {activity.notes.map((note, noteIdx) => (
-                          <View key={noteIdx} style={styles.noteItem}>
-                            <Ionicons name="ellipse" size={6} color={colors.textSecondary} style={styles.noteBullet} />
-                            <Text style={styles.noteText}>{note}</Text>
-                          </View>
-                        ))}
-                      </View>
-                    )}
-                  </View>
+                        {activity.notes.map((note, noteIdx) => {
+                          // Soporte para ambos formatos: string antiguo y objeto nuevo
+                          const noteText = typeof note === 'string' ? note : note.text;
+                          const hasBugContent = typeof note === 'object' && note.bugContent;
+                          const hasCheckContent = typeof note === 'object' && note.checkContent;
 
-                  {/* Card de Archivos de la Actividad */}
-                  {activity.files && activity.files.length > 0 && (
-                    <View style={styles.activityFilesCard}>
-                      <View style={styles.filesHeader}>
-                        <Ionicons name="images-outline" size={16} color="#FFD700" />
-                        <Text style={styles.filesCardTitle}>Archivos de la actividad ({activity.files.length})</Text>
-                      </View>
-                      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                        {activity.files.map((url, idx) => (
-                          <TouchableOpacity
-                            key={idx}
-                            onPress={() => openMediaViewer(url, activity.files)}
-                            activeOpacity={0.8}
-                          >
-                            <View style={styles.mediaContainer}>
-                              {isVideo(url) ? (
-                                <>
-                                  <Image
-                                    source={{ uri: url }}
-                                    style={styles.thumbnail}
-                                    resizeMode="cover"
-                                  />
-                                  <View style={styles.playIconOverlay}>
-                                    <Ionicons name="play-circle" size={40} color="#fff" />
+                          return (
+                            <View key={noteIdx} style={styles.noteItemWrapper}>
+                              <View style={styles.noteItem}>
+                                <Ionicons name="ellipse" size={6} color={colors.textSecondary} style={styles.noteBullet} />
+                                <Text style={styles.noteText}>{noteText}</Text>
+
+                                {/* Indicadores de bug y check */}
+                                {(hasBugContent || hasCheckContent) && (
+                                  <View style={styles.noteIndicators}>
+                                    {hasBugContent && (
+                                      <Ionicons name="bug" size={14} color="#EF4444" />
+                                    )}
+                                    {hasCheckContent && (
+                                      <Ionicons name="checkmark-circle" size={14} color="#10B981" />
+                                    )}
                                   </View>
-                                </>
-                              ) : (
-                                <Image
-                                  source={{ uri: url }}
-                                  style={styles.thumbnail}
-                                  resizeMode="cover"
-                                />
+                                )}
+                              </View>
+
+                              {/* Contenido de bug */}
+                              {hasBugContent && (
+                                <View style={[styles.noteDetailCard, { borderLeftColor: '#EF4444' }]}>
+                                  <View style={styles.noteDetailHeader}>
+                                    <Ionicons name="bug" size={14} color="#EF4444" />
+                                    <Text style={styles.noteDetailTitle}>Problema Reportado:</Text>
+                                  </View>
+                                  <Text style={styles.noteDetailText}>{note.bugContent}</Text>
+                                </View>
+                              )}
+
+                              {/* Contenido de check */}
+                              {hasCheckContent && (
+                                <View style={[styles.noteDetailCard, { borderLeftColor: '#10B981' }]}>
+                                  <View style={styles.noteDetailHeader}>
+                                    <Ionicons name="checkmark-circle" size={14} color="#10B981" />
+                                    <Text style={styles.noteDetailTitle}>Validación:</Text>
+                                  </View>
+                                  <Text style={styles.noteDetailText}>{note.checkContent}</Text>
+                                </View>
                               )}
                             </View>
-                          </TouchableOpacity>
-                        ))}
-                      </ScrollView>
-                    </View>
-                  )}
-                </View>
-              ))}
+                          );
+                        })}
+                      </View>
+                    )}
+
+                        {/* Archivos adjuntos */}
+                        {activity.files && activity.files.length > 0 && (
+                          <View style={styles.activityFilesSection}>
+                            <Text style={styles.activityLabel}>Adjuntar archivos:</Text>
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                              {activity.files.map((url, idx) => (
+                                <TouchableOpacity
+                                  key={idx}
+                                  onPress={() => openMediaViewer(url, activity.files)}
+                                  activeOpacity={0.8}
+                                >
+                                  <View style={styles.mediaContainer}>
+                                    {isVideo(url) ? (
+                                      <>
+                                        <Image
+                                          source={{ uri: url }}
+                                          style={styles.thumbnail}
+                                          resizeMode="cover"
+                                        />
+                                        <View style={styles.playIconOverlay}>
+                                          <Ionicons name="play-circle" size={40} color="#fff" />
+                                        </View>
+                                      </>
+                                    ) : (
+                                      <Image
+                                        source={{ uri: url }}
+                                        style={styles.thumbnail}
+                                        resizeMode="cover"
+                                      />
+                                    )}
+                                  </View>
+                                </TouchableOpacity>
+                              ))}
+                            </ScrollView>
+                          </View>
+                        )}
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
             </View>
 
             {/* Soluciones (SOLO estructura antigua) */}
@@ -1172,6 +1166,96 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontWeight: '700',
   },
+  stepCompleteCard: {
+    backgroundColor: '#1E293B',
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 0,
+    borderWidth: 1,
+    borderColor: '#334155',
+    marginBottom: 16,
+  },
+  stepHeader: {
+    marginBottom: 12,
+    paddingHorizontal: 16,
+  },
+  stepNumber: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: 8,
+  },
+  stepTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.text,
+    backgroundColor: '#0F172A',
+    borderRadius: 8,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#334155',
+  },
+  stepDescriptionContainer: {
+    marginTop: 12,
+  },
+  stepDescription: {
+    fontSize: 14,
+    color: colors.text,
+    lineHeight: 20,
+  },
+  activitiesSection: {
+    marginTop: 16,
+    paddingHorizontal: 0,
+  },
+  activitiesTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: 12,
+    paddingHorizontal: 16,
+  },
+  activityItem: {
+    backgroundColor: colors.cardBackground,
+    borderRadius: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 0,
+    marginBottom: 8,
+    marginHorizontal: 0,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  activityHeader: {
+    marginBottom: 12,
+    paddingHorizontal: 16,
+  },
+  activityContentSection: {
+    marginBottom: 12,
+    paddingHorizontal: 16,
+  },
+  activityLabel: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 6,
+  },
+  activityText: {
+    backgroundColor: colors.inputBackground,
+    borderRadius: 8,
+    padding: 12,
+    color: colors.text,
+    fontSize: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  activityFilesSection: {
+    backgroundColor: colors.inputBackground,
+    borderRadius: 8,
+    padding: 16,
+    marginTop: 12,
+    marginHorizontal: 0,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
   problemCard: {
     backgroundColor: colors.cardBackground,
     borderRadius: 12,
@@ -1319,6 +1403,7 @@ const styles = StyleSheet.create({
   notesContainer: {
     marginTop: 16,
     paddingTop: 12,
+    paddingHorizontal: 16,
     borderTopWidth: 1,
     borderTopColor: colors.border,
   },
@@ -1329,6 +1414,9 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 8,
+  },
+  noteItemWrapper: {
+    marginBottom: 12,
   },
   noteItem: {
     flexDirection: 'row',
@@ -1345,6 +1433,36 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.text,
     lineHeight: 20,
+  },
+  noteIndicators: {
+    flexDirection: 'row',
+    gap: 6,
+    alignItems: 'center',
+    marginLeft: 8,
+  },
+  noteDetailCard: {
+    backgroundColor: colors.inputBackground,
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 6,
+    marginLeft: 22,
+    borderLeftWidth: 3,
+  },
+  noteDetailHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 6,
+  },
+  noteDetailTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  noteDetailText: {
+    fontSize: 13,
+    color: colors.text,
+    lineHeight: 18,
   },
   smallThumbnail: {
     width: 80,
