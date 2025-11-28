@@ -345,16 +345,12 @@ const ProblemDetailScreen = () => {
     );
   }
 
-  // Detectar si es estructura NUEVA o ANTIGUA
   const isNewStructure = !!problem.generalData?.diagnosticGuide;
 
-  // Estructura NUEVA (con steps)
   const currentStep = problem.steps?.[selectedProblemIndex];
 
-  // Estructura ANTIGUA (con problems)
   const currentProblem = problem.problems?.[selectedProblemIndex];
 
-  // Usar el correcto según la estructura
   const currentItem = isNewStructure ? currentStep : currentProblem;
 
   return (
