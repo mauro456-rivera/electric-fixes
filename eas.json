@@ -31,6 +31,12 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "jbiansoftds@gmail.com",
+        "ascAppId": "6756071450",
+        "appleTeamId": "truckfixds2025"
+      }
+    }
   }
 }
