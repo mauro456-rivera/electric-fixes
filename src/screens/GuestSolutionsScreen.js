@@ -1,7 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import guestSolutions from '../data/guestSolutions.json';
 import { colors } from '../styles/colors';
@@ -12,14 +14,45 @@ const GuestSolutionsScreen = () => {
   const { type } = useLocalSearchParams(); // 'mechanical' o 'electrical'
   const { user } = useAuth();
   const [searchText, setSearchText] = useState('');
+  const [firestoreSolutions, setFirestoreSolutions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Obtener soluciones según el tipo
-  const solutions = type === 'mechanical' ? guestSolutions.mechanical : guestSolutions.electrical;
+  // Obtener soluciones estáticas según el tipo
+  const staticSolutions = type === 'mechanical' ? guestSolutions.mechanical : guestSolutions.electrical;
   const typeLabel = type === 'mechanical' ? 'Mecánicas' : 'Eléctricas';
   const typeColor = type === 'mechanical' ? colors.mechanical : colors.electrical;
 
+  // Cargar soluciones de Firestore
+  useEffect(() => {
+    const loadFirestoreSolutions = async () => {
+      try {
+        const q = query(
+          collection(db, 'guestContributions'),
+          where('type', '==', type),
+          where('status', '==', 'approved') // Solo mostrar aprobadas
+        );
+        const querySnapshot = await getDocs(q);
+        const solutions = querySnapshot.docs.map(doc => ({
+          id: `fs-${doc.id}`, // Prefix para diferenciar de estáticas
+          ...doc.data(),
+          isFromFirestore: true,
+        }));
+        setFirestoreSolutions(solutions);
+      } catch (error) {
+        console.error('Error cargando soluciones de Firestore:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFirestoreSolutions();
+  }, [type]);
+
+  // Combinar soluciones estáticas + Firestore
+  const allSolutions = [...staticSolutions, ...firestoreSolutions];
+
   // Filtrar soluciones por búsqueda
-  const filteredSolutions = solutions.filter((solution) => {
+  const filteredSolutions = allSolutions.filter((solution) => {
     const searchLower = searchText.toLowerCase();
     return (
       solution.problem.toLowerCase().includes(searchLower) ||
@@ -77,6 +110,9 @@ const GuestSolutionsScreen = () => {
         <Text style={styles.countText}>
           {filteredSolutions.length} {filteredSolutions.length === 1 ? 'solución encontrada' : 'soluciones encontradas'}
         </Text>
+        {loading && (
+          <ActivityIndicator size="small" color={colors.primary} style={{ marginLeft: 10 }} />
+        )}
       </View>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
@@ -189,6 +225,8 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   countContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 20,
     marginBottom: 12,
   },

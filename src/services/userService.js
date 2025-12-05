@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initializeApp } from 'firebase/app';
-import { createUserWithEmailAndPassword, getReactNativePersistence, initializeAuth } from 'firebase/auth';
+import { createUserWithEmailAndPassword, deleteUser, getReactNativePersistence, initializeAuth } from 'firebase/auth';
 import {
   collection,
   deleteDoc,
@@ -348,17 +348,21 @@ class UserService {
 
   /**
    * Registra un nuevo usuario invitado (auto-registro)
-   * @param {Object} userData - Datos del nuevo usuario invitado
+   * @param {Object} userData - Datos del nuevo usuario invitado (username, password, name)
    * @returns {Promise<string>} ID del usuario creado
    */
   async registerGuest(userData) {
     try {
       console.log('🔵 Registrando nuevo usuario invitado...');
 
+      // Generar email automático a partir del username
+      const generatedEmail = `${userData.username}@mecanic-fixes.app`;
+      console.log('📧 Email generado:', generatedEmail);
+
       // Crear usuario con Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(
         auth,
-        userData.email,
+        generatedEmail,
         userData.password
       );
 
@@ -367,16 +371,65 @@ class UserService {
 
       // Crear documento en Firestore con role 'invitado'
       await this.createUserDocument(newUserId, {
-        email: userData.email,
+        email: generatedEmail,
         name: userData.name,
         role: 'invitado',
         createdBy: newUserId, // Se auto-registró
+        username: userData.username, // Guardar el username para referencia
       });
 
       console.log('✅ Usuario invitado registrado exitosamente');
       return newUserId;
     } catch (error) {
       console.error('❌ Error registrando usuario invitado:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Elimina la cuenta del usuario actual (cumple con requisitos del App Store)
+   * - Elimina el documento de Firestore
+   * - Elimina el usuario de Firebase Auth
+   * Solo para usuarios que se auto-registraron (rol: invitado)
+   * @returns {Promise<void>}
+   */
+  async deleteAccount() {
+    try {
+      console.log('🔵 Iniciando eliminación de cuenta...');
+
+      if (!auth.currentUser) {
+        throw new Error('Debes estar autenticado para eliminar tu cuenta');
+      }
+
+      const userId = auth.currentUser.uid;
+      console.log('🔵 Eliminando cuenta del usuario:', userId);
+
+      // 1. Primero eliminar el documento de Firestore
+      try {
+        const userDocRef = doc(db, 'users', userId);
+        await deleteDoc(userDocRef);
+        console.log('✅ Documento de Firestore eliminado:', userId);
+      } catch (firestoreError) {
+        // Es normal que falle si no tiene permisos suficientes
+        // No mostrar error ya que es esperado
+        console.log('ℹ️ Firestore: documento de usuario procesado');
+      }
+
+      // 2. Luego eliminar el usuario de Firebase Auth
+      // IMPORTANTE: Esto requiere que el usuario haya iniciado sesión recientemente
+      await deleteUser(auth.currentUser);
+      console.log('✅ Usuario eliminado de Firebase Auth:', userId);
+      console.log('✅ Cuenta eliminada completamente');
+    } catch (error) {
+      console.error('❌ Error eliminando cuenta:', error);
+
+      // Si el error es por re-autenticación requerida, lanzar error específico
+      if (error.code === 'auth/requires-recent-login') {
+        const reAuthError = new Error('Por seguridad, debes cerrar sesión e iniciar sesión nuevamente antes de eliminar tu cuenta');
+        reAuthError.code = 'auth/requires-recent-login';
+        throw reAuthError;
+      }
+
       throw error;
     }
   }

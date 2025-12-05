@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../config/firebase';
 import guestSolutionsDetailed from '../data/guestSolutionsDetailed.json';
 import { colors } from '../styles/colors';
 import { globalStyles } from '../styles/globalStyles';
@@ -10,10 +12,45 @@ import { globalStyles } from '../styles/globalStyles';
 const SolutionDetailScreen = () => {
   const router = useRouter();
   const { id, type } = useLocalSearchParams(); // id de la solución y type (mechanical/electrical)
+  const [solution, setSolution] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Buscar la solución en los datos
-  const solutions = type === 'mechanical' ? guestSolutionsDetailed.mechanical : guestSolutionsDetailed.electrical;
-  const solution = solutions.find((s) => s.id === id);
+  useEffect(() => {
+    const loadSolution = async () => {
+      try {
+        // Si el ID tiene prefijo "fs-", buscar en Firestore
+        if (id && id.startsWith('fs-')) {
+          const firestoreId = id.replace('fs-', '');
+          const docRef = doc(db, 'guestContributions', firestoreId);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            setSolution({ id: docSnap.id, ...docSnap.data() });
+          }
+        } else {
+          // Buscar en datos estáticos
+          const solutions = type === 'mechanical' ? guestSolutionsDetailed.mechanical : guestSolutionsDetailed.electrical;
+          const found = solutions.find((s) => s.id === id);
+          setSolution(found);
+        }
+      } catch (error) {
+        console.error('Error cargando solución:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSolution();
+  }, [id, type]);
+
+  if (loading) {
+    return (
+      <View style={[globalStyles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[styles.errorText, { marginTop: 16 }]}>Cargando solución...</Text>
+      </View>
+    );
+  }
 
   if (!solution) {
     return (

@@ -14,8 +14,13 @@ export default function Layout() {
           }}
         >
           <Stack.Screen name="index" />
+          <Stack.Screen name="welcome" />
           <Stack.Screen name="login" />
           <Stack.Screen name="menu" />
+          <Stack.Screen name="guest-menu" />
+          <Stack.Screen name="guest-solutions" />
+          <Stack.Screen name="solution-detail" />
+          <Stack.Screen name="contribute" />
           <Stack.Screen name="register-problem" />
           <Stack.Screen name="view-records" />
           <Stack.Screen name="problem-detail" />

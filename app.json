@@ -15,7 +15,7 @@
     "privacyPolicy": "https://sites.google.com/view/poltica-de-privacidad-mechanic/p%C3%A1gina-principal",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mecanicfixes.ds2025",
+      "bundleIdentifier": "truckfix.ds2025",
       "googleServicesFile": "./GoogleService-Info.plist",
       "privacyManifests": {
         "NSPrivacyAccessedAPITypes": [

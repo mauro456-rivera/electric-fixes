@@ -36,14 +36,12 @@ const LoginScreen = () => {
   }, [isAuthenticated, loginLoading, router]);
 
   const handleEmailChange = (text) => {
-    // Asegurar que siempre termine con @dieselsoft.co
-    if (!text.includes('@dieselsoft.co')) {
-      setEmail('@dieselsoft.co');
-    } else {
-      const parts = text.split('@dieselsoft.co');
-      const username = parts[0] || '';
-      setEmail(username + '@dieselsoft.co');
-    }
+    setEmail(text);
+  };
+
+  const handleEmailBlur = () => {
+    // Ya no agregamos nada automáticamente
+    // El AuthContext se encargará de detectar si es username o email
   };
 
 const handleLogin = async () => {
@@ -86,6 +84,16 @@ const handleLogin = async () => {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.container}>
+          {/* Botón volver */}
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.replace('/welcome')}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="arrow-back" size={24} color={colors.text} />
+            <Text style={styles.backButtonText}>Volver al inicio</Text>
+          </TouchableOpacity>
+
           <View style={styles.logoContainer}>
             <Text style={styles.logoText}>
               <Text style={styles.logoDiesel}>DIESEL</Text>
@@ -108,11 +116,11 @@ const handleLogin = async () => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="usuario@dieselsoft.co"
+                placeholder="usuario o email"
                 placeholderTextColor={colors.textSecondary}
                 value={email}
                 onChangeText={handleEmailChange}
-                keyboardType="email-address"
+                onBlur={handleEmailBlur}
                 autoCapitalize="none"
                 autoCorrect={false}
                 editable={!loginLoading}
@@ -176,6 +184,19 @@ const handleLogin = async () => {
 const styles = StyleSheet.create({
   scrollContent: { flexGrow: 1 },
   container: { flex: 1, justifyContent: "center", paddingHorizontal: 24 },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    marginBottom: 20,
+    marginTop: 20,
+    gap: 8,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: colors.text,
+    fontWeight: '500',
+  },
   logoContainer: { alignItems: "center", marginBottom: 60 },
   logoText: { fontSize: 36, fontWeight: "bold", marginBottom: 8 },
   logoDiesel: { color: colors.primary },

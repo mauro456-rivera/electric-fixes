@@ -112,10 +112,18 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  const signIn = async (email, password) => {
+  const signIn = async (emailOrUsername, password) => {
     try {
       setLoading(true);
       console.log('🔵 Iniciando login con Firebase Auth directamente...');
+
+      // Detectar si es username (sin @) o email completo
+      let email = emailOrUsername;
+      if (!emailOrUsername.includes('@')) {
+        // Es un username, convertir a email
+        email = `${emailOrUsername.toLowerCase()}@mecanic-fixes.app`;
+        console.log('🔄 Username detectado, convertido a email:', email);
+      }
 
       // Autenticación directa con Firebase
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -217,12 +225,32 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const deleteAccount = async () => {
+    try {
+      setLoading(true);
+      console.log('🔵 Eliminando cuenta...');
+
+      // Llamar al servicio para eliminar la cuenta
+      await userService.deleteAccount();
+
+      console.log('✅ Cuenta eliminada exitosamente');
+      // onAuthStateChanged detectará automáticamente que el usuario fue eliminado
+      // y limpiará el estado
+    } catch (error) {
+      console.error('❌ Error en deleteAccount:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value = {
     user,
     token,
     loading,
     signIn,
     signOut,
+    deleteAccount,
     isAuthenticated: !!user,
     isAdmin: user?.role === 'admin',
     isUser: user?.role === 'user',
