@@ -1,78 +1,72 @@
 Hola, 
 
-los problemas que identificamos anteriormente aún requieren su atención. 
+gracias por proporcionar esta información. 
 
-Si tiene alguna pregunta, estamos aquí para ayudarle. Responda a este mensaje en App Store Connect y háganoslo saber. ID de envío 
+Tras una revisión más detallada, hemos identificado problemas adicionales que requieren su atención:
 
-del entorno de revisión
+Directriz 2.2 - Rendimiento - Pruebas beta
 
- : 10f39109-72e3-4898-8013-10ec7a37930e 
-Fecha de revisión: 21 de noviembre de 2025 
-Versión revisada: 1.0.7
-
-
-Directriz 2.3.10 - Rendimiento - Metadatos precisos
-Descripción del problema:
-
- La aplicación o los metadatos incluyen información sobre plataformas de terceros que puede no ser relevante para los usuarios de la App Store, quienes se centran en las experiencias que ofrece la propia aplicación. 
+Tu app parece ser una versión prelanzamiento, de prueba o de evaluación con un conjunto de funciones limitado. Las apps creadas con fines de prueba o de evaluación no son aptas para la App Store. 
 
 Próximos pasos:
 
- Revise las capturas de pantalla de la aplicación para eliminar las imágenes de la barra de estado que no sean de iOS. 
+ Para resolver este problema, completa, elimina o configura por completo cualquier función parcialmente implementada. Si tu app no ​​está lista para su distribución pública, usa TestFlight para probarla. 
 
-Las capturas de pantalla revisadas deben reflejar con precisión la aplicación en uso en los dispositivos compatibles y resaltar las características principales de la aplicación en la mayoría de las capturas de pantalla. 
+Recursos
 
-Responda a la reseña de la aplicación en App Store Connect con información adicional si se ha malinterpretado la funcionalidad de la aplicación y cómo interactúa con plataformas de terceros. 
+ : Para obtener más información sobre nuestras políticas para las pruebas beta, consulta la Guía de revisión de apps 2.2 . 
+Prueba apps e invita a los usuarios a enviar comentarios con TestFlight Beta Testing .
 
-Recursos:
-
- Aprenda a editar los metadatos de la App Store en la Ayuda de App Store Connect .
-
-
-Directriz 5.1.1(v) - Recopilación y almacenamiento de datos
+Directriz 2.3.8 - Rendimiento - Metadatos precisos
 Descripción del problema
 
- La aplicación admite la creación de cuentas, pero no incluye una opción para iniciar la eliminación de la cuenta. Las aplicaciones que admiten la creación de cuentas también deben ofrecer la eliminación de cuentas para brindar a los usuarios más control de los datos que han compartido mientras usaban una aplicación. 
+ El nombre de la aplicación que se muestra en las tiendas de aplicaciones y el nombre de la aplicación que se muestra en el dispositivo no coinciden lo suficiente, lo que dificulta que los usuarios encuentren las aplicaciones que han descargado. Estos nombres no necesitan coincidir exactamente, pero deben ser similares para evitar confusiones. 
 
-Siga estos requisitos al actualizar una aplicación para que admita la eliminación de cuentas: 
+Nombre de la aplicación de la tienda: DS-WIKI 
 
-- Solo ofrecer desactivar o deshabilitar temporalmente una cuenta es insuficiente. 
-- Si los usuarios necesitan visitar un sitio web para terminar de eliminar su cuenta, incluya un enlace directo a la página del sitio web donde puedan completar el proceso. 
-- Las aplicaciones pueden incluir pasos de confirmación para evitar que los usuarios eliminen su cuenta accidentalmente. Sin embargo, solo las aplicaciones en industrias altamente reguladas pueden requerir que los usuarios usen recursos de servicio al cliente, como hacer una llamada telefónica o enviar un correo electrónico, para completar la eliminación de la cuenta. 
+Nombre que se muestra en el dispositivo: Mechanic Corrige 
 
 Próximos pasos
 
- Actualice la aplicación para que admita la eliminación de cuentas. Si la aplicación ya admite la eliminación de cuentas, responda a la Revisión de la aplicación en App Store Connect e identifique dónde encontrar esta función. 
+ Cambie uno o ambos nombres para que sean más similares y el usuario pueda localizar fácilmente la aplicación que descargó. No cambie el identificador de paquete, que se utiliza para identificar de forma única la aplicación. 
 
-Si la aplicación no puede eliminar la cuenta o necesita proporcionar flujos de servicio al cliente adicionales para facilitar y confirmar la eliminación, ya sea porque opera en un sector altamente regulado o por cualquier otro motivo, responda a la Revisión de la Aplicación en App Store Connect y proporcione información o documentación adicional. Si tiene preguntas sobre obligaciones legales, consulte con un asesor legal. 
+Recursos
+
+ - Aprenda a ver y editar la información de la aplicación . 
+- Aprenda a administrar la lista de propiedades de información de una aplicación .
+
+Directriz 4.2 - Diseño - Funcionalidad mínima
+
+La utilidad de la aplicación está limitada por la funcionalidad mínima que ofrece actualmente. 
+
+En concreto, la aplicación no ofrece suficiente contenido ni funciones para ser útil, única y similar a una aplicación. 
+
+Las aplicaciones deben ofrecer una utilidad o entretenimiento valioso, atraer a los usuarios ofreciendo funciones o contenido atractivos, o permitirles hacer algo que antes no podían hacer o de una forma que antes no podían. 
+
+Próximos pasos:
+
+ Le recomendamos que revise el concepto de su aplicación e incorpore contenido y funciones diferentes que cumplan con las Directrices de revisión de aplicaciones. 
 
 Recursos:
 
- Consulte las preguntas frecuentes y obtenga más información sobre los requisitos para eliminar la cuenta .
+ Obtenga más información sobre los requisitos mínimos de funcionalidad en la directriz 4.2 .
 
+Directriz 5.1.1 - Legal - Privacidad - Recopilación y almacenamiento de datos
 
-Directriz 2.1 - Información necesaria
+Descripción del problema:
 
-Hemos comenzado nuestra revisión, pero necesitamos información adicional para continuar. Específicamente, parece que su aplicación puede acceder o incluir contenido o servicios digitales pagos, y queremos entender su modelo de negocio antes de completar nuestra revisión. 
+ La aplicación requiere que los usuarios se registren o inicien sesión para acceder a funciones que no requieren una cuenta. 
 
-Próximos pasos
+En concreto, la aplicación requiere que los usuarios se registren antes de acceder a contenido no basado en cuenta. Es posible que las aplicaciones no requieran que los usuarios introduzcan información personal para funcionar, excepto cuando sea directamente relevante para la funcionalidad principal de la aplicación o lo exija la ley. 
 
- Por favor revise las siguientes preguntas y proporcione tanta información detallada sobre su modelo de negocio como sea posible. 
+Próximos pasos:
 
-1. ¿Quiénes son los usuarios que usarán las funciones pagadas en la aplicación? 
-2. ¿Dónde pueden los usuarios comprar las funciones a las que se puede acceder en la aplicación? 
-3. ¿A qué tipos específicos de funciones compradas previamente puede acceder un usuario en la aplicación? 
-4. ¿Qué contenido pago, suscripciones o funciones se desbloquean dentro de su aplicación que no utilizan compras dentro de la aplicación? 
-5. ¿Los servicios empresariales en su aplicación se venden a usuarios individuales, consumidores o para uso familiar?
+ Revise la aplicación para que los usuarios puedan acceder libremente a las funciones que no requieren una cuenta. Es posible que la aplicación aún requiera registro para otras funciones que sí requieren una cuenta. 
 
-Apoyo
-Responda a este mensaje en su idioma preferido si necesita ayuda. Si necesita soporte adicional, utilice el módulo Contáctenos . 
-Consulte con otros desarrolladores e ingenieros de Apple en los Foros para Desarrolladores de Apple . 
-Solicite una cita para la revisión de su app en Meet with Apple para hablar sobre la revisión de su app. Las citas están sujetas a disponibilidad durante su horario comercial local los martes y jueves. 
-Comparta su opinión sobre este mensaje y su experiencia con la revisión completando una breve encuesta . 
+Recursos: 
 
-Solicite una llamada telefónica de Revisión de Apps.
+ Obtenga más información sobre los requisitos para aplicaciones con contenido y funciones basados ​​en cuenta en la directriz 5.1.1(v) - Inicio de sesión de cuenta . 
 
- Si lo solicita, podemos programar una llamada de un representante de Apple en los próximos tres a cinco días hábiles para hablar sobre el problema de su revisión de app. 
+Atentamente, 
 
-Solicite una llamada para hablar sobre la revisión de su app .
+Revisión de la aplicación .

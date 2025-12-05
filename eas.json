@@ -34,8 +34,7 @@
     "production": {
       "ios": {
         "appleId": "jbiansoftds@gmail.com",
-        "ascAppId": "6756071450",
-        "appleTeamId": "truckfixds2025"
+        "ascAppId": "6756071450"
       }
     }
   }

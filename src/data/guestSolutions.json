@@ -1,326 +1,116 @@
 {
   "mechanical": [
-    {
-      "id": "mech-001",
-      "problem": "Pérdida de potencia en subidas con carga completa",
-      "solution": "Revisar y limpiar filtro de aire, verificar turbocompresor por acumulación de carbonilla. Realizar limpieza del sistema de admisión y calibración del acelerador electrónico.",
-      "truck": "Volvo FH16",
-      "category": "Motor",
-      "severity": "Alta"
-    },
-    {
-      "id": "mech-002",
-      "problem": "Consumo excesivo de aceite del motor",
-      "solution": "Inspeccionar anillos de pistón y guías de válvulas. Verificar turbocompresor por fugas en sellos. Cambiar aceite a especificación VDS-4.5 y verificar nivel de soplado del cárter.",
-      "truck": "Volvo FM",
-      "category": "Motor",
-      "severity": "Alta"
-    },
-    {
-      "id": "mech-003",
-      "problem": "Vibración excesiva en el volante a 80-90 km/h",
-      "solution": "Balancear y alinear ruedas delanteras. Verificar estado de rodamientos de rueda y bujes de suspensión. Inspeccionar barra estabilizadora y silent blocks.",
-      "truck": "Volvo FH",
-      "category": "Suspensión",
-      "severity": "Media"
-    },
-    {
-      "id": "mech-004",
-      "problem": "Dificultad para cambiar marchas en transmisión I-Shift",
-      "solution": "Verificar nivel de aceite de transmisión ATF Dexron VI. Actualizar software de transmisión a última versión. Calibrar embrague automatizado y verificar cilindro selector.",
-      "truck": "Volvo FH",
-      "category": "Transmisión",
-      "severity": "Alta"
-    },
-    {
-      "id": "mech-005",
-      "problem": "Fuga de refrigerante en circuito de enfriamiento",
-      "solution": "Revisar mangueras de radiador y abrazaderas. Verificar bomba de agua por desgaste de sello mecánico. Probar presión del sistema y reemplazar tapón de radiador si es necesario.",
-      "truck": "Volvo FM",
-      "category": "Sistema de enfriamiento",
-      "severity": "Alta"
-    },
-    {
-      "id": "mech-006",
-      "problem": "Ruido metálico en el diferencial al girar",
-      "solution": "Drenar aceite del diferencial y verificar contaminación metálica. Ajustar juego de piñón de ataque y corona. Reemplazar rodamientos si presentan huellas de desgaste.",
-      "truck": "Volvo FH16",
-      "category": "Diferencial",
-      "severity": "Alta"
-    },
-    {
-      "id": "mech-007",
-      "problem": "Frenos traseros se bloquean prematuramente",
-      "solution": "Calibrar válvula moduladora de presión del eje trasero. Verificar estado de tambores y zapatas. Purgar completamente sistema de frenos neumáticos y verificar válvula relay.",
-      "truck": "Volvo FM",
-      "category": "Frenos",
-      "severity": "Crítica"
-    },
-    {
-      "id": "mech-008",
-      "problem": "Pérdida de presión de aire en el sistema neumático",
-      "solution": "Probar fugas con agua jabonosa en todas las conexiones. Verificar válvula gobernadora y compresor de aire. Reemplazar secador de aire si está saturado.",
-      "truck": "Volvo FH",
-      "category": "Sistema neumático",
-      "severity": "Alta"
-    },
-    {
-      "id": "mech-009",
-      "problem": "Desgaste irregular de neumáticos delanteros",
-      "solution": "Realizar alineación computerizada de ejes delanteros (camber, caster, toe). Verificar estado de rótulas y terminales de dirección. Revisar presión de inflado según carga.",
-      "truck": "Volvo FM",
-      "category": "Dirección y neumáticos",
-      "severity": "Media"
-    },
-    {
-      "id": "mech-010",
-      "problem": "Sobrecalentamiento del motor en tráfico pesado",
-      "solution": "Limpiar radiador con aire comprimido desde el motor hacia afuera. Verificar funcionamiento del ventilador viscoso o electro-ventilador. Revisar termostato y su temperatura de apertura.",
-      "truck": "Volvo FH16",
-      "category": "Sistema de enfriamiento",
-      "severity": "Alta"
-    },
-    {
-      "id": "mech-011",
-      "problem": "Fugas de aire en conexiones de frenos de remolque",
-      "solution": "Inspeccionar acoples glad-hands y reemplazar empaques. Verificar mangueras espirales por grietas. Aplicar grasa de silicona en sellos para prolongar vida útil.",
-      "truck": "Volvo FH",
-      "category": "Frenos",
-      "severity": "Alta"
-    },
-    {
-      "id": "mech-012",
-      "problem": "Ruido anormal en turbocompresor (silbido agudo)",
-      "solution": "Verificar juego axial del eje del turbo con reloj comparador. Inspeccionar álabes de turbina por daños. Revisar tuberías de lubricación del turbo por obstrucciones.",
-      "truck": "Volvo FM",
-      "category": "Motor",
-      "severity": "Alta"
-    },
-    {
-      "id": "mech-013",
-      "problem": "Dirección pesada o con juego excesivo",
-      "solution": "Verificar nivel de aceite hidráulico de dirección asistida. Purgar sistema de dirección y ajustar bomba de dirección. Inspeccionar caja de dirección por desgaste interno.",
-      "truck": "Volvo FH",
-      "category": "Dirección",
-      "severity": "Alta"
-    },
-    {
-      "id": "mech-014",
-      "problem": "Suspensión neumática no nivela correctamente",
-      "solution": "Verificar fugas en bolsas de aire con agua jabonosa. Calibrar válvula niveladora de altura. Revisar compresor de suspensión y válvulas solenoides del sistema ECAS.",
-      "truck": "Volvo FH",
-      "category": "Suspensión",
-      "severity": "Media"
-    },
-    {
-      "id": "mech-015",
-      "problem": "Embrague patina en aceleraciones fuertes",
-      "solution": "Verificar desgaste del disco de embrague y ajuste del recorrido del pedal. Revisar cilindro maestro y esclavo por fugas. Purgar sistema hidráulico del embrague.",
-      "truck": "Volvo FM",
-      "category": "Transmisión",
-      "severity": "Alta"
-    },
-    {
-      "id": "mech-016",
-      "problem": "Consumo excesivo de combustible",
-      "solution": "Limpiar inyectores con equipo de ultrasonido. Verificar presión de combustible en riel común. Revisar filtro de partículas DPF por obstrucción y forzar regeneración.",
-      "truck": "Volvo FH16",
-      "category": "Sistema de combustible",
-      "severity": "Media"
-    },
-    {
-      "id": "mech-017",
-      "problem": "Fuga de aceite por retén trasero del cigüeñal",
-      "solution": "Reemplazar retén trasero del cigüeñal con kit original Volvo. Verificar ventilación del cárter. Inspeccionar superficie del cigüeñal por ralladuras que puedan causar nuevas fugas.",
-      "truck": "Volvo FM",
-      "category": "Motor",
-      "severity": "Media"
-    },
-    {
-      "id": "mech-018",
-      "problem": "Toma de fuerza no se activa correctamente",
-      "solution": "Verificar presión neumática de activación (mínimo 7 bar). Inspeccionar cilindro de activación y varillaje. Ajustar sincronización de engrane de PTO con transmisión.",
-      "truck": "Volvo FM",
-      "category": "Toma de fuerza",
-      "severity": "Media"
-    },
-    {
-      "id": "mech-019",
-      "problem": "Cadena de distribución hace ruido al arrancar en frío",
-      "solution": "Verificar tensor hidráulico de cadena de distribución. Cambiar aceite de motor a viscosidad correcta para clima. Revisar bomba de aceite por pérdida de presión.",
-      "truck": "Volvo FH",
-      "category": "Motor",
-      "severity": "Alta"
-    },
-    {
-      "id": "mech-020",
-      "problem": "Válvula EGR obstruida generando humo negro",
-      "solution": "Desmontar y limpiar válvula EGR con limpiador específico. Verificar sensor de temperatura de gases de escape. Actualizar parámetros de ECU para optimizar regeneración de EGR.",
-      "truck": "Volvo FH16",
-      "category": "Sistema de emisiones",
-      "severity": "Alta"
-    }
+    {"id": "mech-001", "problem": "Pérdida de potencia en subidas con carga completa", "solution": "Revisar y limpiar filtro de aire, verificar turbocompresor por acumulación de carbonilla. Realizar limpieza del sistema de admisión y calibración del acelerador electrónico.", "truck": "Volvo FH16", "category": "Motor", "severity": "Alta"},
+    {"id": "mech-002", "problem": "Consumo excesivo de aceite del motor", "solution": "Inspeccionar anillos de pistón y guías de válvulas. Verificar turbocompresor por fugas en sellos. Cambiar aceite a especificación VDS-4.5 y verificar nivel de soplado del cárter.", "truck": "Volvo FM", "category": "Motor", "severity": "Alta"},
+    {"id": "mech-003", "problem": "Vibración excesiva en el volante a 80-90 km/h", "solution": "Balancear y alinear ruedas delanteras. Verificar estado de rodamientos de rueda y bujes de suspensión. Inspeccionar barra estabilizadora y silent blocks.", "truck": "Volvo FH", "category": "Suspensión", "severity": "Media"},
+    {"id": "mech-004", "problem": "Dificultad para cambiar marchas en transmisión I-Shift", "solution": "Verificar nivel de aceite de transmisión ATF Dexron VI. Actualizar software de transmisión a última versión. Calibrar embrague automatizado y verificar cilindro selector.", "truck": "Volvo FH", "category": "Transmisión", "severity": "Alta"},
+    {"id": "mech-005", "problem": "Fuga de refrigerante en circuito de enfriamiento", "solution": "Revisar mangueras de radiador y abrazaderas. Verificar bomba de agua por desgaste de sello mecánico. Probar presión del sistema y reemplazar tapón de radiador si es necesario.", "truck": "Volvo FM", "category": "Sistema de enfriamiento", "severity": "Alta"},
+    {"id": "mech-006", "problem": "Ruido metálico en el diferencial al girar", "solution": "Drenar aceite del diferencial y verificar contaminación metálica. Ajustar juego de piñón de ataque y corona. Reemplazar rodamientos si presentan huellas de desgaste.", "truck": "Volvo FH16", "category": "Diferencial", "severity": "Alta"},
+    {"id": "mech-007", "problem": "Frenos traseros se bloquean prematuramente", "solution": "Calibrar válvula moduladora de presión del eje trasero. Verificar estado de tambores y zapatas. Purgar completamente sistema de frenos neumáticos y verificar válvula relay.", "truck": "Volvo FM", "category": "Frenos", "severity": "Crítica"},
+    {"id": "mech-008", "problem": "Pérdida de presión de aire en el sistema neumático", "solution": "Probar fugas con agua jabonosa en todas las conexiones. Verificar válvula gobernadora y compresor de aire. Reemplazar secador de aire si está saturado.", "truck": "Volvo FH", "category": "Sistema neumático", "severity": "Alta"},
+    {"id": "mech-009", "problem": "Desgaste irregular de neumáticos delanteros", "solution": "Realizar alineación computerizada de ejes delanteros (camber, caster, toe). Verificar estado de rótulas y terminales de dirección. Revisar presión de inflado según carga.", "truck": "Volvo FM", "category": "Dirección y neumáticos", "severity": "Media"},
+    {"id": "mech-010", "problem": "Sobrecalentamiento del motor en tráfico pesado", "solution": "Limpiar radiador con aire comprimido desde el motor hacia afuera. Verificar funcionamiento del ventilador viscoso o electro-ventilador. Revisar termostato y su temperatura de apertura.", "truck": "Volvo FH16", "category": "Sistema de enfriamiento", "severity": "Alta"},
+    {"id": "mech-011", "problem": "Fugas de aire en conexiones de frenos de remolque", "solution": "Inspeccionar acoples glad-hands y reemplazar empaques. Verificar mangueras espirales por grietas. Aplicar grasa de silicona en sellos para prolongar vida útil.", "truck": "Volvo FH", "category": "Frenos", "severity": "Alta"},
+    {"id": "mech-012", "problem": "Ruido anormal en turbocompresor (silbido agudo)", "solution": "Verificar juego axial del eje del turbo con reloj comparador. Inspeccionar álabes de turbina por daños. Revisar tuberías de lubricación del turbo por obstrucciones.", "truck": "Volvo FM", "category": "Motor", "severity": "Alta"},
+    {"id": "mech-013", "problem": "Dirección pesada o con juego excesivo", "solution": "Verificar nivel de aceite hidráulico de dirección asistida. Purgar sistema de dirección y ajustar bomba de dirección. Inspeccionar caja de dirección por desgaste interno.", "truck": "Volvo FH", "category": "Dirección", "severity": "Alta"},
+    {"id": "mech-014", "problem": "Suspensión neumática no nivela correctamente", "solution": "Verificar fugas en bolsas de aire con agua jabonosa. Calibrar válvula niveladora de altura. Revisar compresor de suspensión y válvulas solenoides del sistema ECAS.", "truck": "Volvo FH", "category": "Suspensión", "severity": "Media"},
+    {"id": "mech-015", "problem": "Embrague patina en aceleraciones fuertes", "solution": "Verificar desgaste del disco de embrague y ajuste del recorrido del pedal. Revisar cilindro maestro y esclavo por fugas. Purgar sistema hidráulico del embrague.", "truck": "Volvo FM", "category": "Transmisión", "severity": "Alta"},
+    {"id": "mech-016", "problem": "Consumo excesivo de combustible", "solution": "Limpiar inyectores con equipo de ultrasonido. Verificar presión de combustible en riel común. Revisar filtro de partículas DPF por obstrucción y forzar regeneración.", "truck": "Volvo FH16", "category": "Sistema de combustible", "severity": "Media"},
+    {"id": "mech-017", "problem": "Fuga de aceite por retén trasero del cigüeñal", "solution": "Reemplazar retén trasero del cigüeñal con kit original Volvo. Verificar ventilación del cárter. Inspeccionar superficie del cigüeñal por ralladuras que puedan causar nuevas fugas.", "truck": "Volvo FM", "category": "Motor", "severity": "Media"},
+    {"id": "mech-018", "problem": "Toma de fuerza no se activa correctamente", "solution": "Verificar presión neumática de activación (mínimo 7 bar). Inspeccionar cilindro de activación y varillaje. Ajustar sincronización de engrane de PTO con transmisión.", "truck": "Volvo FM", "category": "Toma de fuerza", "severity": "Media"},
+    {"id": "mech-019", "problem": "Cadena de distribución hace ruido al arrancar en frío", "solution": "Verificar tensor hidráulico de cadena de distribución. Cambiar aceite de motor a viscosidad correcta para clima. Revisar bomba de aceite por pérdida de presión.", "truck": "Volvo FH", "category": "Motor", "severity": "Alta"},
+    {"id": "mech-020", "problem": "Válvula EGR obstruida generando humo negro", "solution": "Desmontar y limpiar válvula EGR con limpiador específico. Verificar sensor de temperatura de gases de escape. Actualizar parámetros de ECU para optimizar regeneración de EGR.", "truck": "Volvo FH16", "category": "Sistema de emisiones", "severity": "Alta"},
+    {"id": "mech-021", "problem": "Amortiguadores delanteros con fuga de aceite", "solution": "Reemplazar amortiguadores por kit completo. Verificar estado de soportes superiores y bujes.", "truck": "Volvo FH", "category": "Suspensión", "severity": "Media"},
+    {"id": "mech-022", "problem": "Ruido en caja de cambios al cambiar de marcha", "solution": "Verificar nivel de aceite de transmisión. Inspeccionar sincronizadores y horquillas selectoras.", "truck": "Volvo FM", "category": "Transmisión", "severity": "Alta"},
+    {"id": "mech-023", "problem": "Pérdida de refrigerante por radiador", "solution": "Inspeccionar radiador por corrosión o daños físicos. Probar presión del sistema. Reemplazar radiador si es necesario.", "truck": "Volvo FH16", "category": "Sistema de enfriamiento", "severity": "Alta"},
+    {"id": "mech-024", "problem": "Batería no retiene carga", "solution": "Probar batería con cargador/tester. Verificar edad de batería (vida útil 3-4 años). Reemplazar si falla prueba de carga.", "truck": "Volvo FH", "category": "Sistema eléctrico", "severity": "Alta"},
+    {"id": "mech-025", "problem": "Barra estabilizadora rota o agrietada", "solution": "Inspeccionar visualmente barra estabilizadora. Reemplazar barra y bujes si hay grietas o roturas.", "truck": "Volvo FM", "category": "Suspensión", "severity": "Alta"},
+    {"id": "mech-026", "problem": "Escape con humo blanco constante", "solution": "Verificar junta de culata por fuga de refrigerante al cilindro. Probar presión de cilindros. Revisar inyectores.", "truck": "Volvo FH16", "category": "Motor", "severity": "Crítica"},
+    {"id": "mech-027", "problem": "Freno de estacionamiento no sostiene el vehículo", "solution": "Ajustar cable de freno de mano. Verificar zapatas de freno de estacionamiento. Reemplazar si desgaste excede límite.", "truck": "Volvo FH", "category": "Frenos", "severity": "Crítica"},
+    {"id": "mech-028", "problem": "Fugas en sistema hidráulico de volteo", "solution": "Inspeccionar cilindros hidráulicos, mangueras y conexiones. Reemplazar sellos o componentes dañados.", "truck": "Volvo FM", "category": "Sistema hidráulico", "severity": "Alta"},
+    {"id": "mech-029", "problem": "Clutch/embrague hace ruido al presionar pedal", "solution": "Verificar collarin/rodamiento de desembrague. Lubricar o reemplazar si está desgastado.", "truck": "Volvo FH", "category": "Transmisión", "severity": "Media"},
+    {"id": "mech-030", "problem": "Cardan/eje de transmisión vibra", "solution": "Balancear cardan. Verificar crucetas y rodamientos centrales. Reemplazar componentes desgastados.", "truck": "Volvo FH16", "category": "Transmisión", "severity": "Alta"},
+    {"id": "mech-031", "problem": "Motor arranca con dificultad en frío", "solution": "Verificar sistema de precalentamiento (bujías). Revisar calidad del combustible y filtros. Comprobar compresión.", "truck": "Volvo FM", "category": "Motor", "severity": "Media"},
+    {"id": "mech-032", "problem": "Cremallera de dirección con juego", "solution": "Ajustar juego de cremallera según especificaciones. Si excede límites, reemplazar cremallera.", "truck": "Volvo FH", "category": "Dirección", "severity": "Alta"},
+    {"id": "mech-033", "problem": "Compresor de aire no genera presión suficiente", "solution": "Verificar válvula de descarga del compresor. Inspeccionar anillos y cilindro del compresor. Reemplazar kit de reparación.", "truck": "Volvo FM", "category": "Sistema neumático", "severity": "Crítica"},
+    {"id": "mech-034", "problem": "Sincronización de motor desajustada", "solution": "Verificar marcas de distribución. Ajustar sincronización según especificaciones del fabricante.", "truck": "Volvo FH16", "category": "Motor", "severity": "Alta"},
+    {"id": "mech-035", "problem": "Junta homocinética rota", "solution": "Reemplazar junta homocinética completa. Verificar estado de grasa y guardapolvos.", "truck": "Volvo FH", "category": "Transmisión", "severity": "Alta"},
+    {"id": "mech-036", "problem": "Muelles/resortes de suspensión vencidos", "solution": "Medir altura de suspensión. Reemplazar muelles si la altura está fuera de especificación.", "truck": "Volvo FM", "category": "Suspensión", "severity": "Media"},
+    {"id": "mech-037", "problem": "Silenciador/mofle con agujeros", "solution": "Inspeccionar sistema de escape completo. Reemplazar silenciador y tubos dañados por corrosión.", "truck": "Volvo FH", "category": "Sistema de escape", "severity": "Media"},
+    {"id": "mech-038", "problem": "Válvula limitadora de presión defectuosa", "solution": "Probar presión del sistema neumático. Calibrar o reemplazar válvula limitadora de presión.", "truck": "Volvo FH16", "category": "Sistema neumático", "severity": "Alta"},
+    {"id": "mech-039", "problem": "Cárter de aceite abollado o fisurado", "solution": "Inspeccionar cárter por daños. Drenar aceite y reemplazar cárter con junta nueva.", "truck": "Volvo FM", "category": "Motor", "severity": "Alta"},
+    {"id": "mech-040", "problem": "Tensor automático de correa fallo", "solution": "Verificar funcionamiento del tensor automático. Reemplazar tensor si no mantiene tensión correcta.", "truck": "Volvo FH", "category": "Motor", "severity": "Media"},
+    {"id": "mech-041", "problem": "Quinta rueda desgastada o suelta", "solution": "Inspeccionar quinta rueda por desgaste. Reapretar pernos de montaje o reemplazar plato si es necesario.", "truck": "Volvo FH16", "category": "Acople", "severity": "Crítica"},
+    {"id": "mech-042", "problem": "Válvulas del motor con juego excesivo", "solution": "Ajustar luz de válvulas según especificaciones. Verificar balancines y árbol de levas por desgaste.", "truck": "Volvo FM", "category": "Motor", "severity": "Media"},
+    {"id": "mech-043", "problem": "Colector de escape agrietado", "solution": "Inspeccionar colector por grietas térmicas. Reemplazar colector y juntas.", "truck": "Volvo FH", "category": "Sistema de escape", "severity": "Media"},
+    {"id": "mech-044", "problem": "Bomba de combustible de baja presión falla", "solution": "Verificar presión de alimentación de combustible. Reemplazar bomba si presión es insuficiente.", "truck": "Volvo FH16", "category": "Sistema de combustible", "severity": "Alta"},
+    {"id": "mech-045", "problem": "Soportes de motor/transmisión rotos", "solution": "Inspeccionar soportes de goma del motor. Reemplazar soportes agrietados o vencidos.", "truck": "Volvo FM", "category": "Motor", "severity": "Alta"},
+    {"id": "mech-046", "problem": "Neumáticos con desgaste desigual lado a lado", "solution": "Verificar presión diferencial entre neumáticos duales. Rotar neumáticos y corregir presión.", "truck": "Volvo FH", "category": "Dirección y neumáticos", "severity": "Media"},
+    {"id": "mech-047", "problem": "Filtro de partículas DPF obstruido completamente", "solution": "Intentar regeneración forzada con VCADS. Si falla, desmontar y limpiar DPF profesionalmente o reemplazar.", "truck": "Volvo FH16", "category": "Sistema de emisiones", "severity": "Crítica"},
+    {"id": "mech-048", "problem": "Volante del motor fisurado", "solution": "Inspeccionar volante por grietas térmicas. Verificar planicidad. Reemplazar volante motor.", "truck": "Volvo FM", "category": "Transmisión", "severity": "Crítica"},
+    {"id": "mech-049", "problem": "Intercooler con fugas de aire", "solution": "Probar presión del intercooler. Reparar soldadura o reemplazar intercooler completo.", "truck": "Volvo FH16", "category": "Motor", "severity": "Alta"},
+    {"id": "mech-050", "problem": "Cabina con ruidos y golpeteos", "solution": "Inspeccionar soportes de cabina y amortiguadores. Reapretar pernos y reemplazar bujes desgastados.", "truck": "Volvo FH", "category": "Cabina", "severity": "Baja"}
   ],
   "electrical": [
-    {
-      "id": "elec-001",
-      "problem": "Batería se descarga durante la noche",
-      "solution": "Medir consumo en reposo (no debe superar 150mA). Verificar alternador por diodo en cortocircuito. Revisar módulos electrónicos que no entren en modo sleep: tacógrafo, GPS, alarma.",
-      "truck": "Volvo FH",
-      "category": "Sistema eléctrico",
-      "severity": "Alta"
-    },
-    {
-      "id": "elec-002",
-      "problem": "Luces del tablero parpadean intermitentemente",
-      "solution": "Verificar conexiones de masa del chasis. Limpiar terminales de batería y reapretar. Revisar regulador de voltaje del alternador (debe mantener 28V en sistema de 24V).",
-      "truck": "Volvo FM",
-      "category": "Iluminación",
-      "severity": "Media"
-    },
-    {
-      "id": "elec-003",
-      "problem": "Sistema ABS no funciona (luz permanece encendida)",
-      "solution": "Escanear códigos de falla con VCADS. Verificar sensores de velocidad de ruedas y limpiar anillos reluctores. Revisar cableado por cortocircuitos o conectores corroídos.",
-      "truck": "Volvo FH",
-      "category": "ABS",
-      "severity": "Crítica"
-    },
-    {
-      "id": "elec-004",
-      "problem": "Alternador no carga las baterías",
-      "solution": "Verificar tensión de correa del alternador. Probar alternador en banco de pruebas (debe entregar mínimo 90A). Revisar cable de excitación y regulador de voltaje interno.",
-      "truck": "Volvo FH16",
-      "category": "Sistema de carga",
-      "severity": "Crítica"
-    },
-    {
-      "id": "elec-005",
-      "problem": "Motor de arranque gira pero no enciende el motor",
-      "solution": "Verificar presión de combustible y funcionamiento de bomba de alta presión. Revisar relay de corte de combustible. Escanear ECM por códigos de sensor de posición del cigüeñal.",
-      "truck": "Volvo FM",
-      "category": "Arranque",
-      "severity": "Alta"
-    },
-    {
-      "id": "elec-006",
-      "problem": "Indicador de nivel de combustible marca incorrectamente",
-      "solution": "Probar resistencia del sensor de nivel en tanque (vacío: 250Ω, lleno: 30Ω). Verificar cableado por falso contacto. Calibrar tablero de instrumentos con VCADS.",
-      "truck": "Volvo FH",
-      "category": "Instrumentación",
-      "severity": "Baja"
-    },
-    {
-      "id": "elec-007",
-      "problem": "Sistema de climatización no enciende",
-      "solution": "Verificar fusible F25 de 15A del sistema HVAC. Revisar relay de compresor de A/C. Probar presión de gas refrigerante (debe estar entre 200-250 PSI en alta).",
-      "truck": "Volvo FM",
-      "category": "Climatización",
-      "severity": "Media"
-    },
-    {
-      "id": "elec-008",
-      "problem": "Sensores de reversa no funcionan",
-      "solution": "Verificar alimentación de 12V a módulo de sensores. Probar cada sensor individualmente con multímetro. Limpiar sensores de barro y verificar instalación correcta.",
-      "truck": "Volvo FH",
-      "category": "Ayudas de conducción",
-      "severity": "Media"
-    },
-    {
-      "id": "elec-009",
-      "problem": "Check Engine encendido - código P0401 (Flujo EGR insuficiente)",
-      "solution": "Limpiar válvula EGR y conductos. Verificar sensor de presión diferencial de EGR. Revisar actuador eléctrico de válvula EGR y calibrar con VCADS.",
-      "truck": "Volvo FH16",
-      "category": "Control de emisiones",
-      "severity": "Alta"
-    },
-    {
-      "id": "elec-010",
-      "problem": "Luces LED de circulación diurna no encienden",
-      "solution": "Verificar fusible F18 de módulo de iluminación. Revisar configuración en CEM (Central Electronic Module). Probar módulo de control de luces LED.",
-      "truck": "Volvo FH",
-      "category": "Iluminación",
-      "severity": "Media"
-    },
-    {
-      "id": "elec-011",
-      "problem": "Tacógrafo digital marca error de calibración",
-      "solution": "Realizar calibración con equipo homologado según normativa EU. Verificar sensor de velocidad VDO y conexión CAN. Actualizar software del tacógrafo a última versión.",
-      "truck": "Volvo FM",
-      "category": "Tacógrafo",
-      "severity": "Crítica"
-    },
-    {
-      "id": "elec-012",
-      "problem": "Sistema de control de crucero se desactiva solo",
-      "solution": "Verificar funcionamiento de interruptores de embrague y freno. Revisar sensor de presión de frenos neumáticos. Actualizar software de AEBS si está instalado.",
-      "truck": "Volvo FH",
-      "category": "Control de crucero",
-      "severity": "Media"
-    },
-    {
-      "id": "elec-013",
-      "problem": "Bocina no suena al presionar",
-      "solution": "Verificar relay de bocina y fusible F12 de 20A. Probar continuidad del claxon directamente con batería. Revisar anillo de contacto en volante (airbag).",
-      "truck": "Volvo FM",
-      "category": "Sistemas auxiliares",
-      "severity": "Media"
-    },
-    {
-      "id": "elec-014",
-      "problem": "Sistema de precalentamiento no funciona en clima frío",
-      "solution": "Probar bujías de precalentamiento con multímetro (resistencia 0.5-2Ω). Verificar relay de precalentamiento y temporizador. Revisar sensor de temperatura de refrigerante.",
-      "truck": "Volvo FM",
-      "category": "Arranque",
-      "severity": "Alta"
-    },
-    {
-      "id": "elec-015",
-      "problem": "Luces de freno no encienden",
-      "solution": "Verificar interruptor neumático de freno en válvula de pedal. Probar bulbos de luces traseras. Revisar fusible F22 y cableado de circuito de luces de freno.",
-      "truck": "Volvo FH",
-      "category": "Iluminación",
-      "severity": "Crítica"
-    },
-    {
-      "id": "elec-016",
-      "problem": "Error de comunicación CAN entre módulos",
-      "solution": "Escanear bus CAN con VCADS para identificar módulo fallido. Verificar resistencias terminales de 120Ω en extremos del bus. Revisar conectores del backbone CAN.",
-      "truck": "Volvo FH16",
-      "category": "Red CAN",
-      "severity": "Alta"
-    },
-    {
-      "id": "elec-017",
-      "problem": "Sistema de elevación de eje auxiliar no responde",
-      "solution": "Verificar presión de aire en circuito de elevación. Probar solenoide de válvula con 24V directo. Revisar interruptor de cabina y cableado de activación.",
-      "truck": "Volvo FM",
-      "category": "Sistemas auxiliares",
-      "severity": "Media"
-    },
-    {
-      "id": "elec-018",
-      "problem": "Velocímetro marca erróneamente o no marca",
-      "solution": "Verificar sensor de velocidad del eje trasero. Revisar configuración de relación de diferencial en ECU. Calibrar tacógrafo y verificar señal CAN de velocidad.",
-      "truck": "Volvo FH",
-      "category": "Instrumentación",
-      "severity": "Alta"
-    },
-    {
-      "id": "elec-019",
-      "problem": "Elevavidrios eléctricos se mueven lentamente",
-      "solution": "Lubricar rieles de ventanas con grasa de silicona. Verificar voltaje en motor de elevavidrios (debe recibir 24V). Limpiar contactos del switch de control.",
-      "truck": "Volvo FM",
-      "category": "Confort",
-      "severity": "Baja"
-    },
-    {
-      "id": "elec-020",
-      "problem": "Sistema de retardador eléctrico no funciona",
-      "solution": "Verificar refrigeración del retardador (temperatura no debe superar 180°C). Revisar relay de activación y fusible F28 de 40A. Escanear códigos de falla en módulo RET.",
-      "truck": "Volvo FH16",
-      "category": "Frenos",
-      "severity": "Alta"
-    }
+    {"id": "elec-001", "problem": "Batería se descarga durante la noche", "solution": "Medir consumo en reposo (no debe superar 150mA). Verificar alternador por diodo en cortocircuito. Revisar módulos electrónicos que no entren en modo sleep: tacógrafo, GPS, alarma.", "truck": "Volvo FH", "category": "Sistema eléctrico", "severity": "Alta"},
+    {"id": "elec-002", "problem": "Luces del tablero parpadean intermitentemente", "solution": "Verificar conexiones de masa del chasis. Limpiar terminales de batería y reapretar. Revisar regulador de voltaje del alternador (debe mantener 28V en sistema de 24V).", "truck": "Volvo FM", "category": "Iluminación", "severity": "Media"},
+    {"id": "elec-003", "problem": "Sistema ABS no funciona (luz permanece encendida)", "solution": "Escanear códigos de falla con VCADS. Verificar sensores de velocidad de ruedas y limpiar anillos reluctores. Revisar cableado por cortocircuitos o conectores corroídos.", "truck": "Volvo FH", "category": "ABS", "severity": "Crítica"},
+    {"id": "elec-004", "problem": "Alternador no carga las baterías", "solution": "Verificar tensión de correa del alternador. Probar alternador en banco de pruebas (debe entregar mínimo 90A). Revisar cable de excitación y regulador de voltaje interno.", "truck": "Volvo FH16", "category": "Sistema de carga", "severity": "Crítica"},
+    {"id": "elec-005", "problem": "Motor de arranque gira pero no enciende el motor", "solution": "Verificar presión de combustible y funcionamiento de bomba de alta presión. Revisar relay de corte de combustible. Escanear ECM por códigos de sensor de posición del cigüeñal.", "truck": "Volvo FM", "category": "Arranque", "severity": "Alta"},
+    {"id": "elec-006", "problem": "Indicador de nivel de combustible marca incorrectamente", "solution": "Probar resistencia del sensor de nivel en tanque (vacío: 250Ω, lleno: 30Ω). Verificar cableado por falso contacto. Calibrar tablero de instrumentos con VCADS.", "truck": "Volvo FH", "category": "Instrumentación", "severity": "Baja"},
+    {"id": "elec-007", "problem": "Sistema de climatización no enciende", "solution": "Verificar fusible F25 de 15A del sistema HVAC. Revisar relay de compresor de A/C. Probar presión de gas refrigerante (debe estar entre 200-250 PSI en alta).", "truck": "Volvo FM", "category": "Climatización", "severity": "Media"},
+    {"id": "elec-008", "problem": "Sensores de reversa no funcionan", "solution": "Verificar alimentación de 12V a módulo de sensores. Probar cada sensor individualmente con multímetro. Limpiar sensores de barro y verificar instalación correcta.", "truck": "Volvo FH", "category": "Ayudas de conducción", "severity": "Media"},
+    {"id": "elec-009", "problem": "Check Engine encendido - código P0401 (Flujo EGR insuficiente)", "solution": "Limpiar válvula EGR y conductos. Verificar sensor de presión diferencial de EGR. Revisar actuador eléctrico de válvula EGR y calibrar con VCADS.", "truck": "Volvo FH16", "category": "Control de emisiones", "severity": "Alta"},
+    {"id": "elec-010", "problem": "Luces LED de circulación diurna no encienden", "solution": "Verificar fusible F18 de módulo de iluminación. Revisar configuración en CEM (Central Electronic Module). Probar módulo de control de luces LED.", "truck": "Volvo FH", "category": "Iluminación", "severity": "Media"},
+    {"id": "elec-011", "problem": "Tacógrafo digital marca error de calibración", "solution": "Realizar calibración con equipo homologado según normativa EU. Verificar sensor de velocidad VDO y conexión CAN. Actualizar software del tacógrafo a última versión.", "truck": "Volvo FM", "category": "Tacógrafo", "severity": "Crítica"},
+    {"id": "elec-012", "problem": "Sistema de control de crucero se desactiva solo", "solution": "Verificar funcionamiento de interruptores de embrague y freno. Revisar sensor de presión de frenos neumáticos. Actualizar software de AEBS si está instalado.", "truck": "Volvo FH", "category": "Control de crucero", "severity": "Media"},
+    {"id": "elec-013", "problem": "Bocina no suena al presionar", "solution": "Verificar relay de bocina y fusible F12 de 20A. Probar continuidad del claxon directamente con batería. Revisar anillo de contacto en volante (airbag).", "truck": "Volvo FM", "category": "Sistemas auxiliares", "severity": "Media"},
+    {"id": "elec-014", "problem": "Sistema de precalentamiento no funciona en clima frío", "solution": "Probar bujías de precalentamiento con multímetro (resistencia 0.5-2Ω). Verificar relay de precalentamiento y temporizador. Revisar sensor de temperatura de refrigerante.", "truck": "Volvo FM", "category": "Arranque", "severity": "Alta"},
+    {"id": "elec-015", "problem": "Luces de freno no encienden", "solution": "Verificar interruptor neumático de freno en válvula de pedal. Probar bulbos de luces traseras. Revisar fusible F22 y cableado de circuito de luces de freno.", "truck": "Volvo FH", "category": "Iluminación", "severity": "Crítica"},
+    {"id": "elec-016", "problem": "Error de comunicación CAN entre módulos", "solution": "Escanear bus CAN con VCADS para identificar módulo fallido. Verificar resistencias terminales de 120Ω en extremos del bus. Revisar conectores del backbone CAN.", "truck": "Volvo FH16", "category": "Red CAN", "severity": "Alta"},
+    {"id": "elec-017", "problem": "Sistema de elevación de eje auxiliar no responde", "solution": "Verificar presión de aire en circuito de elevación. Probar solenoide de válvula con 24V directo. Revisar interruptor de cabina y cableado de activación.", "truck": "Volvo FM", "category": "Sistemas auxiliares", "severity": "Media"},
+    {"id": "elec-018", "problem": "Velocímetro marca erróneamente o no marca", "solution": "Verificar sensor de velocidad del eje trasero. Revisar configuración de relación de diferencial en ECU. Calibrar tacógrafo y verificar señal CAN de velocidad.", "truck": "Volvo FH", "category": "Instrumentación", "severity": "Alta"},
+    {"id": "elec-019", "problem": "Elevavidrios eléctricos se mueven lentamente", "solution": "Lubricar rieles de ventanas con grasa de silicona. Verificar voltaje en motor de elevavidrios (debe recibir 24V). Limpiar contactos del switch de control.", "truck": "Volvo FM", "category": "Confort", "severity": "Baja"},
+    {"id": "elec-020", "problem": "Sistema de retardador eléctrico no funciona", "solution": "Verificar refrigeración del retardador (temperatura no debe superar 180°C). Revisar relay de activación y fusible F28 de 40A. Escanear códigos de falla en módulo RET.", "truck": "Volvo FH16", "category": "Frenos", "severity": "Alta"},
+    {"id": "elec-021", "problem": "Sensor de temperatura del motor marca incorrectamente", "solution": "Verificar sensor de temperatura con multímetro. Probar resistencia a diferentes temperaturas. Reemplazar si valores están fuera de especificación.", "truck": "Volvo FH", "category": "Instrumentación", "severity": "Media"},
+    {"id": "elec-022", "problem": "Luces de giro intermitentes no funcionan", "solution": "Verificar relay intermitente. Probar bulbos. Revisar switch de luces direccionales en volante.", "truck": "Volvo FM", "category": "Iluminación", "severity": "Alta"},
+    {"id": "elec-023", "problem": "Limpiaparabrisas no funcionan", "solution": "Verificar fusible del limpiaparabrisas. Probar motor de limpiaparabrisas con voltaje directo. Revisar switch de control.", "truck": "Volvo FH16", "category": "Confort", "severity": "Media"},
+    {"id": "elec-024", "problem": "Tablero de instrumentos completamente apagado", "solution": "Verificar fusibles principales del tablero. Revisar alimentación de 24V al módulo. Verificar conectores traseros del tablero.", "truck": "Volvo FH", "category": "Instrumentación", "severity": "Crítica"},
+    {"id": "elec-025", "problem": "Alarma de reversa no suena", "solution": "Verificar fusible de alarma. Probar bocina de reversa directamente. Revisar conexión con switch de reversa de transmisión.", "truck": "Volvo FM", "category": "Ayudas de conducción", "severity": "Media"},
+    {"id": "elec-026", "problem": "Luces altas no encienden", "solution": "Verificar fusible de luces altas. Probar relay. Revisar switch en volante. Probar bulbos de luces altas.", "truck": "Volvo FH16", "category": "Iluminación", "severity": "Alta"},
+    {"id": "elec-027", "problem": "Radio/sistema de audio no enciende", "solution": "Verificar fusible del radio. Revisar alimentación de 24V. Verificar código de seguridad si aplica.", "truck": "Volvo FH", "category": "Confort", "severity": "Baja"},
+    {"id": "elec-028", "problem": "Sensor de presión de aceite defectuoso", "solution": "Verificar presión real de aceite con manómetro mecánico. Si presión es correcta, reemplazar sensor eléctrico.", "truck": "Volvo FM", "category": "Instrumentación", "severity": "Alta"},
+    {"id": "elec-029", "problem": "Luces de posición no encienden", "solution": "Verificar fusible de luces de posición. Probar switch de luces. Revisar bulbos LED o incandescentes.", "truck": "Volvo FH16", "category": "Iluminación", "severity": "Alta"},
+    {"id": "elec-030", "problem": "Calefacción de espejos no funciona", "solution": "Verificar fusible de espejos. Probar relay de calefacción. Medir resistencia de elemento calefactor en espejo.", "truck": "Volvo FH", "category": "Confort", "severity": "Baja"},
+    {"id": "elec-031", "problem": "Indicador de nivel de AdBlue/DEF marca vacío", "solution": "Verificar nivel real de AdBlue en tanque. Probar sensor de nivel. Calibrar con VCADS si es necesario.", "truck": "Volvo FM", "category": "Sistema de emisiones", "severity": "Media"},
+    {"id": "elec-032", "problem": "Toma de corriente/encendedor no funciona", "solution": "Verificar fusible de toma de corriente. Limpiar contactos del encendedor. Probar voltaje en toma.", "truck": "Volvo FH16", "category": "Confort", "severity": "Baja"},
+    {"id": "elec-033", "problem": "Sensor MAF/sensor de flujo de aire falla", "solution": "Limpiar sensor MAF con limpiador específico. Verificar señal con VCADS. Reemplazar si está defectuoso.", "truck": "Volvo FH", "category": "Control de motor", "severity": "Alta"},
+    {"id": "elec-034", "problem": "Intermitentes parpadean muy rápido", "solution": "Verificar que todos los bulbos funcionen. Bulbo fundido causa parpadeo rápido. Reemplazar bulbo defectuoso.", "truck": "Volvo FM", "category": "Iluminación", "severity": "Media"},
+    {"id": "elec-035", "problem": "Luces de niebla no encienden", "solution": "Verificar fusible de luces de niebla. Probar relay. Revisar switch de activación. Probar bulbos.", "truck": "Volvo FH16", "category": "Iluminación", "severity": "Media"},
+    {"id": "elec-036", "problem": "Sensor de nivel de refrigerante alerta falsamente", "solution": "Verificar nivel real de refrigerante. Limpiar sensor de nivel. Revisar cableado por cortocircuito.", "truck": "Volvo FH", "category": "Sistema de enfriamiento", "severity": "Media"},
+    {"id": "elec-037", "problem": "Pantalla/display del tablero con píxeles muertos", "solution": "Intentar reset del sistema. Si persiste, reemplazar módulo de instrumentos completo.", "truck": "Volvo FM", "category": "Instrumentación", "severity": "Baja"},
+    {"id": "elec-038", "problem": "Control de espejos eléctricos no responde", "solution": "Verificar fusible de espejos. Probar motor de espejo directamente. Revisar switch de control.", "truck": "Volvo FH16", "category": "Confort", "severity": "Baja"},
+    {"id": "elec-039", "problem": "Luz de Check Engine encendida - código P0193", "solution": "Código P0193 indica problema en sensor de presión de combustible. Verificar sensor y cableado. Reemplazar si es necesario.", "truck": "Volvo FH", "category": "Control de motor", "severity": "Alta"},
+    {"id": "elec-040", "problem": "Batería nueva se descarga rápidamente", "solution": "Verificar consumo parasitario. Probar alternador por carga correcta. Revisar terminales por corrosión.", "truck": "Volvo FM", "category": "Sistema eléctrico", "severity": "Alta"},
+    {"id": "elec-041", "problem": "Luz de baja presión de aceite no apaga al arrancar", "solution": "Verificar presión real de aceite con manómetro. Si presión es correcta, reemplazar sensor de presión.", "truck": "Volvo FH16", "category": "Motor", "severity": "Crítica"},
+    {"id": "elec-042", "problem": "Cerradura centralizada no funciona", "solution": "Verificar fusible de cerradura. Probar actuadores de puertas. Revisar módulo de control central.", "truck": "Volvo FH", "category": "Confort", "severity": "Baja"},
+    {"id": "elec-043", "problem": "Sensor de presión de turbo defectuoso", "solution": "Verificar presión real de turbo. Limpiar sensor y mangueras. Reemplazar sensor si señal es incorrecta.", "truck": "Volvo FM", "category": "Control de motor", "severity": "Alta"},
+    {"id": "elec-044", "problem": "Cámara de reversa no muestra imagen", "solution": "Verificar alimentación de cámara. Limpiar lente de cámara. Revisar cable de video y pantalla.", "truck": "Volvo FH16", "category": "Ayudas de conducción", "severity": "Media"},
+    {"id": "elec-045", "problem": "Luces de marcha atrás no encienden", "solution": "Verificar switch de reversa en transmisión. Probar bulbos. Revisar fusible y cableado.", "truck": "Volvo FH", "category": "Iluminación", "severity": "Alta"},
+    {"id": "elec-046", "problem": "Sistema de frenos ABS se activa en seco", "solution": "Verificar sensores ABS por señales erráticas. Limpiar anillos reluctores. Revisar módulo ABS con VCADS.", "truck": "Volvo FM", "category": "Frenos", "severity": "Alta"},
+    {"id": "elec-047", "problem": "Sensor de oxígeno (O2) defectuoso", "solution": "Leer códigos con VCADS. Verificar señal del sensor O2. Reemplazar si está fuera de rango.", "truck": "Volvo FH16", "category": "Control de emisiones", "severity": "Media"},
+    {"id": "elec-048", "problem": "Arranque dificultoso cuando hace calor", "solution": "Verificar motor de arranque por desgaste de escobillas. Revisar batería por carga baja. Probar solenoide de arranque.", "truck": "Volvo FH", "category": "Arranque", "severity": "Alta"},
+    {"id": "elec-049", "problem": "Luz de airbag encendida permanentemente", "solution": "Escanear códigos de airbag con VCADS. Verificar conectores debajo de asientos. Revisar sensores de impacto.", "truck": "Volvo FM", "category": "Seguridad", "severity": "Alta"},
+    {"id": "elec-050", "problem": "Faros delanteros con luz débil", "solution": "Verificar voltaje en faros (debe ser cercano a 24V). Limpiar reflectores. Reemplazar bulbos si están opacados.", "truck": "Volvo FH16", "category": "Iluminación", "severity": "Alta"},
+    {"id": "elec-051", "problem": "Sistema de estabilidad (ESP) desactivado", "solution": "Leer códigos con VCADS. Verificar sensores de ángulo de dirección y yaw. Calibrar sistema ESP.", "truck": "Volvo FH", "category": "Seguridad", "severity": "Alta"},
+    {"id": "elec-052", "problem": "Módulo ECU no se comunica", "solution": "Verificar alimentación al ECU. Revisar fusibles principales. Comprobar bus CAN por cortocircuito.", "truck": "Volvo FM", "category": "Control de motor", "severity": "Crítica"},
+    {"id": "elec-053", "problem": "Sensor de temperatura de AdBlue falla", "solution": "Verificar resistencia del sensor a temperatura ambiente. Reemplazar sensor si valores están incorrectos.", "truck": "Volvo FH16", "category": "Sistema de emisiones", "severity": "Media"},
+    {"id": "elec-054", "problem": "Control de tracción (TC) no funciona", "solution": "Verificar sensores de velocidad de ruedas. Leer códigos de módulo TC. Calibrar sistema con VCADS.", "truck": "Volvo FH", "category": "Seguridad", "severity": "Alta"},
+    {"id": "elec-055", "problem": "Luz de advertencia de filtro de partículas DPF encendida", "solution": "Verificar nivel de hollín del DPF con VCADS. Realizar regeneración forzada. Reemplazar DPF si está tapado.", "truck": "Volvo FM", "category": "Sistema de emisiones", "severity": "Alta"},
+    {"id": "elec-056", "problem": "Inyectores con falla eléctrica", "solution": "Medir resistencia de bobina de inyectores. Verificar señal de activación con osciloscopio. Reemplazar inyector defectuoso.", "truck": "Volvo FH16", "category": "Control de motor", "severity": "Alta"},
+    {"id": "elec-057", "problem": "Sensor de nivel de aceite averiado", "solution": "Verificar nivel real de aceite con varilla. Probar sensor con multímetro. Reemplazar si está defectuoso.", "truck": "Volvo FH", "category": "Motor", "severity": "Media"},
+    {"id": "elec-058", "problem": "Fusibles se queman repetidamente", "solution": "Identificar circuito afectado. Buscar cortocircuito en cableado. Reparar cable dañado antes de reemplazar fusible.", "truck": "Volvo FM", "category": "Sistema eléctrico", "severity": "Alta"},
+    {"id": "elec-059", "problem": "Luces interiores no apagan", "solution": "Verificar switches de puertas. Revisar módulo de control de luces. Buscar switch trabado o defectuoso.", "truck": "Volvo FH16", "category": "Confort", "severity": "Media"},
+    {"id": "elec-060", "problem": "Sistema de inyección AdBlue/SCR falla", "solution": "Verificar calidad de AdBlue. Revisar bomba de AdBlue. Limpiar inyector de AdBlue. Leer códigos con VCADS.", "truck": "Volvo FH", "category": "Sistema de emisiones", "severity": "Crítica"}
   ]
 }

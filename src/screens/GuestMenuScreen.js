@@ -16,13 +16,7 @@ const GuestMenuScreen = () => {
   const [showDeleteAccountAlert, setShowDeleteAccountAlert] = useState(false);
   const [showWelcomeAlert, setShowWelcomeAlert] = useState(false);
 
-  // Protección de ruta: Si no hay usuario autenticado y no está cargando, redirigir al login
-  React.useEffect(() => {
-    if (!loading && !user) {
-      console.warn('⚠️ Usuario no autenticado en GuestMenuScreen, redirigiendo al login...');
-      router.replace('/login');
-    }
-  }, [user, loading, router]);
+  // ✅ Acceso libre sin login - Vista de invitado disponible para todos
 
   // Mostrar alerta de bienvenida al cargar la pantalla
   React.useEffect(() => {
@@ -67,6 +61,16 @@ const GuestMenuScreen = () => {
     }
   };
 
+  // Función para navegar - verifica si hay usuario para "Aportar conocimientos"
+  const handleNavigation = (route) => {
+    if (route === '/contribute' && !user) {
+      // Si intenta aportar sin login, redirigir al login
+      router.push('/login');
+    } else {
+      router.push(route);
+    }
+  };
+
   // Opciones de menú solo para invitados
   const guestMenuOptions = [
     {
@@ -86,6 +90,15 @@ const GuestMenuScreen = () => {
       route: '/guest-solutions?type=mechanical',
       gradient: ['#1e4d3a', '#2d7a5f'],
       iconBg: colors.mechanical,
+    },
+    {
+      id: 3,
+      title: 'Aportar conocimientos',
+      subtitle: '¡Comparte tu experiencia!',
+      icon: 'bulb-outline',
+      route: '/contribute',
+      gradient: ['#4a1e5a', '#7a2d8c'],
+      iconBg: '#9333ea',
     },
   ];
 
@@ -109,17 +122,28 @@ const GuestMenuScreen = () => {
           </View>
         </View>
 
-        <TouchableOpacity
-          style={styles.userAvatarButton}
-          onPress={() => setShowUserMenu(true)}
-          activeOpacity={0.7}
-        >
-          <View style={styles.avatarCircle}>
-            <Text style={styles.avatarInitial}>
-              {(user?.name || 'I').charAt(0).toUpperCase()}
-            </Text>
-          </View>
-        </TouchableOpacity>
+        {user ? (
+          <TouchableOpacity
+            style={styles.userAvatarButton}
+            onPress={() => setShowUserMenu(true)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.avatarCircle}>
+              <Text style={styles.avatarInitial}>
+                {(user?.name || 'I').charAt(0).toUpperCase()}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={() => router.push('/login')}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="log-in-outline" size={20} color="#ffffff" />
+            <Text style={styles.loginButtonText}>Iniciar sesión</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <ScrollView
@@ -131,7 +155,7 @@ const GuestMenuScreen = () => {
           {guestMenuOptions.map((option) => (
             <TouchableOpacity
               key={option.id}
-              onPress={() => router.push(option.route)}
+              onPress={() => handleNavigation(option.route)}
               activeOpacity={0.8}
             >
               <LinearGradient
@@ -337,6 +361,28 @@ const styles = StyleSheet.create({
   },
   userAvatarButton: {
     padding: 4,
+  },
+  loginButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    gap: 6,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  loginButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
   },
   avatarCircle: {
     width: 48,

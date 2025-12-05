@@ -82,6 +82,16 @@ const handleLogin = async () => {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.container}>
+          {/* Botón volver */}
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.replace('/welcome')}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="arrow-back" size={24} color={colors.text} />
+            <Text style={styles.backButtonText}>Volver al inicio</Text>
+          </TouchableOpacity>
+
           <View style={styles.logoContainer}>
             <Text style={styles.logoText}>
               <Text style={styles.logoDiesel}>DIESEL</Text>
@@ -174,6 +184,19 @@ const handleLogin = async () => {
 const styles = StyleSheet.create({
   scrollContent: { flexGrow: 1 },
   container: { flex: 1, justifyContent: "center", paddingHorizontal: 24 },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    marginBottom: 20,
+    marginTop: 20,
+    gap: 8,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: colors.text,
+    fontWeight: '500',
+  },
   logoContainer: { alignItems: "center", marginBottom: 60 },
   logoText: { fontSize: 36, fontWeight: "bold", marginBottom: 8 },
   logoDiesel: { color: colors.primary },

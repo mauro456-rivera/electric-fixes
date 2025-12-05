@@ -372,6 +372,1491 @@
           "optional": true
         }
       ]
+    },
+    {
+      "id": "mech-006",
+      "problem": "Ruido metálico en el diferencial al girar",
+      "solution": "Drenar aceite del diferencial y verificar contaminación metálica. Ajustar juego de piñón de ataque y corona. Reemplazar rodamientos si presentan huellas de desgaste.",
+      "truck": "Volvo FH16",
+      "category": "Diferencial",
+      "severity": "Alta",
+      "difficulty": "Alta",
+      "estimatedTime": "4-6 horas",
+      "tools": [
+        "Llave dinamométrica 200-800 Nm",
+        "Reloj comparador magnético",
+        "Galgas de espesores",
+        "Martillo de plástico",
+        "Extractor hidráulico de rodamientos"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Diagnóstico del ruido",
+          "description": "Probar vehículo y determinar si ruido ocurre en aceleración, desaceleración o ambos. Esto indica tipo de desgaste"
+        },
+        {
+          "number": 2,
+          "title": "Drenaje y análisis de aceite",
+          "description": "Drenar aceite del diferencial en recipiente limpio. Buscar partículas metálicas brillantes con imán"
+        },
+        {
+          "number": 3,
+          "title": "Inspección visual interna",
+          "description": "Remover tapa del diferencial. Inspeccionar dientes de corona y piñón por picaduras o desportilladuras"
+        },
+        {
+          "number": 4,
+          "title": "Medición de juego del piñón",
+          "description": "Con reloj comparador, medir juego axial del piñón. Especificación: 0.15-0.30mm"
+        },
+        {
+          "number": 5,
+          "title": "Verificación de patrón de contacto",
+          "description": "Aplicar pasta azul de Prusia en dientes. Girar y verificar patrón de contacto (debe estar centrado)"
+        },
+        {
+          "number": 6,
+          "title": "Ajuste de precarga",
+          "description": "Ajustar tuerca del piñón para obtener precarga correcta. Torque de giro debe ser 0.6-1.0 Nm"
+        },
+        {
+          "number": 7,
+          "title": "Cambio de aceite diferencial",
+          "description": "Rellenar con aceite API GL-5 75W-90 sintético. Capacidad típica: 11-13 litros según modelo"
+        }
+      ],
+      "precautions": [
+        "No conducir si ruido es muy fuerte - puede romperse el diferencial",
+        "Marcar posición original del piñón antes de desmontar",
+        "Usar solo aceite sintético GL-5 aprobado por Volvo",
+        "Verificar que tapones de drenaje y llenado no estén dañados"
+      ],
+      "parts": [
+        {
+          "name": "Aceite diferencial 75W-90 GL-5",
+          "partNumber": "1161677",
+          "optional": false
+        },
+        {
+          "name": "Kit de rodamientos de piñón",
+          "partNumber": "20365965",
+          "optional": true
+        },
+        {
+          "name": "Junta de tapa diferencial",
+          "partNumber": "1547644",
+          "optional": false
+        },
+        {
+          "name": "Kit de shims de ajuste",
+          "partNumber": "20569605",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "mech-007",
+      "problem": "Frenos traseros se bloquean prematuramente",
+      "solution": "Calibrar válvula moduladora de presión del eje trasero. Verificar estado de tambores y zapatas. Purgar completamente sistema de frenos neumáticos y verificar válvula relay.",
+      "truck": "Volvo FM",
+      "category": "Frenos",
+      "severity": "Crítica",
+      "difficulty": "Media",
+      "estimatedTime": "3-4 horas",
+      "tools": [
+        "Manómetro de presión neumática 0-12 bar",
+        "Micrómetro para tambores",
+        "Calibre de zapatas",
+        "Herramienta de ajuste de frenos",
+        "Compresor de aire"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Prueba de presión de frenos",
+          "description": "Con manómetros, medir presión en eje delantero y trasero simultáneamente. Trasero no debe superar delantero"
+        },
+        {
+          "number": 2,
+          "title": "Verificación de válvula moduladora",
+          "description": "Localizar válvula de control de carga (load sensing valve). Verificar que varilla esté conectada a suspensión"
+        },
+        {
+          "number": 3,
+          "title": "Calibración de moduladora",
+          "description": "Con vehículo vacío, ajustar válvula para que entregue 40-50% de presión. Con carga, debe dar 100%"
+        },
+        {
+          "number": 4,
+          "title": "Inspección de tambores",
+          "description": "Desmontar ruedas traseras. Medir diámetro interno de tambores con micrómetro. Máximo: 420mm"
+        },
+        {
+          "number": 5,
+          "title": "Medición de zapatas",
+          "description": "Verificar espesor de material de fricción. Mínimo: 5mm. Reemplazar si hay menos"
+        },
+        {
+          "number": 6,
+          "title": "Purga del sistema neumático",
+          "description": "Abrir válvulas de purga de cada cámara de freno. Eliminar agua y contaminación del sistema"
+        },
+        {
+          "number": 7,
+          "title": "Ajuste de frenos",
+          "description": "Usar herramienta de ajuste para establecer clearance correcto: 0.6-0.8mm entre zapata y tambor"
+        }
+      ],
+      "precautions": [
+        "CRÍTICO: Frenos desbalanceados causan pérdida de control y volcaduras",
+        "Nunca ajustar frenos con vehículo en pendiente",
+        "Usar mascarilla al limpiar tambores - polvo de asbesto es cancerígeno",
+        "Verificar que cámaras de freno no tengan diafragma roto"
+      ],
+      "parts": [
+        {
+          "name": "Kit de zapatas de freno",
+          "partNumber": "20795305",
+          "optional": true
+        },
+        {
+          "name": "Válvula moduladora de carga",
+          "partNumber": "20514654",
+          "optional": true
+        },
+        {
+          "name": "Tambor de freno",
+          "partNumber": "20569717",
+          "optional": true
+        },
+        {
+          "name": "Válvula relay",
+          "partNumber": "21620116",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "mech-008",
+      "problem": "Pérdida de presión de aire en el sistema neumático",
+      "solution": "Probar fugas con agua jabonosa en todas las conexiones. Verificar válvula gobernadora y compresor de aire. Reemplazar secador de aire si está saturado.",
+      "truck": "Volvo FH",
+      "category": "Sistema neumático",
+      "severity": "Alta",
+      "difficulty": "Media",
+      "estimatedTime": "2-4 horas",
+      "tools": [
+        "Botella spray con agua jabonosa",
+        "Manómetros de presión",
+        "Llave de filtros",
+        "Compresor externo para pruebas",
+        "Detector ultrasónico de fugas"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Medición de caída de presión",
+          "description": "Llevar sistema a 12 bar, apagar motor. Presión no debe caer más de 1 bar en 5 minutos"
+        },
+        {
+          "number": 2,
+          "title": "Localización de fugas con agua jabonosa",
+          "description": "Rociar agua jabonosa en todas las conexiones, válvulas y mangueras. Burbujas indican fuga"
+        },
+        {
+          "number": 3,
+          "title": "Verificación de válvula gobernadora",
+          "description": "Con motor en marcha, verificar que corte a 12.5 bar y reactive a 10 bar. Si no, está defectuosa"
+        },
+        {
+          "number": 4,
+          "title": "Inspección del compresor",
+          "description": "Verificar que compresor entregue mínimo 500 L/min. Menos indica desgaste de anillos"
+        },
+        {
+          "number": 5,
+          "title": "Prueba de secador de aire",
+          "description": "Drenar tanques y verificar si sale agua. Exceso de agua indica saturación del desecante"
+        },
+        {
+          "number": 6,
+          "title": "Reemplazo de cartucho secador",
+          "description": "Cambiar cartucho desecante del secador de aire cada 3 años o 200,000 km"
+        },
+        {
+          "number": 7,
+          "title": "Verificación de válvulas de retención",
+          "description": "Probar que válvulas check permitan flujo en un sentido y bloqueen en reversa"
+        }
+      ],
+      "precautions": [
+        "Sistema neumático deficiente puede dejar vehículo sin frenos",
+        "Purgar condensación de tanques diariamente en climas húmedos",
+        "Nunca usar aire comprimido para limpiar ropa - puede causar embolia",
+        "Usar gafas de protección al trabajar con aire a presión"
+      ],
+      "parts": [
+        {
+          "name": "Cartucho secador de aire",
+          "partNumber": "21620181",
+          "optional": false
+        },
+        {
+          "name": "Válvula gobernadora",
+          "partNumber": "20721269",
+          "optional": true
+        },
+        {
+          "name": "Kit de reparación de compresor",
+          "partNumber": "85000378",
+          "optional": true
+        },
+        {
+          "name": "Manguera de aire 8mm",
+          "partNumber": "20450912",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "mech-009",
+      "problem": "Desgaste irregular de neumáticos delanteros",
+      "solution": "Realizar alineación computerizada de ejes delanteros (camber, caster, toe). Verificar estado de rótulas y terminales de dirección. Revisar presión de inflado según carga.",
+      "truck": "Volvo FM",
+      "category": "Dirección y neumáticos",
+      "severity": "Media",
+      "difficulty": "Media",
+      "estimatedTime": "2-3 horas",
+      "tools": [
+        "Alineador 3D computarizado",
+        "Calibrador de profundidad de dibujo",
+        "Torquímetro",
+        "Palanca para verificar juegos",
+        "Manómetro digital de neumáticos"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Análisis del patrón de desgaste",
+          "description": "Desgaste interior: camber negativo. Desgaste exterior: camber positivo. Centro: presión excesiva"
+        },
+        {
+          "number": 2,
+          "title": "Medición de profundidad",
+          "description": "Medir dibujo en 3 puntos de cada neumático. Mínimo legal: 1.6mm. Recomendado cambiar a 3mm"
+        },
+        {
+          "number": 3,
+          "title": "Verificación de rótulas",
+          "description": "Levantar eje delantero. Mover rueda vertical y horizontalmente. Juego máximo: 1mm"
+        },
+        {
+          "number": 4,
+          "title": "Inspección de terminales",
+          "description": "Verificar terminales de dirección por desgaste. Si hay juego, reemplazar inmediatamente"
+        },
+        {
+          "number": 5,
+          "title": "Alineación computarizada",
+          "description": "Ajustar parámetros: Camber 0° ±0.5°, Caster 5° ±1°, Toe 0-2mm convergencia total"
+        },
+        {
+          "number": 6,
+          "title": "Ajuste de presión",
+          "description": "Eje delantero: 8.5 bar vacío, 9.0 bar cargado. Verificar con neumáticos fríos"
+        },
+        {
+          "number": 7,
+          "title": "Rotación de neumáticos",
+          "description": "Si desgaste es leve, rotar neumáticos cruzados para igualar desgaste"
+        }
+      ],
+      "precautions": [
+        "Neumáticos desgastados irregularmente reducen estabilidad y agarre",
+        "No alinear si suspensión está dañada - primero reparar",
+        "Verificar presión semanalmente - neumáticos pierden 0.1 bar/mes naturalmente",
+        "Desgaste en forma de sierra indica alineación muy fuera de especificación"
+      ],
+      "parts": [
+        {
+          "name": "Rótula superior",
+          "partNumber": "20382958",
+          "optional": true
+        },
+        {
+          "name": "Terminal de dirección",
+          "partNumber": "20459890",
+          "optional": true
+        },
+        {
+          "name": "Kit de alineación (shims)",
+          "partNumber": "20557742",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "mech-010",
+      "problem": "Sobrecalentamiento del motor en tráfico pesado",
+      "solution": "Limpiar radiador con aire comprimido desde el motor hacia afuera. Verificar funcionamiento del ventilador viscoso o electro-ventilador. Revisar termostato y su temperatura de apertura.",
+      "truck": "Volvo FH16",
+      "category": "Sistema de enfriamiento",
+      "severity": "Alta",
+      "difficulty": "Media",
+      "estimatedTime": "2-3 horas",
+      "tools": [
+        "Compresor de aire con boquilla",
+        "Termómetro infrarrojo",
+        "Termómetro de inmersión para termostato",
+        "Olla grande para probar termostato",
+        "Probador de fan clutch"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Verificación de síntomas",
+          "description": "Temperatura normal: 85-90°C. Sobrecalentamiento: más de 100°C. Crítico: más de 105°C"
+        },
+        {
+          "number": 2,
+          "title": "Limpieza del radiador",
+          "description": "Aplicar aire comprimido desde motor hacia adelante para expulsar suciedad. Luego desde adelante"
+        },
+        {
+          "number": 3,
+          "title": "Inspección del intercooler",
+          "description": "Limpiar también intercooler que está delante del radiador. Suciedad bloquea flujo de aire"
+        },
+        {
+          "number": 4,
+          "title": "Prueba del ventilador viscoso",
+          "description": "Con motor frío, girar ventilador manualmente. Debe girar con resistencia moderada. Si gira libre, está fallando"
+        },
+        {
+          "number": 5,
+          "title": "Verificación a temperatura",
+          "description": "Con motor a 90°C, ventilador debe acoplarse y hacer ruido audible. Si no, reemplazar fan clutch"
+        },
+        {
+          "number": 6,
+          "title": "Prueba de termostato",
+          "description": "Desmontar termostato. Sumergir en agua caliente. Debe abrir completamente a 83-87°C"
+        },
+        {
+          "number": 7,
+          "title": "Verificación de flujo",
+          "description": "Con motor en marcha, verificar que refrigerante circule al abrir tapón del radiador (cuidado)"
+        }
+      ],
+      "precautions": [
+        "NUNCA abrir radiador con motor caliente - riesgo de quemaduras graves",
+        "No rociar agua fría a motor caliente - puede agrietar block",
+        "Ventilador puede activarse súbitamente - mantener manos alejadas",
+        "Sobrecalentamiento severo puede fundir pistones en minutos"
+      ],
+      "parts": [
+        {
+          "name": "Termostato 83°C",
+          "partNumber": "20700220",
+          "optional": true
+        },
+        {
+          "name": "Fan clutch viscoso",
+          "partNumber": "20502418",
+          "optional": true
+        },
+        {
+          "name": "Sensor de temperatura",
+          "partNumber": "20508011",
+          "optional": true
+        },
+        {
+          "name": "Anticongelante Volvo Coolant",
+          "partNumber": "1161418",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "mech-011",
+      "problem": "Fugas de aire en conexiones de frenos de remolque",
+      "solution": "Inspeccionar acoples glad-hands y reemplazar empaques. Verificar mangueras espirales por grietas. Aplicar grasa de silicona en sellos para prolongar vida útil.",
+      "truck": "Volvo FH",
+      "category": "Frenos",
+      "severity": "Alta",
+      "difficulty": "Baja",
+      "estimatedTime": "1-2 horas",
+      "tools": [
+        "Juego de llaves",
+        "Agua jabonosa en spray",
+        "Grasa de silicona",
+        "Cepillo de alambre",
+        "Manómetro de presión"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Localización de fugas",
+          "description": "Con sistema presurizado, rociar agua jabonosa en acoples glad-hands. Burbujas indican fuga"
+        },
+        {
+          "number": 2,
+          "title": "Inspección de glad-hands",
+          "description": "Verificar que los acoples no estén desgastados, doblados o con resorte débil"
+        },
+        {
+          "number": 3,
+          "title": "Reemplazo de empaques",
+          "description": "Desmontar acoples y reemplazar empaques de goma. Usar solo empaques originales Volvo"
+        },
+        {
+          "number": 4,
+          "title": "Limpieza de superficies",
+          "description": "Limpiar superficies de acople con cepillo de alambre. Remover óxido y suciedad"
+        },
+        {
+          "number": 5,
+          "title": "Inspección de mangueras espirales",
+          "description": "Verificar mangueras por grietas, especialmente en los dobleces. Reemplazar si hay daños"
+        },
+        {
+          "number": 6,
+          "title": "Lubricación de sellos",
+          "description": "Aplicar grasa de silicona en empaques para prolongar vida útil y facilitar conexión"
+        },
+        {
+          "number": 7,
+          "title": "Prueba final",
+          "description": "Presurizar sistema a 12 bar y verificar que no haya fugas por 10 minutos"
+        }
+      ],
+      "precautions": [
+        "Fugas en frenos de remolque pueden causar pérdida total de frenado en trailer",
+        "Nunca usar empaques genéricos - deben ser certificados para aire comprimido",
+        "Limpiar glad-hands diariamente para evitar ingreso de suciedad",
+        "Verificar color de acoples: Rojo=emergencia, Azul=servicio"
+      ],
+      "parts": [
+        {
+          "name": "Kit de empaques glad-hand",
+          "partNumber": "8191498",
+          "optional": false
+        },
+        {
+          "name": "Acople glad-hand completo",
+          "partNumber": "1547899",
+          "optional": true
+        },
+        {
+          "name": "Manguera espiral neumática",
+          "partNumber": "20450956",
+          "optional": true
+        },
+        {
+          "name": "Grasa de silicona",
+          "partNumber": "N/A",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "mech-012",
+      "problem": "Ruido anormal en turbocompresor (silbido agudo)",
+      "solution": "Verificar juego axial del eje del turbo con reloj comparador. Inspeccionar álabes de turbina por daños. Revisar tuberías de lubricación del turbo por obstrucciones.",
+      "truck": "Volvo FM",
+      "category": "Motor",
+      "severity": "Alta",
+      "difficulty": "Alta",
+      "estimatedTime": "3-4 horas",
+      "tools": [
+        "Reloj comparador magnético",
+        "Juego de llaves Allen",
+        "Endoscopio",
+        "Llave dinamométrica",
+        "Recipiente para drenar aceite"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Identificación del ruido",
+          "description": "Silbido agudo: fuga de aire. Ruido metálico: roce de álabes. Silbido grave: obstrucción"
+        },
+        {
+          "number": 2,
+          "title": "Inspección visual externa",
+          "description": "Con motor apagado y frío, verificar conexiones de mangueras de turbo por fugas de aceite"
+        },
+        {
+          "number": 3,
+          "title": "Medición de juego axial",
+          "description": "Con reloj comparador, medir juego del eje. Máximo permitido: 0.05mm. Más indica desgaste"
+        },
+        {
+          "number": 4,
+          "title": "Medición de juego radial",
+          "description": "Mover eje del turbo perpendicular. Juego máximo: 0.5mm. Exceso indica falla de rodamientos"
+        },
+        {
+          "number": 5,
+          "title": "Inspección de álabes con endoscopio",
+          "description": "Inspeccionar álabes de compresor y turbina. Buscar roturas, dobleces o roce con carcasa"
+        },
+        {
+          "number": 6,
+          "title": "Verificación de lubricación",
+          "description": "Desconectar línea de retorno de aceite. Debe drenar libremente sin obstrucciones"
+        },
+        {
+          "number": 7,
+          "title": "Limpieza o reemplazo",
+          "description": "Si juegos están OK, limpiar con productos específicos. Si exceden límites, reemplazar turbo"
+        }
+      ],
+      "precautions": [
+        "Turbo trabaja a 200,000 RPM - falla catastrófica puede destruir motor",
+        "NUNCA apagar motor inmediatamente después de carga - dejar 2 min en ralentí",
+        "Dejar enfriar turbo 30 min antes de manipular - alcanza 800°C",
+        "Falta de aceite por 10 segundos puede destruir turbo permanentemente"
+      ],
+      "parts": [
+        {
+          "name": "Turbocompresor remanufacturado",
+          "partNumber": "85000285",
+          "optional": true
+        },
+        {
+          "name": "Kit de reparación de turbo",
+          "partNumber": "85000295",
+          "optional": true
+        },
+        {
+          "name": "Junta de turbo",
+          "partNumber": "20713138",
+          "optional": false
+        },
+        {
+          "name": "Tubo de aceite de turbo",
+          "partNumber": "20440062",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "mech-013",
+      "problem": "Dirección pesada o con juego excesivo",
+      "solution": "Verificar nivel de aceite hidráulico de dirección asistida. Purgar sistema de dirección y ajustar bomba de dirección. Inspeccionar caja de dirección por desgaste interno.",
+      "truck": "Volvo FH",
+      "category": "Dirección",
+      "severity": "Alta",
+      "difficulty": "Media",
+      "estimatedTime": "2-3 horas",
+      "tools": [
+        "Manómetro hidráulico 0-200 bar",
+        "Embudo con filtro",
+        "Llave de vaso de 36mm",
+        "Bomba de vacío para purgar",
+        "Dinamómetro para medir esfuerzo"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Verificación de síntomas",
+          "description": "Dirección pesada: falta de asistencia. Juego excesivo: desgaste en caja de dirección"
+        },
+        {
+          "number": 2,
+          "title": "Medición de juego en volante",
+          "description": "Girar volante sin mover ruedas. Juego máximo: 30mm en llanta. Más indica desgaste"
+        },
+        {
+          "number": 3,
+          "title": "Verificación de nivel",
+          "description": "Revisar depósito de aceite hidráulico. Nivel bajo indica fugas en sistema"
+        },
+        {
+          "number": 4,
+          "title": "Inspección de fugas",
+          "description": "Buscar fugas en mangueras, bomba y caja de dirección. Aceite rojo indica power steering"
+        },
+        {
+          "number": 5,
+          "title": "Prueba de presión de bomba",
+          "description": "Conectar manómetro. Presión debe ser 100-120 bar al girar volante tope contra tope"
+        },
+        {
+          "number": 6,
+          "title": "Purga del sistema",
+          "description": "Con motor apagado, girar volante 10 veces de tope a tope. Eliminar aire del sistema"
+        },
+        {
+          "number": 7,
+          "title": "Ajuste de caja de dirección",
+          "description": "Ajustar tornillo de precarga del sector (si aplica). Eliminar juego sin generar dureza"
+        }
+      ],
+      "precautions": [
+        "Dirección con juego excesivo es peligrosa a alta velocidad",
+        "No girar volante con motor apagado - daña bomba de dirección",
+        "Usar solo aceite ATF Dexron III o sintético para dirección",
+        "Nunca dejar depósito vacío - bomba se destruye sin lubricación"
+      ],
+      "parts": [
+        {
+          "name": "Aceite ATF Dexron III",
+          "partNumber": "1161251",
+          "optional": false
+        },
+        {
+          "name": "Bomba de dirección hidráulica",
+          "partNumber": "20466866",
+          "optional": true
+        },
+        {
+          "name": "Caja de dirección (remanufacturada)",
+          "partNumber": "85103403",
+          "optional": true
+        },
+        {
+          "name": "Manguera de alta presión",
+          "partNumber": "20381235",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "mech-014",
+      "problem": "Suspensión neumática no nivela correctamente",
+      "solution": "Verificar fugas en bolsas de aire con agua jabonosa. Calibrar válvula niveladora de altura. Revisar compresor de suspensión y válvulas solenoides del sistema ECAS.",
+      "truck": "Volvo FH",
+      "category": "Suspensión",
+      "severity": "Media",
+      "difficulty": "Media",
+      "estimatedTime": "2-4 horas",
+      "tools": [
+        "Agua jabonosa",
+        "Manómetro de presión",
+        "Escáner VCADS",
+        "Multímetro",
+        "Regla para medir altura"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Verificación de síntoma",
+          "description": "Un lado bajo: fuga en bolsa. Ambos lados bajos: problema de compresor o válvulas"
+        },
+        {
+          "number": 2,
+          "title": "Medición de altura de chasis",
+          "description": "Medir distancia del chasis al suelo. Debe ser constante entre ambos lados (±10mm)"
+        },
+        {
+          "number": 3,
+          "title": "Detección de fugas",
+          "description": "Rociar agua jabonosa en bolsas de aire, conectores y válvulas. Burbujas indican fuga"
+        },
+        {
+          "number": 4,
+          "title": "Diagnóstico con VCADS",
+          "description": "Leer códigos de falla del sistema ECAS. Identificar sensores o válvulas defectuosas"
+        },
+        {
+          "number": 5,
+          "title": "Prueba de válvulas solenoides",
+          "description": "Con VCADS, activar individualmente cada válvula. Debe escucharse click de activación"
+        },
+        {
+          "number": 6,
+          "title": "Calibración de sensores de altura",
+          "description": "Ejecutar calibración automática con VCADS. Verificar que sistema mantenga altura correcta"
+        },
+        {
+          "number": 7,
+          "title": "Verificación de compresor",
+          "description": "Comprobar que compresor entregue aire suficiente. Tiempo de llenado: 30-45 segundos"
+        }
+      ],
+      "precautions": [
+        "No levantar vehículo con gato si suspensión está presurizada",
+        "Bolsa de aire rota puede colapsar súbitamente - usar soportes de seguridad",
+        "No conducir con suspensión baja - daña componentes",
+        "Verificar que altura esté correcta antes de acoplar remolque"
+      ],
+      "parts": [
+        {
+          "name": "Bolsa de aire suspensión",
+          "partNumber": "20497618",
+          "optional": true
+        },
+        {
+          "name": "Válvula solenoide ECAS",
+          "partNumber": "21620126",
+          "optional": true
+        },
+        {
+          "name": "Sensor de altura",
+          "partNumber": "20582958",
+          "optional": true
+        },
+        {
+          "name": "Módulo ECU ECAS",
+          "partNumber": "21300122",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "mech-015",
+      "problem": "Embrague patina en aceleraciones fuertes",
+      "solution": "Verificar desgaste del disco de embrague y ajuste del recorrido del pedal. Revisar cilindro maestro y esclavo por fugas. Purgar sistema hidráulico del embrague.",
+      "truck": "Volvo FM",
+      "category": "Transmisión",
+      "severity": "Alta",
+      "difficulty": "Alta",
+      "estimatedTime": "5-7 horas",
+      "tools": [
+        "Gato de transmisión",
+        "Alineador de disco de embrague",
+        "Llave dinamométrica",
+        "Medidor de espesor",
+        "Kit de purga de embrague"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Confirmación del síntoma",
+          "description": "En 5ta o 6ta marcha, acelerar a fondo. Si RPM suben sin aumentar velocidad, embrague patina"
+        },
+        {
+          "number": 2,
+          "title": "Verificación de recorrido del pedal",
+          "description": "Medir recorrido total del pedal: debe ser 150-180mm. Ajustar si es necesario"
+        },
+        {
+          "number": 3,
+          "title": "Inspección de fugas hidráulicas",
+          "description": "Verificar cilindro maestro y esclavo por fugas de líquido de frenos. Reemplazar si gotea"
+        },
+        {
+          "number": 4,
+          "title": "Purga del sistema hidráulico",
+          "description": "Purgar sistema de embrague hasta eliminar todo el aire. Usar líquido DOT 4"
+        },
+        {
+          "number": 5,
+          "title": "Desmontaje de transmisión",
+          "description": "Si persiste, desmontar transmisión para acceder al embrague. Proceso toma 3-4 horas"
+        },
+        {
+          "number": 6,
+          "title": "Inspección del disco",
+          "description": "Verificar espesor del disco. Mínimo: 7mm. Menos de 6mm = reemplazo obligatorio"
+        },
+        {
+          "number": 7,
+          "title": "Verificación del volante motor",
+          "description": "Inspeccionar superficie del volante por ranuras o puntos calientes. Rectificar si es necesario"
+        },
+        {
+          "number": 8,
+          "title": "Instalación de kit nuevo",
+          "description": "Reemplazar disco, plato de presión y collarin. Siempre cambiar kit completo"
+        }
+      ],
+      "precautions": [
+        "Embrague patinando se sobrecalienta y puede incendiarse",
+        "No conducir si embrague patina - daño aumenta exponencialmente",
+        "Usar alineador para centrar disco - mal alineado impide montaje de transmisión",
+        "Torque de pernos de plato: 60 Nm en secuencia de estrella"
+      ],
+      "parts": [
+        {
+          "name": "Kit de embrague completo 430mm",
+          "partNumber": "85000156",
+          "optional": false
+        },
+        {
+          "name": "Cilindro esclavo",
+          "partNumber": "20511065",
+          "optional": true
+        },
+        {
+          "name": "Cilindro maestro",
+          "partNumber": "1547917",
+          "optional": true
+        },
+        {
+          "name": "Líquido de frenos DOT 4",
+          "partNumber": "1161252",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "mech-016",
+      "problem": "Consumo excesivo de combustible",
+      "solution": "Limpiar inyectores con equipo de ultrasonido. Verificar presión de combustible en riel común. Revisar filtro de partículas DPF por obstrucción y forzar regeneración.",
+      "truck": "Volvo FH16",
+      "category": "Sistema de combustible",
+      "severity": "Media",
+      "difficulty": "Media",
+      "estimatedTime": "3-4 horas",
+      "tools": [
+        "Equipo de limpieza de inyectores",
+        "Manómetro de alta presión 0-2000 bar",
+        "Escáner VCADS",
+        "Multímetro",
+        "Software de diagnóstico"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Cuantificación del consumo",
+          "description": "Medir consumo real: llenar tanque, recorrer 100km, rellenar. Normal: 28-32 L/100km"
+        },
+        {
+          "number": 2,
+          "title": "Lectura de códigos de falla",
+          "description": "Con VCADS, leer códigos relacionados con inyectores, presión de rail, sensores MAF/MAP"
+        },
+        {
+          "number": 3,
+          "title": "Medición de presión de rail",
+          "description": "Conectar manómetro al riel común. Presión en ralentí: 250 bar, a carga: 1600-1800 bar"
+        },
+        {
+          "number": 4,
+          "title": "Prueba de balance de inyectores",
+          "description": "Con VCADS, ejecutar prueba de contribución de inyectores. Todos deben estar ±2%"
+        },
+        {
+          "number": 5,
+          "title": "Limpieza de inyectores",
+          "description": "Desmontar inyectores y limpiar con equipo de ultrasonido. Probar patrón de inyección"
+        },
+        {
+          "number": 6,
+          "title": "Verificación de DPF",
+          "description": "Revisar nivel de hollín en filtro de partículas. Más de 80% requiere regeneración forzada"
+        },
+        {
+          "number": 7,
+          "title": "Regeneración del DPF",
+          "description": "Ejecutar regeneración estacionaria con VCADS. Proceso toma 30-45 minutos"
+        },
+        {
+          "number": 8,
+          "title": "Verificación de filtro de aire",
+          "description": "Filtro obstruido aumenta consumo 15-20%. Reemplazar si está sucio"
+        }
+      ],
+      "precautions": [
+        "Inyectores trabajan a 2000 bar - diesel a presión corta piel como cuchillo",
+        "Durante regeneración, DPF alcanza 600°C - riesgo de incendio",
+        "No usar aditivos de combustible genéricos - pueden dañar inyectores",
+        "Conducción en ciudad sin regeneraciones causa obstrucción de DPF"
+      ],
+      "parts": [
+        {
+          "name": "Inyector remanufacturado",
+          "partNumber": "85000221",
+          "optional": true
+        },
+        {
+          "name": "Filtro de combustible",
+          "partNumber": "21707134",
+          "optional": false
+        },
+        {
+          "name": "Sensor de presión de rail",
+          "partNumber": "20792328",
+          "optional": true
+        },
+        {
+          "name": "Aditivo AdBlue",
+          "partNumber": "1161837",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "mech-017",
+      "problem": "Fuga de aceite por retén trasero del cigüeñal",
+      "solution": "Reemplazar retén trasero del cigüeñal con kit original Volvo. Verificar ventilación del cárter. Inspeccionar superficie del cigüeñal por ralladuras que puedan causar nuevas fugas.",
+      "truck": "Volvo FM",
+      "category": "Motor",
+      "severity": "Media",
+      "difficulty": "Alta",
+      "estimatedTime": "6-8 horas",
+      "tools": [
+        "Gato de transmisión",
+        "Extractor de retenes",
+        "Instalador de retenes",
+        "Lija fina 600-800",
+        "Desengrasante"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Confirmación de la fuga",
+          "description": "Limpiar zona y operar vehículo. Fuga en parte baja trasera del motor confirma retén"
+        },
+        {
+          "number": 2,
+          "title": "Desmontaje de transmisión",
+          "description": "Desmontar transmisión completa para acceder a volante motor y retén. Proceso largo"
+        },
+        {
+          "number": 3,
+          "title": "Remoción del volante motor",
+          "description": "Bloquear cigüeñal y aflojar 8 pernos del volante. Torque de afloje: 120 Nm"
+        },
+        {
+          "number": 4,
+          "title": "Extracción del retén viejo",
+          "description": "Usar extractor de retenes. Si no hay, perforar y usar tornillo autoroscante para jalar"
+        },
+        {
+          "number": 5,
+          "title": "Inspección del cigüeñal",
+          "description": "Verificar superficie de contacto del retén. Ralladuras requieren pulido con lija 600"
+        },
+        {
+          "number": 6,
+          "title": "Instalación de retén nuevo",
+          "description": "Lubricar labio del retén con aceite. Instalar con herramienta especial, evitar golpear directamente"
+        },
+        {
+          "number": 7,
+          "title": "Verificación de ventilación",
+          "description": "Limpiar válvula PCV del cárter. Presión excesiva causa fugas en todos los retenes"
+        },
+        {
+          "number": 8,
+          "title": "Reensamble",
+          "description": "Instalar volante motor (torque: 120 Nm en estrella). Montar transmisión"
+        }
+      ],
+      "precautions": [
+        "Trabajo requiere desmontar transmisión - considerar si vale la pena la inversión",
+        "Retén mal instalado se destruye en minutos al arrancar",
+        "Siempre reemplazar pernos del volante motor - se estiran",
+        "Verificar embrague mientras transmisión está fuera - aprovechar mano de obra"
+      ],
+      "parts": [
+        {
+          "name": "Retén trasero de cigüeñal",
+          "partNumber": "20700059",
+          "optional": false
+        },
+        {
+          "name": "Kit de pernos de volante",
+          "partNumber": "20508068",
+          "optional": false
+        },
+        {
+          "name": "Junta de cárter trasero",
+          "partNumber": "20430686",
+          "optional": false
+        },
+        {
+          "name": "Válvula PCV",
+          "partNumber": "20383147",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "mech-018",
+      "problem": "Toma de fuerza no se activa correctamente",
+      "solution": "Verificar presión neumática de activación (mínimo 7 bar). Inspeccionar cilindro de activación y varillaje. Ajustar sincronización de engrane de PTO con transmisión.",
+      "truck": "Volvo FM",
+      "category": "Toma de fuerza",
+      "severity": "Media",
+      "difficulty": "Media",
+      "estimatedTime": "2-3 horas",
+      "tools": [
+        "Manómetro neumático",
+        "Galgas de espesores",
+        "Llave Allen",
+        "Micrómetro",
+        "Calibrador"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Verificación de presión de aire",
+          "description": "Conectar manómetro a línea de PTO. Presión mínima para activación: 7 bar"
+        },
+        {
+          "number": 2,
+          "title": "Prueba de válvula de activación",
+          "description": "Activar switch de PTO. Válvula debe cambiar de estado audiblemente (click)"
+        },
+        {
+          "number": 3,
+          "title": "Inspección del cilindro neumático",
+          "description": "Verificar que vástago del cilindro se extienda completamente al activar PTO"
+        },
+        {
+          "number": 4,
+          "title": "Verificación del varillaje",
+          "description": "Inspeccionar articulaciones del varillaje por desgaste. Debe transmitir movimiento sin juego"
+        },
+        {
+          "number": 5,
+          "title": "Ajuste de sincronización",
+          "description": "Con PTO activada, verificar que engrane esté completamente acoplado. Ajustar topes si es necesario"
+        },
+        {
+          "number": 6,
+          "title": "Verificación de interlock",
+          "description": "PTO debe desactivarse automáticamente al presionar embrague. Probar sistema de seguridad"
+        },
+        {
+          "number": 7,
+          "title": "Prueba bajo carga",
+          "description": "Con PTO activada, verificar que no se desenganche bajo carga. Ruido indica dientes desgastados"
+        }
+      ],
+      "precautions": [
+        "NUNCA activar PTO con vehículo en movimiento",
+        "PTO debe activarse solo en neutral o marchas específicas",
+        "Verificar que implemento esté desacoplado antes de activar",
+        "Desengrane súbito de PTO puede dañar transmisión"
+      ],
+      "parts": [
+        {
+          "name": "Cilindro neumático de PTO",
+          "partNumber": "20405624",
+          "optional": true
+        },
+        {
+          "name": "Válvula de control de PTO",
+          "partNumber": "21067817",
+          "optional": true
+        },
+        {
+          "name": "Kit de engranaje de PTO",
+          "partNumber": "85103890",
+          "optional": true
+        },
+        {
+          "name": "Switch de activación",
+          "partNumber": "20405890",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "id": "mech-019",
+      "problem": "Cadena de distribución hace ruido al arrancar en frío",
+      "solution": "Verificar tensor hidráulico de cadena de distribución. Cambiar aceite de motor a viscosidad correcta para clima. Revisar bomba de aceite por pérdida de presión.",
+      "truck": "Volvo FH",
+      "category": "Motor",
+      "severity": "Alta",
+      "difficulty": "Alta",
+      "estimatedTime": "5-7 horas",
+      "tools": [
+        "Manómetro de aceite",
+        "Estetoscopio automotriz",
+        "Llave de cadena",
+        "Medidor de desgaste de cadena",
+        "Juego de llaves torx"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Confirmación del síntoma",
+          "description": "Ruido de cascabeleo en frío que desaparece en caliente indica tensor o cadena"
+        },
+        {
+          "number": 2,
+          "title": "Medición de presión de aceite",
+          "description": "Con motor frío, presión debe ser mínimo 1.5 bar en ralentí. Menos indica bomba débil"
+        },
+        {
+          "number": 3,
+          "title": "Inspección del tensor",
+          "description": "Desmontar tapa de distribución. Verificar que tensor hidráulico esté extendido"
+        },
+        {
+          "number": 4,
+          "title": "Medición de estiramiento de cadena",
+          "description": "Medir elongación de cadena. Más de 1% de estiramiento requiere reemplazo"
+        },
+        {
+          "number": 5,
+          "title": "Verificación de guías",
+          "description": "Inspeccionar guías plásticas de cadena. Desgaste o roturas causan desalineación"
+        },
+        {
+          "number": 6,
+          "title": "Reemplazo de componentes",
+          "description": "Cambiar cadena, tensor y guías como kit completo. No reutilizar componentes viejos"
+        },
+        {
+          "number": 7,
+          "title": "Cambio de aceite",
+          "description": "Usar aceite correcto: 15W-40 para clima cálido, 5W-30 para frío. Viscosidad afecta tensado"
+        }
+      ],
+      "precautions": [
+        "Cadena de distribución rota destruye motor instantáneamente",
+        "Alinear marcas de distribución EXACTAMENTE - 1 diente fuera causa daño",
+        "No girar motor manualmente con bujías instaladas",
+        "Verificar distribución después de ensamblar - usar método de TDC"
+      ],
+      "parts": [
+        {
+          "name": "Kit de cadena de distribución",
+          "partNumber": "21340708",
+          "optional": false
+        },
+        {
+          "name": "Tensor hidráulico",
+          "partNumber": "20700084",
+          "optional": false
+        },
+        {
+          "name": "Guías de cadena (juego)",
+          "partNumber": "20700085",
+          "optional": false
+        },
+        {
+          "name": "Junta de tapa de distribución",
+          "partNumber": "20700089",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "mech-020",
+      "problem": "Válvula EGR obstruida generando humo negro",
+      "solution": "Desmontar y limpiar válvula EGR con limpiador específico. Verificar sensor de temperatura de gases de escape. Actualizar parámetros de ECU para optimizar regeneración de EGR.",
+      "truck": "Volvo FH16",
+      "category": "Sistema de emisiones",
+      "severity": "Alta",
+      "difficulty": "Media",
+      "estimatedTime": "3-4 horas",
+      "tools": [
+        "Limpiador de EGR",
+        "Escáner VCADS",
+        "Cepillo de alambre",
+        "Juego de llaves",
+        "Recipiente para remojar piezas"
+      ],
+      "steps": [
+        {
+          "number": 1,
+          "title": "Diagnóstico de humo negro",
+          "description": "Humo negro indica combustión incompleta por exceso de combustible o falta de aire"
+        },
+        {
+          "number": 2,
+          "title": "Lectura de códigos",
+          "description": "Con VCADS, leer códigos de EGR, MAF, presión de turbo y sensor de oxígeno"
+        },
+        {
+          "number": 3,
+          "title": "Desmontaje de válvula EGR",
+          "description": "Ubicar válvula EGR en lateral del motor. Desconectar tuberías y conector eléctrico"
+        },
+        {
+          "number": 4,
+          "title": "Inspección visual",
+          "description": "Verificar acumulación de hollín. EGR obstruida tiene pasajes completamente tapados"
+        },
+        {
+          "number": 5,
+          "title": "Limpieza química",
+          "description": "Sumergir válvula en limpiador de EGR por 2-4 horas. Luego cepillar y enjuagar"
+        },
+        {
+          "number": 6,
+          "title": "Limpieza de conductos",
+          "description": "Limpiar conductos de EGR en el motor con cepillo y limpiador. Remover carbonilla"
+        },
+        {
+          "number": 7,
+          "title": "Verificación del actuador",
+          "description": "Probar motor eléctrico de válvula EGR. Debe moverse libremente sin atascarse"
+        },
+        {
+          "number": 8,
+          "title": "Actualización de software",
+          "description": "Actualizar parámetros de ECU con VCADS. Nuevos mapas optimizan funcionamiento de EGR"
+        }
+      ],
+      "precautions": [
+        "EGR obstruida genera humo negro y aumenta consumo 20-30%",
+        "No bloquear EGR permanentemente - causa fallas en verificación vehicular",
+        "Usar guantes al manipular - hollín de EGR es cancerígeno",
+        "Verificar que mangueras de EGR no estén cristalizadas por calor"
+      ],
+      "parts": [
+        {
+          "name": "Válvula EGR",
+          "partNumber": "21340733",
+          "optional": true
+        },
+        {
+          "name": "Junta de EGR",
+          "partNumber": "20700103",
+          "optional": false
+        },
+        {
+          "name": "Sensor de temperatura EGR",
+          "partNumber": "20792344",
+          "optional": true
+        },
+        {
+          "name": "Limpiador de EGR",
+          "partNumber": "N/A",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "mech-021",
+      "problem": "Amortiguadores delanteros con fuga de aceite",
+      "solution": "Reemplazar amortiguadores por kit completo. Verificar estado de soportes superiores y bujes.",
+      "truck": "Volvo FH",
+      "category": "Suspensión",
+      "severity": "Media"
+    },
+    {
+      "id": "mech-022",
+      "problem": "Ruido en caja de cambios al cambiar de marcha",
+      "solution": "Verificar nivel de aceite de transmisión. Inspeccionar sincronizadores y horquillas selectoras.",
+      "truck": "Volvo FM",
+      "category": "Transmisión",
+      "severity": "Alta"
+    },
+    {
+      "id": "mech-023",
+      "problem": "Pérdida de refrigerante por radiador",
+      "solution": "Inspeccionar radiador por corrosión o daños físicos. Probar presión del sistema. Reemplazar radiador si es necesario.",
+      "truck": "Volvo FH16",
+      "category": "Sistema de enfriamiento",
+      "severity": "Alta"
+    },
+    {
+      "id": "mech-024",
+      "problem": "Batería no retiene carga",
+      "solution": "Probar batería con cargador/tester. Verificar edad de batería (vida útil 3-4 años). Reemplazar si falla prueba de carga.",
+      "truck": "Volvo FH",
+      "category": "Sistema eléctrico",
+      "severity": "Alta"
+    },
+    {
+      "id": "mech-025",
+      "problem": "Barra estabilizadora rota o agrietada",
+      "solution": "Inspeccionar visualmente barra estabilizadora. Reemplazar barra y bujes si hay grietas o roturas.",
+      "truck": "Volvo FM",
+      "category": "Suspensión",
+      "severity": "Alta"
+    },
+    {
+      "id": "mech-026",
+      "problem": "Escape con humo blanco constante",
+      "solution": "Verificar junta de culata por fuga de refrigerante al cilindro. Probar presión de cilindros. Revisar inyectores.",
+      "truck": "Volvo FH16",
+      "category": "Motor",
+      "severity": "Crítica"
+    },
+    {
+      "id": "mech-027",
+      "problem": "Freno de estacionamiento no sostiene el vehículo",
+      "solution": "Ajustar cable de freno de mano. Verificar zapatas de freno de estacionamiento. Reemplazar si desgaste excede límite.",
+      "truck": "Volvo FH",
+      "category": "Frenos",
+      "severity": "Crítica"
+    },
+    {
+      "id": "mech-028",
+      "problem": "Fugas en sistema hidráulico de volteo",
+      "solution": "Inspeccionar cilindros hidráulicos, mangueras y conexiones. Reemplazar sellos o componentes dañados.",
+      "truck": "Volvo FM",
+      "category": "Sistema hidráulico",
+      "severity": "Alta"
+    },
+    {
+      "id": "mech-029",
+      "problem": "Clutch/embrague hace ruido al presionar pedal",
+      "solution": "Verificar collarin/rodamiento de desembrague. Lubricar o reemplazar si está desgastado.",
+      "truck": "Volvo FH",
+      "category": "Transmisión",
+      "severity": "Media"
+    },
+    {
+      "id": "mech-030",
+      "problem": "Cardan/eje de transmisión vibra",
+      "solution": "Balancear cardan. Verificar crucetas y rodamientos centrales. Reemplazar componentes desgastados.",
+      "truck": "Volvo FH16",
+      "category": "Transmisión",
+      "severity": "Alta"
+    },
+    {
+      "id": "mech-031",
+      "problem": "Motor arranca con dificultad en frío",
+      "solution": "Verificar sistema de precalentamiento (bujías). Revisar calidad del combustible y filtros. Comprobar compresión.",
+      "truck": "Volvo FM",
+      "category": "Motor",
+      "severity": "Media"
+    },
+    {
+      "id": "mech-032",
+      "problem": "Cremallera de dirección con juego",
+      "solution": "Ajustar juego de cremallera según especificaciones. Si excede límites, reemplazar cremallera.",
+      "truck": "Volvo FH",
+      "category": "Dirección",
+      "severity": "Alta"
+    },
+    {
+      "id": "mech-033",
+      "problem": "Compresor de aire no genera presión suficiente",
+      "solution": "Verificar válvula de descarga del compresor. Inspeccionar anillos y cilindro del compresor. Reemplazar kit de reparación.",
+      "truck": "Volvo FM",
+      "category": "Sistema neumático",
+      "severity": "Crítica"
+    },
+    {
+      "id": "mech-034",
+      "problem": "Sincronización de motor desajustada",
+      "solution": "Verificar marcas de distribución. Ajustar sincronización según especificaciones del fabricante.",
+      "truck": "Volvo FH16",
+      "category": "Motor",
+      "severity": "Alta"
+    },
+    {
+      "id": "mech-035",
+      "problem": "Junta homocinética rota",
+      "solution": "Reemplazar junta homocinética completa. Verificar estado de grasa y guardapolvos.",
+      "truck": "Volvo FH",
+      "category": "Transmisión",
+      "severity": "Alta"
+    },
+    {
+      "id": "mech-036",
+      "problem": "Muelles/resortes de suspensión vencidos",
+      "solution": "Medir altura de suspensión. Reemplazar muelles si la altura está fuera de especificación.",
+      "truck": "Volvo FM",
+      "category": "Suspensión",
+      "severity": "Media"
+    },
+    {
+      "id": "mech-037",
+      "problem": "Silenciador/mofle con agujeros",
+      "solution": "Inspeccionar sistema de escape completo. Reemplazar silenciador y tubos dañados por corrosión.",
+      "truck": "Volvo FH",
+      "category": "Sistema de escape",
+      "severity": "Media"
+    },
+    {
+      "id": "mech-038",
+      "problem": "Válvula limitadora de presión defectuosa",
+      "solution": "Probar presión del sistema neumático. Calibrar o reemplazar válvula limitadora de presión.",
+      "truck": "Volvo FH16",
+      "category": "Sistema neumático",
+      "severity": "Alta"
+    },
+    {
+      "id": "mech-039",
+      "problem": "Cárter de aceite abollado o fisurado",
+      "solution": "Inspeccionar cárter por daños. Drenar aceite y reemplazar cárter con junta nueva.",
+      "truck": "Volvo FM",
+      "category": "Motor",
+      "severity": "Alta"
+    },
+    {
+      "id": "mech-040",
+      "problem": "Tensor automático de correa fallo",
+      "solution": "Verificar funcionamiento del tensor automático. Reemplazar tensor si no mantiene tensión correcta.",
+      "truck": "Volvo FH",
+      "category": "Motor",
+      "severity": "Media"
+    },
+    {
+      "id": "mech-041",
+      "problem": "Quinta rueda desgastada o suelta",
+      "solution": "Inspeccionar quinta rueda por desgaste. Reapretar pernos de montaje o reemplazar plato si es necesario.",
+      "truck": "Volvo FH16",
+      "category": "Acople",
+      "severity": "Crítica"
+    },
+    {
+      "id": "mech-042",
+      "problem": "Válvulas del motor con juego excesivo",
+      "solution": "Ajustar luz de válvulas según especificaciones. Verificar balancines y árbol de levas por desgaste.",
+      "truck": "Volvo FM",
+      "category": "Motor",
+      "severity": "Media"
+    },
+    {
+      "id": "mech-043",
+      "problem": "Colector de escape agrietado",
+      "solution": "Inspeccionar colector por grietas térmicas. Reemplazar colector y juntas.",
+      "truck": "Volvo FH",
+      "category": "Sistema de escape",
+      "severity": "Media"
+    },
+    {
+      "id": "mech-044",
+      "problem": "Bomba de combustible de baja presión falla",
+      "solution": "Verificar presión de alimentación de combustible. Reemplazar bomba si presión es insuficiente.",
+      "truck": "Volvo FH16",
+      "category": "Sistema de combustible",
+      "severity": "Alta"
+    },
+    {
+      "id": "mech-045",
+      "problem": "Soportes de motor/transmisión rotos",
+      "solution": "Inspeccionar soportes de goma del motor. Reemplazar soportes agrietados o vencidos.",
+      "truck": "Volvo FM",
+      "category": "Motor",
+      "severity": "Alta"
+    },
+    {
+      "id": "mech-046",
+      "problem": "Neumáticos con desgaste desigual lado a lado",
+      "solution": "Verificar presión diferencial entre neumáticos duales. Rotar neumáticos y corregir presión.",
+      "truck": "Volvo FH",
+      "category": "Dirección y neumáticos",
+      "severity": "Media"
+    },
+    {
+      "id": "mech-047",
+      "problem": "Filtro de partículas DPF obstruido completamente",
+      "solution": "Intentar regeneración forzada con VCADS. Si falla, desmontar y limpiar DPF profesionalmente o reemplazar.",
+      "truck": "Volvo FH16",
+      "category": "Sistema de emisiones",
+      "severity": "Crítica"
+    },
+    {
+      "id": "mech-048",
+      "problem": "Volante del motor fisurado",
+      "solution": "Inspeccionar volante por grietas térmicas. Verificar planicidad. Reemplazar volante motor.",
+      "truck": "Volvo FM",
+      "category": "Transmisión",
+      "severity": "Crítica"
+    },
+    {
+      "id": "mech-049",
+      "problem": "Intercooler con fugas de aire",
+      "solution": "Probar presión del intercooler. Reparar soldadura o reemplazar intercooler completo.",
+      "truck": "Volvo FH16",
+      "category": "Motor",
+      "severity": "Alta"
+    },
+    {
+      "id": "mech-050",
+      "problem": "Cabina con ruidos y golpeteos",
+      "solution": "Inspeccionar soportes de cabina y amortiguadores. Reapretar pernos y reemplazar bujes desgastados.",
+      "truck": "Volvo FH",
+      "category": "Cabina",
+      "severity": "Baja"
     }
   ],
   "electrical": [
@@ -756,6 +2241,610 @@
           "optional": true
         }
       ]
+    },
+    {
+      "id": "elec-006",
+      "problem": "Indicador de nivel de combustible marca incorrectamente",
+      "solution": "Probar resistencia del sensor de nivel en tanque (vacío: 250Ω, lleno: 30Ω). Verificar cableado por falso contacto. Calibrar tablero de instrumentos con VCADS.",
+      "truck": "Volvo FH",
+      "category": "Instrumentación",
+      "severity": "Baja",
+      "difficulty": "Baja",
+      "estimatedTime": "1-2 horas",
+      "tools": ["Multímetro digital", "VCADS", "Diagrama eléctrico"],
+      "steps": [
+        {"number": 1, "title": "Verificar síntoma", "description": "Confirmar que indicador no corresponde con nivel real de combustible en tanque"},
+        {"number": 2, "title": "Prueba de sensor", "description": "Desconectar sensor y medir resistencia. Vacío: 250Ω, lleno: 30Ω"},
+        {"number": 3, "title": "Verificar cableado", "description": "Revisar continuidad de cables entre sensor y tablero"},
+        {"number": 4, "title": "Calibrar con VCADS", "description": "Usar VCADS para calibrar indicador de combustible"}
+      ],
+      "precautions": ["Evitar chispas cerca del tanque de combustible", "No fumar durante el trabajo"],
+      "parts": [{"name": "Sensor de nivel", "partNumber": "20582467", "optional": true}]
+    },
+    {
+      "id": "elec-007",
+      "problem": "Sistema de climatización no enciende",
+      "solution": "Verificar fusible F25 de 15A del sistema HVAC. Revisar relay de compresor de A/C. Probar presión de gas refrigerante (debe estar entre 200-250 PSI en alta).",
+      "truck": "Volvo FM",
+      "category": "Climatización",
+      "severity": "Media",
+      "difficulty": "Media",
+      "estimatedTime": "1-2 horas",
+      "tools": ["Multímetro", "Manómetro de A/C", "Detector de fugas"],
+      "steps": [
+        {"number": 1, "title": "Verificar fusible", "description": "Revisar fusible F25 de 15A del sistema HVAC"},
+        {"number": 2, "title": "Probar relay", "description": "Verificar relay de compresor con multímetro"},
+        {"number": 3, "title": "Medir presión", "description": "Conectar manómetro y verificar presión de refrigerante"},
+        {"number": 4, "title": "Detectar fugas", "description": "Si presión es baja, buscar fugas con detector UV"}
+      ],
+      "precautions": ["Gas refrigerante a alta presión", "Usar gafas de protección"],
+      "parts": [{"name": "Relay de A/C", "partNumber": "20568439", "optional": true}]
+    },
+    {
+      "id": "elec-008",
+      "problem": "Sensores de reversa no funcionan",
+      "solution": "Verificar alimentación de 12V a módulo de sensores. Probar cada sensor individualmente con multímetro. Limpiar sensores de barro y verificar instalación correcta.",
+      "truck": "Volvo FH",
+      "category": "Ayudas de conducción",
+      "severity": "Media",
+      "difficulty": "Baja",
+      "estimatedTime": "1 hora",
+      "tools": ["Multímetro", "Agua y jabón"],
+      "steps": [
+        {"number": 1, "title": "Verificar alimentación", "description": "Medir voltaje en módulo de sensores (debe ser 12V)"},
+        {"number": 2, "title": "Probar sensores", "description": "Desconectar y medir resistencia de cada sensor"},
+        {"number": 3, "title": "Limpiar sensores", "description": "Limpiar con agua y jabón, secar completamente"},
+        {"number": 4, "title": "Verificar instalación", "description": "Asegurar que sensores estén bien montados y alineados"}
+      ],
+      "precautions": ["No usar alta presión para limpiar sensores"],
+      "parts": [{"name": "Sensor de reversa", "partNumber": "21302029", "optional": true}]
+    },
+    {
+      "id": "elec-009",
+      "problem": "Check Engine encendido - código P0401 (Flujo EGR insuficiente)",
+      "solution": "Limpiar válvula EGR y conductos. Verificar sensor de presión diferencial de EGR. Revisar actuador eléctrico de válvula EGR y calibrar con VCADS.",
+      "truck": "Volvo FH16",
+      "category": "Control de emisiones",
+      "severity": "Alta",
+      "difficulty": "Media",
+      "estimatedTime": "2-3 horas",
+      "tools": ["VCADS", "Limpiador de EGR", "Multímetro"],
+      "steps": [
+        {"number": 1, "title": "Leer código", "description": "Confirmar código P0401 con VCADS"},
+        {"number": 2, "title": "Limpiar válvula EGR", "description": "Desmontar y limpiar válvula con producto específico"},
+        {"number": 3, "title": "Verificar sensor", "description": "Probar sensor de presión diferencial"},
+        {"number": 4, "title": "Calibrar", "description": "Calibrar sistema EGR con VCADS"}
+      ],
+      "precautions": ["Usar guantes - hollín es tóxico"],
+      "parts": [{"name": "Sensor de presión EGR", "partNumber": "21302156", "optional": true}]
+    },
+    {
+      "id": "elec-010",
+      "problem": "Luces LED de circulación diurna no encienden",
+      "solution": "Verificar fusible F18 de módulo de iluminación. Revisar configuración en CEM (Central Electronic Module). Probar módulo de control de luces LED.",
+      "truck": "Volvo FH",
+      "category": "Iluminación",
+      "severity": "Media",
+      "difficulty": "Baja",
+      "estimatedTime": "1 hora",
+      "tools": ["Multímetro", "VCADS"],
+      "steps": [
+        {"number": 1, "title": "Verificar fusible", "description": "Revisar fusible F18 del módulo de iluminación"},
+        {"number": 2, "title": "Verificar configuración", "description": "Con VCADS, revisar que función DRL esté habilitada en CEM"},
+        {"number": 3, "title": "Probar módulo LED", "description": "Medir voltaje en conectores del módulo LED"}
+      ],
+      "precautions": ["No tocar LEDs con las manos - usar guantes"],
+      "parts": [{"name": "Módulo LED", "partNumber": "21610048", "optional": true}]
+    },
+    {
+      "id": "elec-011",
+      "problem": "Tacógrafo digital marca error de calibración",
+      "solution": "Realizar calibración con equipo homologado según normativa EU. Verificar sensor de velocidad VDO y conexión CAN. Actualizar software del tacógrafo a última versión.",
+      "truck": "Volvo FM",
+      "category": "Tacógrafo",
+      "severity": "Crítica",
+      "difficulty": "Alta",
+      "estimatedTime": "2-3 horas",
+      "tools": ["Equipo de calibración homologado", "VCADS", "Software de tacógrafo"],
+      "steps": [
+        {"number": 1, "title": "Leer error", "description": "Identificar código de error específico del tacógrafo"},
+        {"number": 2, "title": "Verificar sensor VDO", "description": "Comprobar señal del sensor de velocidad"},
+        {"number": 3, "title": "Calibrar", "description": "Usar equipo homologado para calibración oficial"},
+        {"number": 4, "title": "Actualizar software", "description": "Instalar última versión de firmware del tacógrafo"}
+      ],
+      "precautions": ["Solo técnicos certificados pueden calibrar tacógrafos", "Registrar calibración en documentos oficiales"],
+      "parts": [{"name": "Sensor VDO", "partNumber": "21413290", "optional": true}]
+    },
+    {
+      "id": "elec-012",
+      "problem": "Sistema de control de crucero se desactiva solo",
+      "solution": "Verificar funcionamiento de interruptores de embrague y freno. Revisar sensor de presión de frenos neumáticos. Actualizar software de AEBS si está instalado.",
+      "truck": "Volvo FH",
+      "category": "Control de crucero",
+      "severity": "Media",
+      "difficulty": "Media",
+      "estimatedTime": "1-2 horas",
+      "tools": ["Multímetro", "VCADS"],
+      "steps": [
+        {"number": 1, "title": "Probar interruptores", "description": "Verificar switches de embrague y freno con multímetro"},
+        {"number": 2, "title": "Revisar sensor de presión", "description": "Comprobar sensor de presión de frenos neumáticos"},
+        {"number": 3, "title": "Leer códigos", "description": "Escanear con VCADS por códigos de falla"},
+        {"number": 4, "title": "Actualizar software", "description": "Si aplica, actualizar software de AEBS"}
+      ],
+      "precautions": ["No probar en carretera - usar área segura"],
+      "parts": [{"name": "Switch de freno", "partNumber": "20582910", "optional": true}]
+    },
+    {
+      "id": "elec-013",
+      "problem": "Bocina no suena al presionar",
+      "solution": "Verificar relay de bocina y fusible F12 de 20A. Probar continuidad del claxon directamente con batería. Revisar anillo de contacto en volante (airbag).",
+      "truck": "Volvo FM",
+      "category": "Sistemas auxiliares",
+      "severity": "Media",
+      "difficulty": "Baja",
+      "estimatedTime": "30min-1 hora",
+      "tools": ["Multímetro", "Cables puente"],
+      "steps": [
+        {"number": 1, "title": "Verificar fusible", "description": "Revisar fusible F12 de 20A"},
+        {"number": 2, "title": "Probar relay", "description": "Verificar que relay de bocina active correctamente"},
+        {"number": 3, "title": "Prueba directa", "description": "Conectar bocina directamente a batería para verificar que funcione"},
+        {"number": 4, "title": "Revisar anillo", "description": "Inspeccionar anillo de contacto en volante"}
+      ],
+      "precautions": ["Tener cuidado con airbag al trabajar en volante"],
+      "parts": [{"name": "Bocina", "partNumber": "20392847", "optional": true}]
+    },
+    {
+      "id": "elec-014",
+      "problem": "Sistema de precalentamiento no funciona en clima frío",
+      "solution": "Probar bujías de precalentamiento con multímetro (resistencia 0.5-2Ω). Verificar relay de precalentamiento y temporizador. Revisar sensor de temperatura de refrigerante.",
+      "truck": "Volvo FM",
+      "category": "Arranque",
+      "severity": "Alta",
+      "difficulty": "Media",
+      "estimatedTime": "1-2 horas",
+      "tools": ["Multímetro", "Llave de bujías de precalentamiento"],
+      "steps": [
+        {"number": 1, "title": "Probar bujías", "description": "Medir resistencia de cada bujía: debe ser 0.5-2Ω"},
+        {"number": 2, "title": "Verificar relay", "description": "Comprobar que relay active al dar contacto"},
+        {"number": 3, "title": "Probar temporizador", "description": "Verificar tiempo de activación del precalentamiento"},
+        {"number": 4, "title": "Revisar sensor", "description": "Comprobar sensor de temperatura de refrigerante"}
+      ],
+      "precautions": ["Bujías están en el motor - cuidado con partes calientes"],
+      "parts": [{"name": "Bujía de precalentamiento", "partNumber": "20700112", "optional": true}]
+    },
+    {
+      "id": "elec-015",
+      "problem": "Luces de freno no encienden",
+      "solution": "Verificar interruptor neumático de freno en válvula de pedal. Probar bulbos de luces traseras. Revisar fusible F22 y cableado de circuito de luces de freno.",
+      "truck": "Volvo FH",
+      "category": "Iluminación",
+      "severity": "Crítica",
+      "difficulty": "Baja",
+      "estimatedTime": "30min-1 hora",
+      "tools": ["Multímetro", "Bulbos de repuesto"],
+      "steps": [
+        {"number": 1, "title": "Verificar bulbos", "description": "Revisar que bulbos de luces de freno no estén fundidos"},
+        {"number": 2, "title": "Probar switch", "description": "Verificar switch neumático de freno"},
+        {"number": 3, "title": "Verificar fusible", "description": "Revisar fusible F22 del circuito de frenos"},
+        {"number": 4, "title": "Revisar cableado", "description": "Verificar continuidad en cables"}
+      ],
+      "precautions": ["CRÍTICO - No conducir sin luces de freno funcionando"],
+      "parts": [{"name": "Switch neumático de freno", "partNumber": "8170393", "optional": true}]
+    },
+    {
+      "id": "elec-016",
+      "problem": "Error de comunicación CAN entre módulos",
+      "solution": "Escanear bus CAN con VCADS para identificar módulo fallido. Verificar resistencias terminales de 120Ω en extremos del bus. Revisar conectores del backbone CAN.",
+      "truck": "Volvo FH16",
+      "category": "Red CAN",
+      "severity": "Alta",
+      "difficulty": "Alta",
+      "estimatedTime": "2-4 horas",
+      "tools": ["VCADS", "Multímetro", "Osciloscopio CAN"],
+      "steps": [
+        {"number": 1, "title": "Escanear red CAN", "description": "Usar VCADS para identificar qué módulo no se comunica"},
+        {"number": 2, "title": "Medir resistencias", "description": "Verificar 120Ω en extremos del bus CAN"},
+        {"number": 3, "title": "Inspeccionar conectores", "description": "Revisar todos los conectores del backbone CAN"},
+        {"number": 4, "title": "Osciloscopio", "description": "Verificar señales CAN-H y CAN-L con osciloscopio"}
+      ],
+      "precautions": ["Red CAN es crítica - error puede dejar vehículo inoperante"],
+      "parts": [{"name": "Conector CAN", "partNumber": "21302890", "optional": true}]
+    },
+    {
+      "id": "elec-017",
+      "problem": "Sistema de elevación de eje auxiliar no responde",
+      "solution": "Verificar presión de aire en circuito de elevación. Probar solenoide de válvula con 24V directo. Revisar interruptor de cabina y cableado de activación.",
+      "truck": "Volvo FM",
+      "category": "Sistemas auxiliares",
+      "severity": "Media",
+      "difficulty": "Media",
+      "estimatedTime": "1-2 horas",
+      "tools": ["Multímetro", "Manómetro", "Fuente 24V"],
+      "steps": [
+        {"number": 1, "title": "Verificar presión", "description": "Comprobar presión de aire en circuito de elevación"},
+        {"number": 2, "title": "Probar solenoide", "description": "Aplicar 24V directamente al solenoide"},
+        {"number": 3, "title": "Revisar switch", "description": "Verificar switch de activación en cabina"},
+        {"number": 4, "title": "Inspeccionar cableado", "description": "Revisar continuidad de cables"}
+      ],
+      "precautions": ["No elevar eje con carga - puede dañar suspensión"],
+      "parts": [{"name": "Válvula solenoide", "partNumber": "20514890", "optional": true}]
+    },
+    {
+      "id": "elec-018",
+      "problem": "Velocímetro marca erróneamente o no marca",
+      "solution": "Verificar sensor de velocidad del eje trasero. Revisar configuración de relación de diferencial en ECU. Calibrar tacógrafo y verificar señal CAN de velocidad.",
+      "truck": "Volvo FH",
+      "category": "Instrumentación",
+      "severity": "Alta",
+      "difficulty": "Media",
+      "estimatedTime": "1-2 horas",
+      "tools": ["VCADS", "Multímetro"],
+      "steps": [
+        {"number": 1, "title": "Verificar sensor", "description": "Comprobar sensor de velocidad en diferencial"},
+        {"number": 2, "title": "Revisar configuración", "description": "Verificar relación de diferencial en ECU con VCADS"},
+        {"number": 3, "title": "Calibrar tacógrafo", "description": "Realizar calibración de tacógrafo"},
+        {"number": 4, "title": "Verificar señal CAN", "description": "Comprobar señal de velocidad en red CAN"}
+      ],
+      "precautions": ["Velocímetro incorrecto puede causar multas"],
+      "parts": [{"name": "Sensor de velocidad", "partNumber": "20582401", "optional": true}]
+    },
+    {
+      "id": "elec-019",
+      "problem": "Elevavidrios eléctricos se mueven lentamente",
+      "solution": "Lubricar rieles de ventanas con grasa de silicona. Verificar voltaje en motor de elevavidrios (debe recibir 24V). Limpiar contactos del switch de control.",
+      "truck": "Volvo FM",
+      "category": "Confort",
+      "severity": "Baja",
+      "difficulty": "Baja",
+      "estimatedTime": "30min-1 hora",
+      "tools": ["Multímetro", "Grasa de silicona", "Limpiador de contactos"],
+      "steps": [
+        {"number": 1, "title": "Lubricar rieles", "description": "Aplicar grasa de silicona en guías de ventanas"},
+        {"number": 2, "title": "Medir voltaje", "description": "Verificar que motor reciba 24V al activar"},
+        {"number": 3, "title": "Limpiar switch", "description": "Limpiar contactos del switch con spray limpiador"},
+        {"number": 4, "title": "Probar funcionamiento", "description": "Verificar que velocidad haya mejorado"}
+      ],
+      "precautions": ["No forzar ventanas - puede dañar motor"],
+      "parts": [{"name": "Motor de elevavidrios", "partNumber": "20440129", "optional": true}]
+    },
+    {
+      "id": "elec-020",
+      "problem": "Sistema de retardador eléctrico no funciona",
+      "solution": "Verificar refrigeración del retardador (temperatura no debe superar 180°C). Revisar relay de activación y fusible F28 de 40A. Escanear códigos de falla en módulo RET.",
+      "truck": "Volvo FH16",
+      "category": "Frenos",
+      "severity": "Alta",
+      "difficulty": "Media",
+      "estimatedTime": "1-2 horas",
+      "tools": ["VCADS", "Multímetro", "Termómetro infrarrojo"],
+      "steps": [
+        {"number": 1, "title": "Verificar temperatura", "description": "Medir temperatura del retardador con termómetro infrarrojo"},
+        {"number": 2, "title": "Revisar fusible", "description": "Verificar fusible F28 de 40A"},
+        {"number": 3, "title": "Probar relay", "description": "Comprobar relay de activación del retardador"},
+        {"number": 4, "title": "Escanear códigos", "description": "Leer códigos de falla en módulo RET con VCADS"}
+      ],
+      "precautions": ["Retardador sobrecalentado puede fallar súbitamente"],
+      "parts": [{"name": "Relay de retardador", "partNumber": "21302567", "optional": true}]
+    },
+    {
+      "id": "elec-021",
+      "problem": "Sensor de temperatura del motor marca incorrectamente",
+      "solution": "Verificar sensor de temperatura con multímetro. Probar resistencia a diferentes temperaturas. Reemplazar si valores están fuera de especificación.",
+      "truck": "Volvo FH",
+      "category": "Instrumentación",
+      "severity": "Media"
+    },
+    {
+      "id": "elec-022",
+      "problem": "Luces de giro intermitentes no funcionan",
+      "solution": "Verificar relay intermitente. Probar bulbos. Revisar switch de luces direccionales en volante.",
+      "truck": "Volvo FM",
+      "category": "Iluminación",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-023",
+      "problem": "Limpiaparabrisas no funcionan",
+      "solution": "Verificar fusible del limpiaparabrisas. Probar motor de limpiaparabrisas con voltaje directo. Revisar switch de control.",
+      "truck": "Volvo FH16",
+      "category": "Confort",
+      "severity": "Media"
+    },
+    {
+      "id": "elec-024",
+      "problem": "Tablero de instrumentos completamente apagado",
+      "solution": "Verificar fusibles principales del tablero. Revisar alimentación de 24V al módulo. Verificar conectores traseros del tablero.",
+      "truck": "Volvo FH",
+      "category": "Instrumentación",
+      "severity": "Crítica"
+    },
+    {
+      "id": "elec-025",
+      "problem": "Alarma de reversa no suena",
+      "solution": "Verificar fusible de alarma. Probar bocina de reversa directamente. Revisar conexión con switch de reversa de transmisión.",
+      "truck": "Volvo FM",
+      "category": "Ayudas de conducción",
+      "severity": "Media"
+    },
+    {
+      "id": "elec-026",
+      "problem": "Luces altas no encienden",
+      "solution": "Verificar fusible de luces altas. Probar relay. Revisar switch en volante. Probar bulbos de luces altas.",
+      "truck": "Volvo FH16",
+      "category": "Iluminación",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-027",
+      "problem": "Radio/sistema de audio no enciende",
+      "solution": "Verificar fusible del radio. Revisar alimentación de 24V. Verificar código de seguridad si aplica.",
+      "truck": "Volvo FH",
+      "category": "Confort",
+      "severity": "Baja"
+    },
+    {
+      "id": "elec-028",
+      "problem": "Sensor de presión de aceite defectuoso",
+      "solution": "Verificar presión real de aceite con manómetro mecánico. Si presión es correcta, reemplazar sensor eléctrico.",
+      "truck": "Volvo FM",
+      "category": "Instrumentación",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-029",
+      "problem": "Luces de posición no encienden",
+      "solution": "Verificar fusible de luces de posición. Probar switch de luces. Revisar bulbos LED o incandescentes.",
+      "truck": "Volvo FH16",
+      "category": "Iluminación",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-030",
+      "problem": "Calefacción de espejos no funciona",
+      "solution": "Verificar fusible de espejos. Probar relay de calefacción. Medir resistencia de elemento calefactor en espejo.",
+      "truck": "Volvo FH",
+      "category": "Confort",
+      "severity": "Baja"
+    },
+    {
+      "id": "elec-031",
+      "problem": "Indicador de nivel de AdBlue/DEF marca vacío",
+      "solution": "Verificar nivel real de AdBlue en tanque. Probar sensor de nivel. Calibrar con VCADS si es necesario.",
+      "truck": "Volvo FM",
+      "category": "Sistema de emisiones",
+      "severity": "Media"
+    },
+    {
+      "id": "elec-032",
+      "problem": "Toma de corriente/encendedor no funciona",
+      "solution": "Verificar fusible de toma de corriente. Limpiar contactos del encendedor. Probar voltaje en toma.",
+      "truck": "Volvo FH16",
+      "category": "Confort",
+      "severity": "Baja"
+    },
+    {
+      "id": "elec-033",
+      "problem": "Sensor MAF/sensor de flujo de aire falla",
+      "solution": "Limpiar sensor MAF con limpiador específico. Verificar señal con VCADS. Reemplazar si está defectuoso.",
+      "truck": "Volvo FH",
+      "category": "Control de motor",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-034",
+      "problem": "Intermitentes parpadean muy rápido",
+      "solution": "Verificar que todos los bulbos funcionen. Bulbo fundido causa parpadeo rápido. Reemplazar bulbo defectuoso.",
+      "truck": "Volvo FM",
+      "category": "Iluminación",
+      "severity": "Media"
+    },
+    {
+      "id": "elec-035",
+      "problem": "Luces de niebla no encienden",
+      "solution": "Verificar fusible de luces de niebla. Probar relay. Revisar switch de activación. Probar bulbos.",
+      "truck": "Volvo FH16",
+      "category": "Iluminación",
+      "severity": "Media"
+    },
+    {
+      "id": "elec-036",
+      "problem": "Sensor de nivel de refrigerante alerta falsamente",
+      "solution": "Verificar nivel real de refrigerante. Limpiar sensor de nivel. Revisar cableado por cortocircuito.",
+      "truck": "Volvo FH",
+      "category": "Sistema de enfriamiento",
+      "severity": "Media"
+    },
+    {
+      "id": "elec-037",
+      "problem": "Pantalla/display del tablero con píxeles muertos",
+      "solution": "Intentar reset del sistema. Si persiste, reemplazar módulo de instrumentos completo.",
+      "truck": "Volvo FM",
+      "category": "Instrumentación",
+      "severity": "Baja"
+    },
+    {
+      "id": "elec-038",
+      "problem": "Control de espejos eléctricos no responde",
+      "solution": "Verificar fusible de espejos. Probar motor de espejo directamente. Revisar switch de control.",
+      "truck": "Volvo FH16",
+      "category": "Confort",
+      "severity": "Baja"
+    },
+    {
+      "id": "elec-039",
+      "problem": "Luz de Check Engine encendida - código P0193",
+      "solution": "Código P0193 indica problema en sensor de presión de combustible. Verificar sensor y cableado. Reemplazar si es necesario.",
+      "truck": "Volvo FH",
+      "category": "Control de motor",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-040",
+      "problem": "Batería nueva se descarga rápidamente",
+      "solution": "Verificar consumo parasitario. Probar alternador por carga correcta. Revisar terminales por corrosión.",
+      "truck": "Volvo FM",
+      "category": "Sistema eléctrico",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-041",
+      "problem": "Luz de baja presión de aceite no apaga al arrancar",
+      "solution": "Verificar presión real de aceite con manómetro. Si presión es correcta, reemplazar sensor de presión.",
+      "truck": "Volvo FH16",
+      "category": "Motor",
+      "severity": "Crítica"
+    },
+    {
+      "id": "elec-042",
+      "problem": "Cerradura centralizada no funciona",
+      "solution": "Verificar fusible de cerradura. Probar actuadores de puertas. Revisar módulo de control central.",
+      "truck": "Volvo FH",
+      "category": "Confort",
+      "severity": "Baja"
+    },
+    {
+      "id": "elec-043",
+      "problem": "Sensor de presión de turbo defectuoso",
+      "solution": "Verificar presión real de turbo. Limpiar sensor y mangueras. Reemplazar sensor si señal es incorrecta.",
+      "truck": "Volvo FM",
+      "category": "Control de motor",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-044",
+      "problem": "Cámara de reversa no muestra imagen",
+      "solution": "Verificar alimentación de cámara. Limpiar lente de cámara. Revisar cable de video y pantalla.",
+      "truck": "Volvo FH16",
+      "category": "Ayudas de conducción",
+      "severity": "Media"
+    },
+    {
+      "id": "elec-045",
+      "problem": "Luces de marcha atrás no encienden",
+      "solution": "Verificar switch de reversa en transmisión. Probar bulbos. Revisar fusible y cableado.",
+      "truck": "Volvo FH",
+      "category": "Iluminación",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-046",
+      "problem": "Sistema de frenos ABS se activa en seco",
+      "solution": "Verificar sensores ABS por señales erráticas. Limpiar anillos reluctores. Revisar módulo ABS con VCADS.",
+      "truck": "Volvo FM",
+      "category": "Frenos",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-047",
+      "problem": "Sensor de oxígeno (O2) defectuoso",
+      "solution": "Leer códigos con VCADS. Verificar señal del sensor O2. Reemplazar si está fuera de rango.",
+      "truck": "Volvo FH16",
+      "category": "Control de emisiones",
+      "severity": "Media"
+    },
+    {
+      "id": "elec-048",
+      "problem": "Arranque dificultoso cuando hace calor",
+      "solution": "Verificar motor de arranque por desgaste de escobillas. Revisar batería por carga baja. Probar solenoide de arranque.",
+      "truck": "Volvo FH",
+      "category": "Arranque",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-049",
+      "problem": "Luz de airbag encendida permanentemente",
+      "solution": "Escanear códigos de airbag con VCADS. Verificar conectores debajo de asientos. Revisar sensores de impacto.",
+      "truck": "Volvo FM",
+      "category": "Seguridad",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-050",
+      "problem": "Faros delanteros con luz débil",
+      "solution": "Verificar voltaje en faros (debe ser cercano a 24V). Limpiar reflectores. Reemplazar bulbos si están opacados.",
+      "truck": "Volvo FH16",
+      "category": "Iluminación",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-051",
+      "problem": "Sistema de estabilidad (ESP) desactivado",
+      "solution": "Leer códigos con VCADS. Verificar sensores de ángulo de dirección y yaw. Calibrar sistema ESP.",
+      "truck": "Volvo FH",
+      "category": "Seguridad",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-052",
+      "problem": "Módulo ECU no se comunica",
+      "solution": "Verificar alimentación al ECU. Revisar fusibles principales. Comprobar bus CAN por cortocircuito.",
+      "truck": "Volvo FM",
+      "category": "Control de motor",
+      "severity": "Crítica"
+    },
+    {
+      "id": "elec-053",
+      "problem": "Sensor de temperatura de AdBlue falla",
+      "solution": "Verificar resistencia del sensor a temperatura ambiente. Reemplazar sensor si valores están incorrectos.",
+      "truck": "Volvo FH16",
+      "category": "Sistema de emisiones",
+      "severity": "Media"
+    },
+    {
+      "id": "elec-054",
+      "problem": "Control de tracción (TC) no funciona",
+      "solution": "Verificar sensores de velocidad de ruedas. Leer códigos de módulo TC. Calibrar sistema con VCADS.",
+      "truck": "Volvo FH",
+      "category": "Seguridad",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-055",
+      "problem": "Luz de advertencia de filtro de partículas DPF encendida",
+      "solution": "Verificar nivel de hollín del DPF con VCADS. Realizar regeneración forzada. Reemplazar DPF si está tapado.",
+      "truck": "Volvo FM",
+      "category": "Sistema de emisiones",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-056",
+      "problem": "Inyectores con falla eléctrica",
+      "solution": "Medir resistencia de bobina de inyectores. Verificar señal de activación con osciloscopio. Reemplazar inyector defectuoso.",
+      "truck": "Volvo FH16",
+      "category": "Control de motor",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-057",
+      "problem": "Sensor de nivel de aceite averiado",
+      "solution": "Verificar nivel real de aceite con varilla. Probar sensor con multímetro. Reemplazar si está defectuoso.",
+      "truck": "Volvo FH",
+      "category": "Motor",
+      "severity": "Media"
+    },
+    {
+      "id": "elec-058",
+      "problem": "Fusibles se queman repetidamente",
+      "solution": "Identificar circuito afectado. Buscar cortocircuito en cableado. Reparar cable dañado antes de reemplazar fusible.",
+      "truck": "Volvo FM",
+      "category": "Sistema eléctrico",
+      "severity": "Alta"
+    },
+    {
+      "id": "elec-059",
+      "problem": "Luces interiores no apagan",
+      "solution": "Verificar switches de puertas. Revisar módulo de control de luces. Buscar switch trabado o defectuoso.",
+      "truck": "Volvo FH16",
+      "category": "Confort",
+      "severity": "Media"
+    },
+    {
+      "id": "elec-060",
+      "problem": "Sistema de inyección AdBlue/SCR falla",
+      "solution": "Verificar calidad de AdBlue. Revisar bomba de AdBlue. Limpiar inyector de AdBlue. Leer códigos con VCADS.",
+      "truck": "Volvo FH",
+      "category": "Sistema de emisiones",
+      "severity": "Crítica"
     }
   ]
 }
